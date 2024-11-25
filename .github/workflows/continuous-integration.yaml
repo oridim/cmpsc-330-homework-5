@@ -1,0 +1,33 @@
+name: Continuous Integration
+
+on:
+    push:
+        branches: [main]
+
+    pull_request:
+        branches: [main]
+
+jobs:
+    compile-and-test:
+        runs-on: ubuntu-22.04
+
+        steps:
+            - name: Install System Updates
+              run: sudo apt-get update
+
+            - name: Print Dependency Versions
+              run: |
+                  cat /etc/os-release
+                  gcc --version
+
+            - name: Checkout
+              uses: actions/checkout@v2.3.1
+
+            - name: Compile Game Engine
+              run: sh ./compile-game-engine.sh
+
+            - name: Compile Players
+              run: sh ./compile-players.sh
+
+            - name: Run Test Runs
+              run: sh ./run-test-runs.sh

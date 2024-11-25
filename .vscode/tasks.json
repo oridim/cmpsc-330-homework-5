@@ -2,30 +2,22 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build Dots and Boxes",
+            "label": "Build Random Player",
             "type": "cppbuild",
             "command": "g++",
             "args": [
                 "-fdiagnostics-color=always",
+                "-shared",
+                "-fPIC",
                 "-ansi",
                 "-pedantic",
                 "-std=c++14",
                 "-Wall",
                 "-g",
-                "${workspaceFolder}/basic_strategy_ai_player.cxx",
-                "${workspaceFolder}/game_configuration.cxx",
-                "${workspaceFolder}/game_board.cxx",
-                "${workspaceFolder}/game_board_slot.cxx",
-                "${workspaceFolder}/game_data.cxx",
-                "${workspaceFolder}/game_result.cxx",
-                "${workspaceFolder}/game_session.cxx",
-                "${workspaceFolder}/player_move.cxx",
-                "${workspaceFolder}/player_result.cxx",
-                "${workspaceFolder}/player_turn.cxx",
-                "${workspaceFolder}/random_ai_player.cxx",
-                "${workspaceFolder}/main.cxx",
+                "${workspaceFolder}/board.cxx",
+                "${workspaceFolder}/random_player.cxx",
                 "-o",
-                "${workspaceFolder}/dotsandboxes"
+                "${workspaceFolder}/random_player.so"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -39,7 +31,36 @@
         },
 
         {
-            "label": "Build Active C++ File",
+            "label": "Build Our Player",
+            "type": "cppbuild",
+            "command": "g++",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-shared",
+                "-fPIC",
+                "-ansi",
+                "-pedantic",
+                "-std=c++14",
+                "-Wall",
+                "-g",
+                "${workspaceFolder}/board.cxx",
+                "${workspaceFolder}/OzgeAkosa5177_DimitriNearchosdon5092.cxx",
+                "-o",
+                "${workspaceFolder}/OzgeAkosa5177_DimitriNearchosdon5092.so"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": ["$gcc"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "compiler: g++"
+        },
+
+        {
+            "label": "Build Game Engine",
             "type": "cppbuild",
             "command": "g++",
             "args": [
@@ -49,12 +70,14 @@
                 "-std=c++14",
                 "-Wall",
                 "-g",
-                "${file}",
+                "${workspaceFolder}/board.cxx",
+                "${workspaceFolder}/dotsboxesgm.cxx",
+                "${workspaceFolder}/main.cxx",
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}"
+                "${workspaceFolder}/dotsboxes"
             ],
             "options": {
-                "cwd": "${fileDirname}"
+                "cwd": "${workspaceFolder}"
             },
             "problemMatcher": ["$gcc"],
             "group": {
@@ -62,6 +85,20 @@
                 "isDefault": true
             },
             "detail": "compiler: g++"
+        },
+
+        {
+            "label": "Build Dots and Boxes",
+            "dependsOn": [
+                "Build Game Engine",
+                "Build Random Player",
+                "Build Our Player"
+            ],
+
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }

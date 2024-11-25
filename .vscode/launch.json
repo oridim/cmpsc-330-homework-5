@@ -5,10 +5,13 @@
             "name": "Debug Dots and Boxes",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/dotsandboxes",
+            "program": "${workspaceFolder}/dotsboxes",
             "args": [
-                "<",
-                "./Test Cases/GameConfiguration/configuration.professor-supplied.txt"
+                "./OzgeAkosa5177_DimitriNearchosdon5092.so",
+                "./random_player.so",
+                "./strategic_player.so",
+                "<<<",
+                "3 5"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -23,27 +26,6 @@
                 }
             ],
             "preLaunchTask": "Build Dots and Boxes"
-        },
-
-        {
-            "name": "Debug Active C++ File",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${fileDirname}/${fileBasenameNoExtension}",
-            "args": [],
-            "stopAtEntry": false,
-            "cwd": "${fileDirname}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
-            ],
-            "preLaunchTask": "Build Active C++ File"
         }
     ]
 }

@@ -5,6 +5,7 @@
 #include "common.h"
 #include "player.h"
 #include "board.h"
+#include <vector>
 using namespace std;
 
 class OzgeAkosa5177_DimitriNearchosdon5092_Player : public IPlayer
@@ -15,6 +16,10 @@ private:
     char player_line;
     Loc *emptylines;
     int emptylines_cnt;
+
+    vector<Loc> highPriorityLines; // Moves that complete a box.
+    vector<Loc> lowRiskLines;     // Moves that don't create risky situations.
+    vector<Loc> neutralLines;     // Other valid moves.
 
 public:
     OzgeAkosa5177_DimitriNearchosdon5092_Player();

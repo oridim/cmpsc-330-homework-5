@@ -73,30 +73,71 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
 {
     ListEmptyLines();
 
+    //prioritize moves that can complete a box, which earns points
+    for ( int i  = 0; i < emptylines_cnt; i++)
+    {
+        Loc loc = emptylines[i];
+        if ( board.CountSurroundingLines(loc.row. loc.col) == 3)
+        {
+            return loc;
+        }
+    }
+    //avoid the moves that makes it easier for other to score points
+    for (int i = 0; i < emptylines_cnt; i++ )
+    {
+        Loc loc = emptylines[i];
+        if ( board.CountSurroundingLines(loc.row. loc.col) <= 1)
+        {
+            return loc; 
+        }
+    }
+    
     int randloc = rand() % emptylines_cnt;
     return emptylines[randloc];
 }
 
 void OzgeAkosa5177_DimitriNearchosdon5092_Player::ListEmptyLines()
 {
-    emptylines_cnt = 0;
+highPriorityLines.clear();
+lowRiskLines.clear();
+neutralLines.clear();
+
+    emptylines_cnt = 0; // Reset count of available lines.
+
     for (int row = 0; row < board.GetRows(); row++)
     {
         for (int col = 0; col < board.GetCols(); col++)
         {
-            if ((row % 2 == 0) && (col % 2 == 0))
+            // Skip irrelevant locations (dots and box centers).
+            if ((row % 2 == 0 && col % 2 == 0) || (row % 2 == 1 && col % 2 == 1))
             {
-                continue; // dot
+                continue;
             }
-            if ((row % 2 == 1) && (col % 2 == 1))
-            {
-                continue; // box
-            }
+
+            // If the location is empty, evaluate its value.
             if (board(row, col) == ' ')
             {
+                int surroundingLines = board.CountSurroundingLines(row, col);
+
+                if (surroundingLines == 3)
+                {
+                    // High-priority move (completes a box).
+                    highPriorityLines.push_back({row, col});
+                }
+                else if (surroundingLines <= 1)
+                {
+                    // Low-risk move.
+                    lowRiskLines.push_back({row, col});
+                }
+                else
+                {
+                    // Neutral or other cases.
+                    neutralLines.push_back({row, col});
+                }
+
+                // Always add to the generic list of empty lines.
                 emptylines[emptylines_cnt].row = row;
                 emptylines[emptylines_cnt].col = col;
-
                 emptylines_cnt++;
             }
         }

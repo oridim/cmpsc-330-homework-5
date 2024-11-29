@@ -29,6 +29,29 @@ void Board::AllocateBoard(int dots_in_rows, int dots_in_cols, int& blanklinecoun
             board[r][c] = '.';
 }
 
+int Board::CountSurroundingLines(int row, int col) const
+{
+    int lineCount = 0;
+
+    // Check the four possible surrounding positions of the cell (top, bottom, left, right).
+    if (row > 0 && this->operator()(row - 1, col) != ' ') lineCount++; // Above
+    if (row < GetRows() - 1 && this->operator()(row + 1, col) != ' ') lineCount++; // Below
+    if (col > 0 && this->operator()(row, col - 1) != ' ') lineCount++; // Left
+    if (col < GetCols() - 1 && this->operator()(row, col + 1) != ' ') lineCount++; // Right
+
+    return lineCount;
+}
+
+
+int Board::GetRows() const {
+    return rows; // Assuming `rows` is a private member of `Board`.
+}
+
+int Board::GetCols() const {
+    return cols; // Assuming `cols` is a private member of `Board`.
+}
+
+
 void Board::FreeBoard()
 {
     if(board != nullptr)

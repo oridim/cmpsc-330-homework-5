@@ -1,8 +1,10 @@
 #include <iostream>
 #include <assert.h>
+
 #include <cstdlib> // for srand and rand
 #include <ctime>   // for time
-
+#include <vector>
+#include "board.h"
 #include "common.h"
 #include "player.h"
 #include "OzgeAkosa5177_DimitriNearchosdon5092.h"
@@ -22,6 +24,8 @@ OzgeAkosa5177_DimitriNearchosdon5092_Player::OzgeAkosa5177_DimitriNearchosdon509
     // Put that stuff in `.Init`.
 
     srand(time(0));
+    emptylines = nullptr;
+    emptylines_cnt = 0;
 }
 
 OzgeAkosa5177_DimitriNearchosdon5092_Player::~OzgeAkosa5177_DimitriNearchosdon5092_Player()
@@ -30,27 +34,28 @@ OzgeAkosa5177_DimitriNearchosdon5092_Player::~OzgeAkosa5177_DimitriNearchosdon50
     // directly related to the game engine.
     //
     // Put that stuff `.Close()`.
+    Close();
 }
 
 void OzgeAkosa5177_DimitriNearchosdon5092_Player::Init(int _dots_in_rows, int _dots_in_cols, char _player_box, char _player_line)
 {
-    // **TODO**: Allocate anything you use to track the game / player state here.
-
     board.AllocateBoard(_dots_in_rows, _dots_in_cols);
-
     player_box = _player_box;
     player_line = _player_line;
     emptylines = new Loc[board.GetRows() * board.GetCols()];
 }
+
 
 void OzgeAkosa5177_DimitriNearchosdon5092_Player::Close()
 {
     // **TODO**: Deallocate anything you use to track the game / player state here.
 
     board.FreeBoard();
-
-    int emptylines_cnt = board.GetRows() * board.GetCols();
+if (emptylines)
+{
     delete[] emptylines;
+    emptylines = nullptr;
+}
 }
 
 void OzgeAkosa5177_DimitriNearchosdon5092_Player::EventAddLine(const char bar, const Loc &loc)
@@ -71,37 +76,38 @@ void OzgeAkosa5177_DimitriNearchosdon5092_Player::EventAddBox(const char box, co
 
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
 {
-    ListEmptyLines();
+   ListEmptyLines(); // Find empty lines and categorize them.
 
-    //prioritize moves that can complete a box, which earns points
-    for ( int i  = 0; i < emptylines_cnt; i++)
+    // Prioritize moves that complete a box (high-priority).
+    for (int i = 0; i < emptylines_cnt; i++)
     {
         Loc loc = emptylines[i];
-        if ( board.CountSurroundingLines(loc.row. loc.col) == 3)
+        if (board.CountSurroundingLines(loc.row, loc.col) == 3) // Fix the syntax here
         {
             return loc;
         }
     }
-    //avoid the moves that makes it easier for other to score points
-    for (int i = 0; i < emptylines_cnt; i++ )
+
+    // Avoid moves that leave a box with 3 sides (low-risk).
+    for (int i = 0; i < emptylines_cnt; i++)
     {
         Loc loc = emptylines[i];
-        if ( board.CountSurroundingLines(loc.row. loc.col) <= 1)
+        if (board.CountSurroundingLines(loc.row, loc.col) <= 1) // Fix the syntax here
         {
-            return loc; 
+            return loc;
         }
     }
-    
+    // If no strategic moves exist, fall back to random.
     int randloc = rand() % emptylines_cnt;
     return emptylines[randloc];
 }
 
 void OzgeAkosa5177_DimitriNearchosdon5092_Player::ListEmptyLines()
 {
-highPriorityLines.clear();
-lowRiskLines.clear();
-neutralLines.clear();
-
+    // Clear all strategic line categories.
+    highPriorityLines.clear();
+    lowRiskLines.clear();
+    neutralLines.clear();
     emptylines_cnt = 0; // Reset count of available lines.
 
     for (int row = 0; row < board.GetRows(); row++)
@@ -135,7 +141,7 @@ neutralLines.clear();
                     neutralLines.push_back({row, col});
                 }
 
-                // Always add to the generic list of empty lines.
+                // Add to the generic list of empty lines.
                 emptylines[emptylines_cnt].row = row;
                 emptylines[emptylines_cnt].col = col;
                 emptylines_cnt++;
@@ -143,3 +149,4 @@ neutralLines.clear();
         }
     }
 }
+

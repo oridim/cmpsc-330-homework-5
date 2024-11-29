@@ -14,6 +14,7 @@ public:
 
 class Board : public IBoard
 {
+private:
     char **board;
     int rows, cols;
 
@@ -23,11 +24,6 @@ public:
         rows = cols = -1;
         board = nullptr;
     }
-
-    // Board(int dots_in_rows, int dots_in_cols)
-    //{
-    //     AllocateBoard(dots_in_rows, dots_in_cols);
-    // }
 
     ~Board()
     {
@@ -42,6 +38,7 @@ public:
         AllocateBoard(dots_in_rows, dots_in_cols, blanklinecount);
     }
 
+    // **MAKE SURE THESE ARE PUBLIC**
     int GetRows() const { return rows; }
     int GetCols() const { return cols; }
 
@@ -49,6 +46,8 @@ public:
     char operator()(int row, int col) const { return board[row][col]; }
     char &operator()(const Loc &loc) { return board[loc.row][loc.col]; }
     char operator()(const Loc &loc) const { return board[loc.row][loc.col]; }
+
+    int CountSurroundingLines(int row, int col) const;
 
     friend ostream &operator<<(ostream &os, const Board &board);
 };

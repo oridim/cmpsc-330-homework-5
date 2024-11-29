@@ -1,13 +1,14 @@
 #ifndef __RANDOM_PLAYER__
 #define __RANDOM_PLAYER__
 
+#include <vector>
+
 #include "common.h"
 #include "board.h"
 
-#include <vector>
 #include "player.h"
-#include "board.h"
-using namespace std; 
+
+using namespace std;
 
 class OzgeAkosa5177_DimitriNearchosdon5092_Player : public IPlayer
 {

@@ -1,13 +1,13 @@
-#include <iostream>
 #include <assert.h>
-
 #include <cstdlib> // for srand and rand
 #include <ctime>   // for time
+#include <iostream>
 #include <vector>
 
 #include "common.h"
 #include "board.h"
 #include "player.h"
+
 #include "OzgeAkosa5177_DimitriNearchosdon5092.h"
 
 using namespace std;

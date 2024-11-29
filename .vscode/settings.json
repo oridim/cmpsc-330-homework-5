@@ -45,7 +45,10 @@
         "exception": "cpp",
         "memory": "cpp",
         "type_traits": "cpp",
-        "numbers": "cpp"
+        "numbers": "cpp",
+        "chrono": "cpp",
+        "ctime": "cpp",
+        "ratio": "cpp"
     },
 
     "[cpp]": {

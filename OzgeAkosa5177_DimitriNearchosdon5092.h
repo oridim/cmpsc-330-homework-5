@@ -25,6 +25,8 @@ public:
     OzgeAkosa5177_DimitriNearchosdon5092_Player();
     ~OzgeAkosa5177_DimitriNearchosdon5092_Player();
 
+    string PlayerInfo() { return "Ozge Selin Ak (osa5177@psu.edu) + Dimitri Orion Nearchos (don5092@psu.edu)"; }
+
     void Init(int _dots_in_rows, int _dots_in_cols, char _player_box, char _player_line);
     void Close();
 
@@ -32,8 +34,6 @@ public:
     void EventAddBox(const char box, const Loc &loc);
     Loc SelectLineLocation();
     void ListEmptyLines();
-    virtual const char *PlayerInfo() const = 0;
-    const char *PlayerInfo() const override; 
 };
 
 #endif

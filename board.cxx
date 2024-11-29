@@ -42,16 +42,6 @@ int Board::CountSurroundingLines(int row, int col) const
     return lineCount;
 }
 
-
-int Board::GetRows() const {
-    return rows; // Assuming `rows` is a private member of `Board`.
-}
-
-int Board::GetCols() const {
-    return cols; // Assuming `cols` is a private member of `Board`.
-}
-
-
 void Board::FreeBoard()
 {
     if(board != nullptr)

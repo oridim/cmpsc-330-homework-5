@@ -4,8 +4,9 @@
 #include <cstdlib> // for srand and rand
 #include <ctime>   // for time
 #include <vector>
-#include "board.h"
+
 #include "common.h"
+#include "board.h"
 #include "player.h"
 #include "OzgeAkosa5177_DimitriNearchosdon5092.h"
 

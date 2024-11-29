@@ -1,8 +1,8 @@
 #ifndef __RANDOM_PLAYER__
 #define __RANDOM_PLAYER__
 
-#include "board.h"
 #include "common.h"
+#include "board.h"
 
 #include <vector>
 #include "player.h"

@@ -74,7 +74,31 @@ void OzgeAkosa5177_DimitriNearchosdon5092_Player::EventAddBox(const char box, co
 
     board(loc) = box;
 }
+bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CreatesDoubleCross(const Loc &loc)
+{
+    // Simulate adding the line.
+    board(loc) = player_line;
 
+    int doubleCrossCount = 0;
+
+    // Check all boxes near the current line.
+    for (int row = 0; row < board.GetRows(); row++)
+    {
+        for (int col = 0; col < board.GetCols(); col++)
+        {
+            if (board.CountSurroundingLines(row, col) == 3) // Box with 3 sides filled.
+            {
+                doubleCrossCount++;
+            }
+        }
+    }
+
+    // Undo the move.
+    board(loc) = ' ';
+
+    // A double-cross happens when two boxes have 3 sides filled.
+    return doubleCrossCount >= 2;
+}
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
 {
    ListEmptyLines(); // Find empty lines and categorize them.

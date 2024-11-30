@@ -27,7 +27,7 @@ private:
     int EvaluateFutureMoves(Board &currentBoard, int depth); // Recursively evaluate move outcomes.
     int SimulateMoveAndEvaluate(Board &currentBoard, const Loc &loc, int depth); // Evaluate a specific move.
     bool CreatesChainForOpp(const Loc &loc);
-
+    bool CreatesDoubleCross(const Loc &loc); // Checks if a move creates a double-cross.
 public:
     OzgeAkosa5177_DimitriNearchosdon5092_Player();
     ~OzgeAkosa5177_DimitriNearchosdon5092_Player();

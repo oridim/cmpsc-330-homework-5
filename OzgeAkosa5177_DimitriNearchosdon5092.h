@@ -22,6 +22,7 @@ private:
     vector<Loc> lowRiskLines;
     vector<Loc> neutralLines;
 
+    int EvaluateBoardState(Board &currentBoard) const;
     int EvaluateMove(const Loc &loc);                  // Evaluates a move's strategic value.
     int SimulateMove(const Loc &loc);
     int EvaluateFutureMoves(Board &currentBoard, int depth); // Recursively evaluate move outcomes.

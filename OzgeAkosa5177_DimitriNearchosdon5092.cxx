@@ -259,6 +259,32 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateFutureMoves(Board &curr
     return maxGain; // Return the best gain found.
 }
 
+int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateBoardState(Board &currentBoard) const
+{
+    int myScore = 0, opponentScore = 0;
+
+    for (int row = 0; row < currentBoard.GetRows(); row++)
+    {
+        for (int col = 0; col < currentBoard.GetCols(); col++)
+        {
+            if (currentBoard.CountSurroundingLines(row, col) == 4)
+            {
+                // If it's your box, add to your score.
+                if (currentBoard(row, col) == player_box)
+                {
+                    myScore++;
+                }
+                else
+                {
+                    opponentScore++;
+                }
+            }
+        }
+    }
+
+    return myScore - opponentScore; // Return the net score difference.
+}
+
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::SimulateMove(const Loc &loc)
 {
     // Simulate adding the line.

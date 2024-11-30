@@ -103,27 +103,38 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
 {
    ListEmptyLines(); // Find empty lines and categorize them.
 
-    // Prioritize moves that complete a box (high-priority).
+    bool isEndgame = emptylines_cnt < 10;
+
+    // Look for high-priority moves to complete a box.
     for (int i = 0; i < emptylines_cnt; i++)
     {
         Loc loc = emptylines[i];
-        if (board.CountSurroundingLines(loc.row, loc.col) == 3) // Fix the syntax here
+        if (board.CountSurroundingLines(loc.row, loc.col) == 3 && !CreatesChainForOpp(loc))
         {
-            if (!CreatesChainForOpp (loc))
-            {
+            return loc; // Complete a box if it won't create chains.
+        }
+    }
 
-            return loc;
+    // Apply double-cross strategy only during the endgame.
+    if (isEndgame)
+    {
+        for (int i = 0; i < emptylines_cnt; i++)
+        {
+            Loc loc = emptylines[i];
+            if (CreatesDoubleCross(loc))
+            {
+                return loc; // Prioritize double-cross in the endgame.
             }
         }
     }
 
-    // Avoid moves that leave a box with 3 sides (low-risk).
+    // Avoid creating chains for the opponent.
     for (int i = 0; i < emptylines_cnt; i++)
     {
         Loc loc = emptylines[i];
-        if (board.CountSurroundingLines(loc.row, loc.col) <= 1) // Fix the syntax here
+        if (board.CountSurroundingLines(loc.row, loc.col) <= 1)
         {
-            return loc;
+            return loc; // Safe move.
         }
     }
     

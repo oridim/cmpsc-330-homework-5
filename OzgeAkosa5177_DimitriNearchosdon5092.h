@@ -22,6 +22,8 @@ private:
     vector<Loc> lowRiskLines;
     vector<Loc> neutralLines;
 
+    bool CreatesChainForOpp(const Loc &loc);
+
 public:
     OzgeAkosa5177_DimitriNearchosdon5092_Player();
     ~OzgeAkosa5177_DimitriNearchosdon5092_Player();

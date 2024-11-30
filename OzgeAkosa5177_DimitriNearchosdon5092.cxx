@@ -85,7 +85,12 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
         Loc loc = emptylines[i];
         if (board.CountSurroundingLines(loc.row, loc.col) == 3) // Fix the syntax here
         {
+            if (!CreatesChainForOpp (loc))
+            {
+
+            
             return loc;
+        }
         }
     }
 
@@ -101,6 +106,30 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
     // If no strategic moves exist, fall back to random.
     int randloc = rand() % emptylines_cnt;
     return emptylines[randloc];
+}
+bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CreatesChainForOpp(const Loc &loc)
+{
+    // Simulate adding the line.
+    board(loc) = player_line;
+
+    // Check if completing this line opens a chain.
+    int opponentChains = 0;
+    for (int row = 0; row < board.GetRows(); row++)
+    {
+        for (int col = 0; col < board.GetCols(); col++)
+        {
+            if (board.CountSurroundingLines(row, col) == 2)
+            {
+                opponentChains++;
+            }
+        }
+    }
+
+    // Undo the simulated line addition.
+    board(loc) = ' ';
+
+    // If multiple chains are opened, this is bad.
+    return opponentChains > 1;
 }
 
 void OzgeAkosa5177_DimitriNearchosdon5092_Player::ListEmptyLines()

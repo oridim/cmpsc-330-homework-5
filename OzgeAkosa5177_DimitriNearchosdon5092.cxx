@@ -192,31 +192,6 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateMove(const Loc &loc)
 }
 
 
-bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CreatesChainForOpp(const Loc &loc)
-{
-    // Simulate the move.
-    board(loc) = player_line;
-
-    // Check how many boxes now have 2 sides filled.
-    int chainsCreated = 0;
-    for (int row = 0; row < board.GetRows(); row++)
-    {
-        for (int col = 0; col < board.GetCols(); col++)
-        {
-            if (board.CountSurroundingLines(row, col) == 2)
-            {
-                chainsCreated++;
-            }
-        }
-    }
-
-    // Undo the move.
-    board(loc) = ' ';
-
-    return chainsCreated > 1; // If multiple chains are opened, this is bad.
-}
-
-
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::SimulateMove(const Loc &loc)
 {
     // Simulate adding the line.

@@ -88,9 +88,8 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
             if (!CreatesChainForOpp (loc))
             {
 
-            
             return loc;
-        }
+            }
         }
     }
 
@@ -103,9 +102,11 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
             return loc;
         }
     }
+    
     // If no strategic moves exist, fall back to random.
     int randloc = rand() % emptylines_cnt;
     return emptylines[randloc];
+
 }
 bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CreatesChainForOpp(const Loc &loc)
 {
@@ -178,5 +179,65 @@ void OzgeAkosa5177_DimitriNearchosdon5092_Player::ListEmptyLines()
             }
         }
     }
+}
+// Helper function: Evaluate a move's value.
+int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateMove(const Loc &loc)
+{
+    if (CreatesChainForOpp(loc))
+    {
+        return -1000; // Penalize moves that create chains for the opponent.
+    }
+
+    return SimulateMove(loc); // Reward moves based on the number of boxes gained.
+}
+
+
+bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CreatesChainForOpp(const Loc &loc)
+{
+    // Simulate the move.
+    board(loc) = player_line;
+
+    // Check how many boxes now have 2 sides filled.
+    int chainsCreated = 0;
+    for (int row = 0; row < board.GetRows(); row++)
+    {
+        for (int col = 0; col < board.GetCols(); col++)
+        {
+            if (board.CountSurroundingLines(row, col) == 2)
+            {
+                chainsCreated++;
+            }
+        }
+    }
+
+    // Undo the move.
+    board(loc) = ' ';
+
+    return chainsCreated > 1; // If multiple chains are opened, this is bad.
+}
+
+
+int OzgeAkosa5177_DimitriNearchosdon5092_Player::SimulateMove(const Loc &loc)
+{
+    // Simulate adding the line.
+    board(loc) = player_line;
+
+    // Count how many boxes are gained.
+    int boxesGained = 0;
+    for (int row = 0; row < board.GetRows(); row++)
+    {
+        for (int col = 0; col < board.GetCols(); col++)
+        {
+            if (board.CountSurroundingLines(row, col) == 4)
+            {
+                boxesGained++;
+            }
+        }
+    }
+
+    // Undo the simulated move.
+    board(loc) = ' ';
+
+    return boxesGained;
 }
 

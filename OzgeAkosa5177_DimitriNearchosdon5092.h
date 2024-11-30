@@ -22,6 +22,8 @@ private:
     vector<Loc> lowRiskLines;
     vector<Loc> neutralLines;
 
+    int EvaluateMove(const Loc &loc);                  // Evaluates a move's strategic value.
+    int SimulateMove(const Loc &loc);
     bool CreatesChainForOpp(const Loc &loc);
 
 public:

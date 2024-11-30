@@ -24,6 +24,8 @@ private:
 
     int EvaluateMove(const Loc &loc);                  // Evaluates a move's strategic value.
     int SimulateMove(const Loc &loc);
+    int EvaluateFutureMoves(Board &currentBoard, int depth); // Recursively evaluate move outcomes.
+    int SimulateMoveAndEvaluate(Board &currentBoard, const Loc &loc, int depth); // Evaluate a specific move.
     bool CreatesChainForOpp(const Loc &loc);
 
 public:

@@ -191,6 +191,38 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateMove(const Loc &loc)
     return SimulateMove(loc); // Reward moves based on the number of boxes gained.
 }
 
+int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateFutureMoves(Board &currentBoard, int depth)
+{
+    if (depth == 0)
+    {
+        return 0; // No further evaluation if depth is 0.
+    }
+
+    int maxGain = -1000; // Initialize with a very low value.
+
+    // Loop through all possible moves.
+    for (int row = 0; row < currentBoard.GetRows(); row++)
+    {
+        for (int col = 0; col < currentBoard.GetCols(); col++)
+        {
+            // If the location is empty and is a valid line location.
+            if (currentBoard(row, col) == ' ' && Loc(row, col).IsLineLocation())
+            {
+                Loc loc(row, col);
+                // Simulate the move and evaluate it recursively.
+                int gain = SimulateMoveAndEvaluate(currentBoard, loc, depth);
+
+                // Track the best gain.
+                if (gain > maxGain)
+                {
+                    maxGain = gain;
+                }
+            }
+        }
+    }
+
+    return maxGain; // Return the best gain found.
+}
 
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::SimulateMove(const Loc &loc)
 {

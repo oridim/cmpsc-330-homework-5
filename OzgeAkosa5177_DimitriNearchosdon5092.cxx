@@ -43,6 +43,7 @@ void OzgeAkosa5177_DimitriNearchosdon5092_Player::Init(int _dots_in_rows, int _d
     board.AllocateBoard(_dots_in_rows, _dots_in_cols);
     player_box = _player_box;
     player_line = _player_line;
+    opponent_line = (player_line == 'A') ? 'B' : 'A';
     emptylines = new Loc[board.GetRows() * board.GetCols()];
 }
 
@@ -99,13 +100,14 @@ bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CreatesDoubleCross(const Loc &
     // A double-cross happens when two boxes have 3 sides filled.
     return doubleCrossCount >= 2;
 }
+
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
 {
-   ListEmptyLines(); // Find empty lines and categorize them.
+    ListEmptyLines(); // Find empty lines and categorize them.
 
-    bool isEndgame = emptylines_cnt < 10;
+    bool isEndgame = emptylines_cnt < 10; // Consider it an endgame if there are fewer than 10 empty lines.
 
-    // Look for high-priority moves to complete a box.
+    //Look for high-priority moves to complete a box.
     for (int i = 0; i < emptylines_cnt; i++)
     {
         Loc loc = emptylines[i];
@@ -115,34 +117,94 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
         }
     }
 
-    // Apply double-cross strategy only during the endgame.
+    // Apply the double-cross strategy during the endgame.
     if (isEndgame)
     {
         for (int i = 0; i < emptylines_cnt; i++)
         {
             Loc loc = emptylines[i];
-            if (CreatesDoubleCross(loc))
+            if (CreatesDoubleCross(loc)) // Check if the move sets up a double-cross.
             {
-                return loc; // Prioritize double-cross in the endgame.
+                return loc; // Prioritize double-cross moves in the endgame.
             }
         }
     }
 
-    // Avoid creating chains for the opponent.
+    //Avoid creating chains for the opponent by playing safe moves.
     for (int i = 0; i < emptylines_cnt; i++)
     {
         Loc loc = emptylines[i];
-        if (board.CountSurroundingLines(loc.row, loc.col) <= 1)
+        if (board.CountSurroundingLines(loc.row, loc.col) <= 1) // Moves with 1 or fewer surrounding lines.
         {
-            return loc; // Safe move.
+            return loc; // Make a safe move.
         }
     }
-    
-    // If no strategic moves exist, fall back to random.
-    int randloc = rand() % emptylines_cnt;
-    return emptylines[randloc];
+// Use Minimax to evaluate the best fallback move.
+    int bestValue = -100000; // Initialize to a very low value.
+    Loc bestMove;
 
+    for (int i = 0; i < emptylines_cnt; i++)
+    {
+        Loc loc = emptylines[i];
+        board(loc) = player_line; // Simulate AI's move.
+
+        int moveValue = Minimax(3, false); // Look 3 moves ahead.
+        if (moveValue > bestValue)
+        {
+            bestValue = moveValue;
+            bestMove = loc;
+        }
+
+        board(loc) = ' '; // Undo the move.
+    }
+
+   
 }
+
+
+
+int OzgeAkosa5177_DimitriNearchosdon5092_Player::Minimax(int depth, bool isMaximizing)
+{
+    if (depth == 0 || emptylines_cnt == 0) // Base case: max depth or no moves left.
+        return EvaluateBoard();           // Evaluate the current board state.
+
+    if (isMaximizing) // Maximize AI's score.
+    {
+        int bestValue = -100000;
+
+        for (int i = 0; i < emptylines_cnt; i++)
+        {
+            Loc loc = emptylines[i];
+            board(loc) = player_line; // Simulate AI's move.
+
+            int value = Minimax(depth - 1, false); // Recur for opponent's turn.
+            bestValue = max(bestValue, value);
+
+            board(loc) = ' '; // Undo the move.
+        }
+
+        return bestValue;
+    }
+    else // Minimize opponent's score.
+    {
+        int bestValue = 100000;
+
+        for (int i = 0; i < emptylines_cnt; i++)
+        {
+            Loc loc = emptylines[i];
+            board(loc) = opponent_line; // Simulate opponent's move.
+
+            int value = Minimax(depth - 1, true); // Recur for AI's turn.
+            bestValue = min(bestValue, value);
+
+            board(loc) = ' '; // Undo the move.
+        }
+
+        return bestValue;
+    }
+}
+
+
 bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CreatesChainForOpp(const Loc &loc)
 {
     // Simulate adding the line.

@@ -18,6 +18,7 @@ private:
     int emptylines_cnt;  // Count of empty lines.
     char player_box;         // The player's box character.
     char player_line;  
+    char opponent_line; // Line character for the opponent.
     vector<Loc> highPriorityLines; // Strategic vector
     vector<Loc> lowRiskLines;
     vector<Loc> neutralLines;
@@ -29,6 +30,9 @@ private:
     int SimulateMoveAndEvaluate(Board &currentBoard, const Loc &loc, int depth); // Evaluate a specific move.
     bool CreatesChainForOpp(const Loc &loc);
     bool CreatesDoubleCross(const Loc &loc); // Checks if a move creates a double-cross.
+    int Minimax(int depth, bool isMaximizing); // Recursive Minimax function for lookahead.
+    int EvaluateBoard();                     
+
 public:
     OzgeAkosa5177_DimitriNearchosdon5092_Player();
     ~OzgeAkosa5177_DimitriNearchosdon5092_Player();

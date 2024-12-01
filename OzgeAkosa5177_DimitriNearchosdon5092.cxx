@@ -105,7 +105,7 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
 {
     ListEmptyLines(); // Find empty lines and categorize them.
 
-    bool isEndgame = emptylines_cnt < 10; // Consider it an endgame if there are fewer than 10 empty lines.
+    bool isEndgame = emptylines_cnt < 10; // Consider it an endgame if fewer than 10 empty lines.
 
     //Look for high-priority moves to complete a box.
     for (int i = 0; i < emptylines_cnt; i++)
@@ -117,7 +117,7 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
         }
     }
 
-    // Apply the double-cross strategy during the endgame.
+    //Apply double-cross strategy during the endgame.
     if (isEndgame)
     {
         for (int i = 0; i < emptylines_cnt; i++)
@@ -130,7 +130,7 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
         }
     }
 
-    //Avoid creating chains for the opponent by playing safe moves.
+    // Avoid creating chains for the opponent by playing safe moves.
     for (int i = 0; i < emptylines_cnt; i++)
     {
         Loc loc = emptylines[i];
@@ -139,29 +139,39 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
             return loc; // Make a safe move.
         }
     }
-// Use Minimax to evaluate the best fallback move.
+
+    // Use Minimax to evaluate the best fallback move.
     int bestValue = -100000; // Initialize to a very low value.
     Loc bestMove;
 
     for (int i = 0; i < emptylines_cnt; i++)
     {
         Loc loc = emptylines[i];
-        board(loc) = player_line; // Simulate AI's move.
-
-        int moveValue = Minimax(3, false); // Look 3 moves ahead.
-        if (moveValue > bestValue)
+        if (board(loc) == ' ') // Ensure move is valid.
         {
-            bestValue = moveValue;
-            bestMove = loc;
-        }
+            board(loc) = player_line; // Simulate AI's move.
 
-        board(loc) = ' '; // Undo the move.
+            int moveValue = Minimax(3, false); // Look 3 moves ahead.
+            if (moveValue > bestValue)
+            {
+                bestValue = moveValue;
+                bestMove = loc;
+            }
+
+            board(loc) = ' '; // Undo the move.
+        }
     }
 
-   
+    //Return the best move found or fallback to a random move if Minimax fails.
+    if (bestValue > -100000)
+    {
+        return bestMove; // Return the best move evaluated by Minimax.
+    }
+
+    // Fallback: Random move if all else fails.
+    int randloc = rand() % emptylines_cnt;
+    return emptylines[randloc];
 }
-
-
 
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::Minimax(int depth, bool isMaximizing)
 {
@@ -175,12 +185,15 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::Minimax(int depth, bool isMaxim
         for (int i = 0; i < emptylines_cnt; i++)
         {
             Loc loc = emptylines[i];
-            board(loc) = player_line; // Simulate AI's move.
+            if (board(loc) == ' ') // Ensure move is valid.
+            {
+                board(loc) = player_line; // Simulate AI's move.
 
-            int value = Minimax(depth - 1, false); // Recur for opponent's turn.
-            bestValue = max(bestValue, value);
+                int value = Minimax(depth - 1, false); // Recur for opponent's turn.
+                bestValue = max(bestValue, value);
 
-            board(loc) = ' '; // Undo the move.
+                board(loc) = ' '; // Undo the move.
+            }
         }
 
         return bestValue;
@@ -192,17 +205,21 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::Minimax(int depth, bool isMaxim
         for (int i = 0; i < emptylines_cnt; i++)
         {
             Loc loc = emptylines[i];
-            board(loc) = opponent_line; // Simulate opponent's move.
+            if (board(loc) == ' ') // Ensure move is valid.
+            {
+                board(loc) = opponent_line; // Simulate opponent's move.
 
-            int value = Minimax(depth - 1, true); // Recur for AI's turn.
-            bestValue = min(bestValue, value);
+                int value = Minimax(depth - 1, true); // Recur for AI's turn.
+                bestValue = min(bestValue, value);
 
-            board(loc) = ' '; // Undo the move.
+                board(loc) = ' '; // Undo the move.
+            }
         }
 
         return bestValue;
     }
 }
+
 
 
 bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CreatesChainForOpp(const Loc &loc)

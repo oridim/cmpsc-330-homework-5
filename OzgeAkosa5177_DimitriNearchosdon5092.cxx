@@ -508,24 +508,22 @@ void OzgeAkosa5177_DimitriNearchosdon5092_Player::CategorizeMoves() {
     emptylines_cnt = 0; // Reset count of available lines.
 
     for (int row = 0; row < board.GetRows(); row++) {
-        for (int col = (row % 2 == 0 ? 1 : 0); col < board.GetCols(); col += 2) {
-            if (board(row, col) == ' ') {
+        for (int col = 0; col < board.GetCols(); col++) {
+            if (board(row, col) == ' ') { // Empty line position.
                 Loc loc(row, col);
-                int surroundingLines = board.CountSurroundingLines(row, col);
+                int surroundingLines = ComputeSurroundingLineCount(loc);
 
                 if (surroundingLines == 3) {
                     highPriorityLines.push_back(loc); // Complete a box.
-                } else if (surroundingLines == 2 && CreatesDoubleCross(loc)) {
-                    highPriorityLines.push_back(loc); // Double-box opportunity.
-                } else if (surroundingLines <= 1) {
-                    lowRiskLines.push_back(loc); // Safe moves.
-                } else if (surroundingLines == 2 && !CreatesDoubleCross(loc)) {
-                    neutralLines.push_back(loc); // Neutral moves.
+                } else if (surroundingLines == 2) {
+                    neutralLines.push_back(loc); // Safe move, neutral priority.
+                } else if (surroundingLines == 1) {
+                    lowRiskLines.push_back(loc); // Avoid creating chains.
                 } else {
-                    delayedMoves.push_back(loc); // Risky moves.
+                    delayedMoves.push_back(loc); // Risky or irrelevant moves.
                 }
 
-                emptylines[emptylines_cnt++] = loc; // Add to the list of empty lines.
+                emptylines[emptylines_cnt++] = loc; // Add to the generic list.
             }
         }
     }

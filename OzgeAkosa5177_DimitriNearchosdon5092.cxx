@@ -111,76 +111,61 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectFirstMove() {
     return SelectLineLocation();
 }
 
-
-Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
-{
+Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation() {
     ListEmptyLines(); // Populate empty lines.
     CategorizeMoves(); // Categorize moves into high-priority, low-risk, neutral, and delayed.
+
     bool isEndgame = emptylines_cnt < 10;
-    bool isMidgame = (emptylines_cnt >= 10 && emptylines_cnt <= 20);
-    int depth = isEndgame ? 5 : (isMidgame ? 4 : 2); // Dynamically adjust depth.
 
+    //Prioritize high-priority moves to score first.
+    if (!highPriorityLines.empty()) {
+        return highPriorityLines[0]; // Complete a box.
+    }
 
-    //High-priority moves: Complete a box.
-    if (!highPriorityLines.empty())
-        return highPriorityLines[0];
-
-    //Midgame: Avoid creating chains.
-    if (!lowRiskLines.empty())
+    //In the midgame, avoid creating chains.
+    if (!lowRiskLines.empty()) {
         return lowRiskLines[0];
+    }
 
-    //Endgame: Control chains.
-    if (emptylines_cnt < 10)
-    {
-        for (const Loc &loc : highPriorityLines)
-        {
-            if (CreatesDoubleCross(loc))
-                return loc;
+    //Endgame chain control.
+    if (isEndgame && HandleChains()) {
+        for (const Loc &loc : lowRiskLines) {
+            if (!CreatesChainForOpp(loc)) {
+                return loc; // Prevent chain creation for the opponent.
+            }
         }
     }
 
-    //Minimax fallback: Evaluate best move.
+    //Minimax fallback to evaluate the best move.
     int bestValue = -100000;
     Loc bestMove;
 
-    for (int i = 0; i < emptylines_cnt; i++)
-    {
+    for (int i = 0; i < emptylines_cnt; i++) {
         Loc loc = emptylines[i];
-        if (board(loc) == ' ')
-        {
+        if (board(loc) == ' ') {
             board(loc) = player_line; // Simulate AI's move.
-            int moveValue = Minimax(depth, false, isEndgame, isMidgame); // Pass the values
-            if (moveValue > bestValue)
-            {
+            int moveValue = Minimax(3, false, -100000, 100000); // Use depth 3 for efficiency.
+            board(loc) = ' '; // Undo simulation.
+            if (moveValue > bestValue) {
                 bestValue = moveValue;
                 bestMove = loc;
             }
-            board(loc) = ' '; // Undo simulation.
-        }
-    }
-    if (emptylines_cnt < 10 && HandleChains()) {
-        // Endgame: prioritize moves that maximize chain control.
-        for (const Loc &loc : lowRiskLines) 
-        {
-            if (!CreatesChainForOpp(loc)) 
-            {
-                return loc;
-          }
         }
     }
 
-    if (bestValue > -100000)
+    if (bestValue > -100000) {
         return bestMove;
+    }
 
-    //Fallback: Random move.
-    if (emptylines_cnt > 0)
-    {
+    // Fallback: Random move.
+    if (emptylines_cnt > 0) {
         int randloc = rand() % emptylines_cnt;
         return emptylines[randloc];
     }
 
     return {0, 0}; // Default fallback.
 }
+
 
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::Minimax(int depth, bool isMaximizing, int alpha, int beta) {
     if (depth == 0 || emptylines_cnt == 0) {

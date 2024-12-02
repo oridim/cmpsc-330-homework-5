@@ -23,6 +23,7 @@ private:
     vector<Loc> lowRiskLines;
     vector<Loc> neutralLines;
 
+    void CategorizeMoves(); // Categorize moves into high-priority, low-risk, and neutral.
     int EvaluateBoardState(Board &currentBoard) const;
     int EvaluateMove(const Loc &loc);                  // Evaluates a move's strategic value.
     int SimulateMove(const Loc &loc);

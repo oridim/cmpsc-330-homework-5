@@ -103,46 +103,58 @@ bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CreatesDoubleCross(const Loc &
 
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
 {
-    ListEmptyLines(); // Find empty lines and categorize them.
+    ListEmptyLines(); // Populate empty lines.
+    CategorizeMoves(); // Categorize high-priority, low-risk, and neutral moves.
 
-    bool isEndgame = emptylines_cnt < 10; // Consider it an endgame if fewer than 10 empty lines.
+    bool isEndgame = emptylines_cnt < 10; // Identify the endgame.
 
-    //Look for high-priority moves to complete a box.
+    // High-priority moves to complete a box.
     for (int i = 0; i < emptylines_cnt; i++)
     {
         Loc loc = emptylines[i];
         if (board.CountSurroundingLines(loc.row, loc.col) == 3 && !CreatesChainForOpp(loc))
         {
-            return loc; // Complete a box if it won't create chains.
+            return loc; // Complete the box safely.
         }
     }
 
-    //Apply double-cross strategy during the endgame.
-    if (isEndgame)
-    {
-        for (int i = 0; i < emptylines_cnt; i++)
-        {
-            Loc loc = emptylines[i];
-            if (CreatesDoubleCross(loc)) // Check if the move sets up a double-cross.
-            {
-                return loc; // Prioritize double-cross moves in the endgame.
-            }
-        }
-    }
-
-    // Avoid creating chains for the opponent by playing safe moves.
+    // Midgame prioritization (focus on moves with 2 surrounding lines).
     for (int i = 0; i < emptylines_cnt; i++)
     {
         Loc loc = emptylines[i];
-        if (board.CountSurroundingLines(loc.row, loc.col) <= 1) // Moves with 1 or fewer surrounding lines.
+        if (board.CountSurroundingLines(loc.row, loc.col) == 2 && !CreatesChainForOpp(loc))
+        {
+            return loc; // Prioritize strategic midgame moves.
+        }
+    }
+
+    // Avoid creating chains with low-risk moves.
+    for (int i = 0; i < emptylines_cnt; i++)
+    {
+        Loc loc = emptylines[i];
+        if (board.CountSurroundingLines(loc.row, loc.col) <= 1)
         {
             return loc; // Make a safe move.
         }
     }
 
-    // Use Minimax to evaluate the best fallback move.
-    int bestValue = -100000; // Initialize to a very low value.
+    // Apply double-cross strategy during the endgame.
+    if (isEndgame)
+    {
+        for (int i = 0; i < emptylines_cnt; i++)
+        {
+            Loc loc = emptylines[i];
+            if (CreatesDoubleCross(loc)) // Check for double-cross potential.
+            {
+                return loc; // Prioritize double-cross moves.
+            }
+        }
+    }
+
+    //Use Minimax to evaluate fallback moves.
+    int bestValue = -100000;
     Loc bestMove;
+    int depth = (isEndgame) ? 5 : 3; // Adjust depth dynamically for endgame.
 
     for (int i = 0; i < emptylines_cnt; i++)
     {
@@ -151,26 +163,30 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
         {
             board(loc) = player_line; // Simulate AI's move.
 
-            int moveValue = Minimax(3, false); // Look 3 moves ahead.
+            int moveValue = Minimax(depth, false); // Evaluate with Minimax.
             if (moveValue > bestValue)
             {
                 bestValue = moveValue;
                 bestMove = loc;
             }
 
-            board(loc) = ' '; // Undo the move.
+            board(loc) = ' '; // Undo simulation.
         }
     }
 
-    //Return the best move found or fallback to a random move if Minimax fails.
     if (bestValue > -100000)
     {
-        return bestMove; // Return the best move evaluated by Minimax.
+        return bestMove; // Return best move from Minimax.
     }
 
-    // Fallback: Random move if all else fails.
-    int randloc = rand() % emptylines_cnt;
-    return emptylines[randloc];
+    // Fallback to random move if all else fails.
+    if (emptylines_cnt > 0)
+    {
+        int randloc = rand() % emptylines_cnt;
+        return emptylines[randloc];
+    }
+
+    return {0, 0}; // Default fallback.
 }
 
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::Minimax(int depth, bool isMaximizing)

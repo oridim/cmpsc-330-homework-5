@@ -32,7 +32,7 @@ private:
     int SimulateMoveAndEvaluate(Board &currentBoard, const Loc &loc, int depth); // Evaluate a specific move.
     bool CreatesChainForOpp(const Loc &loc);
     bool CreatesDoubleCross(const Loc &loc); // Checks if a move creates a double-cross.
-    int Minimax(int depth, bool isMaximizing, bool isEndgame, bool isMidgame);
+    int Minimax(int depth, bool isMaximizing, int alpha, int beta);
     int EvaluateBoard();     
     bool CanControlChains();                
 

@@ -92,7 +92,6 @@ bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CreatesDoubleCross(const Loc &
     return doubleCrossCount >= 2; // More than 1 box can be completed.
 }
 
-
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
 {
     ListEmptyLines(); // Populate empty lines.
@@ -163,43 +162,50 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
     return {0, 0}; // Default fallback.
 }
 
-
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::Minimax(int depth, bool isMaximizing, int alpha, int beta) {
     if (depth == 0 || emptylines_cnt == 0) {
-        return EvaluateBoard();
+        return EvaluateBoard(); // Base case: evaluate the current board state.
     }
 
     if (isMaximizing) {
         int maxEval = -100000;
+
         for (int i = 0; i < emptylines_cnt; i++) {
-            Loc loc = emptylines[i];
+            Loc loc = emptylines[i]; // Define loc here.
             if (board(loc) == ' ') {
                 board(loc) = player_line; // Simulate move
-                int eval = Minimax(depth - 1, false, alpha, beta);
+                int value = Minimax(depth - 1, false, alpha, beta);
+
+                // Add opponent prediction.
+                if (PredictOpponentMove(loc) > value) {
+                    value -= 10; // Penalize risky moves.
+                }
+
                 board(loc) = ' '; // Undo move
-                maxEval = max(maxEval, eval);
-                alpha = max(alpha, eval);
+                maxEval = max(maxEval, value);
+                alpha = max(alpha, value);
                 if (beta <= alpha) break; // Prune
             }
         }
         return maxEval;
     } else {
         int minEval = 100000;
+
         for (int i = 0; i < emptylines_cnt; i++) {
-            Loc loc = emptylines[i];
+            Loc loc = emptylines[i]; // Define loc here.
             if (board(loc) == ' ') {
-                board(loc) = opponent_line; // Simulate opponent move
-                int eval = Minimax(depth - 1, true, alpha, beta);
+                board(loc) = opponent_line; // Simulate opponent's move
+                int value = Minimax(depth - 1, true, alpha, beta);
+
                 board(loc) = ' '; // Undo move
-                minEval = min(minEval, eval);
-                beta = min(beta, eval);
+                minEval = min(minEval, value);
+                beta = min(beta, value);
                 if (beta <= alpha) break; // Prune
             }
         }
         return minEval;
     }
 }
-
 
 
 bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CreatesChainForOpp(const Loc &loc)
@@ -408,6 +414,13 @@ bool OzgeAkosa5177_DimitriNearchosdon5092_Player::HandleChains() {
     return controlledChains >= totalChains;
 }
 
+int OzgeAkosa5177_DimitriNearchosdon5092_Player::PredictOpponentMove(const Loc &loc) 
+{
+    board(loc) = opponent_line; // Simulate opponent move
+    int opponentScore = EvaluateBoard(); // Evaluate their advantage
+    board(loc) = ' '; // Undo simulation
+    return opponentScore;
+}
 
 void OzgeAkosa5177_DimitriNearchosdon5092_Player::CategorizeMoves() {
     highPriorityLines.clear();

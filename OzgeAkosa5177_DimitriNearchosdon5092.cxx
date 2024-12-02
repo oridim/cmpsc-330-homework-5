@@ -3,6 +3,7 @@
 #include <ctime>   // for time
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 #include "common.h"
 #include "board.h"
@@ -119,18 +120,8 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
     {
         for (const Loc &loc : neutralLines)
         {
-            if (!CreatesChainForOpp(loc)) // Ensure it doesn't create a chain.
-                return loc; // Delay chains strategically.
-        }
-    }
-
-    // Midgame logic: prioritize safe moves.
-    if (isMidgame)
-    {
-        for (const Loc &loc : neutralLines)
-        {
-            if (!CreatesChainForOpp(loc)) // Avoid creating chains.
-                return loc; // Make a neutral move during midgame.
+            if (!CreatesChainForOpp(loc))
+                return loc;
         }
     }
 
@@ -139,8 +130,8 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
     {
         for (const Loc &loc : lowRiskLines)
         {
-            if (!CreatesChainForOpp(loc)) // Double-check it's a safe move.
-                return loc; // Make a low-risk move.
+            if (!CreatesChainForOpp(loc))
+                return loc;
         }
     }
 
@@ -166,8 +157,7 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
         {
             board(loc) = player_line; // Simulate AI's move.
 
-           int moveValue = Minimax(depth, false); // Original Minimax without alpha-beta pruning.
-
+            int moveValue = Minimax(depth, false);
             if (moveValue > bestValue)
             {
                 bestValue = moveValue;
@@ -195,50 +185,43 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
 
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::Minimax(int depth, bool isMaximizing)
 {
-    if (depth == 0 || emptylines_cnt == 0) // Base case: max depth or no moves left.
-        return EvaluateBoard();           // Evaluate the current board state.
+    // Base case: Max depth or no moves left
+    if (depth == 0 || emptylines_cnt == 0)
+        return EvaluateBoard(); // Use heuristic evaluation function.
 
-    if (isMaximizing) // Maximize AI's score.
+    int bestValue = isMaximizing ? -100000 : 100000;
+
+    // Sort moves by their heuristic value to prioritize good moves early.
+    vector<Loc> sortedMoves(emptylines, emptylines + emptylines_cnt);
+    sort(sortedMoves.begin(), sortedMoves.end(), [this](const Loc &a, const Loc &b) {
+        return EvaluateMove(a) > EvaluateMove(b); // Sort descending by EvaluateMove().
+    });
+
+    // Loop through sorted moves.
+    for (const Loc &loc : sortedMoves)
     {
-        int bestValue = -100000;
-
-        for (int i = 0; i < emptylines_cnt; i++)
+        if (board(loc) == ' ') // Ensure the move is valid.
         {
-            Loc loc = emptylines[i];
-            if (board(loc) == ' ') // Ensure move is valid.
-            {
-                board(loc) = player_line; // Simulate AI's move.
+            // Simulate the move.
+            board(loc) = isMaximizing ? player_line : opponent_line;
 
-                int value = Minimax(depth - 1, false); // Recur for opponent's turn.
+            // Recur with adjusted depth.
+            int value = Minimax(depth - 1, !isMaximizing);
+
+            // Undo the move.
+            board(loc) = ' ';
+
+            // Update the best value based on maximizing or minimizing.
+            if (isMaximizing)
                 bestValue = max(bestValue, value);
-
-                board(loc) = ' '; // Undo the move.
-            }
-        }
-
-        return bestValue;
-    }
-    else // Minimize opponent's score.
-    {
-        int bestValue = 100000;
-
-        for (int i = 0; i < emptylines_cnt; i++)
-        {
-            Loc loc = emptylines[i];
-            if (board(loc) == ' ') // Ensure move is valid.
-            {
-                board(loc) = opponent_line; // Simulate opponent's move.
-
-                int value = Minimax(depth - 1, true); // Recur for AI's turn.
+            else
                 bestValue = min(bestValue, value);
-
-                board(loc) = ' '; // Undo the move.
-            }
         }
-
-        return bestValue;
     }
+
+    return bestValue;
 }
+
 
 
 

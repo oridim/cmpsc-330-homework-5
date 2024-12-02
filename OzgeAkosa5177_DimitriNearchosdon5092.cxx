@@ -107,63 +107,45 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
 {
     ListEmptyLines(); // Populate empty lines.
     CategorizeMoves(); // Categorize moves into high-priority, low-risk, neutral, and delayed.
+    bool isEndgame = emptylines_cnt < 10;
+    bool isMidgame = (emptylines_cnt >= 10 && emptylines_cnt <= 20);
+    int depth = isEndgame ? 5 : (isMidgame ? 4 : 2); // Dynamically adjust depth.
 
-    bool isEndgame = emptylines_cnt < 10; // Identify the endgame.
-    bool isMidgame = (emptylines_cnt >= 10 && emptylines_cnt <= 20); // Identify midgame.
 
-    // High-priority moves to complete a box.
+    //High-priority moves: Complete a box.
     if (!highPriorityLines.empty())
         return highPriorityLines[0];
 
-    // Strategic delaying moves in midgame (chains control).
-    if (isMidgame && CanControlChains())
-    {
-        for (const Loc &loc : neutralLines)
-        {
-            if (!CreatesChainForOpp(loc))
-                return loc;
-        }
-    }
-
-    // Avoid creating chains with low-risk moves.
+    //Midgame: Avoid creating chains.
     if (!lowRiskLines.empty())
-    {
-        for (const Loc &loc : lowRiskLines)
-        {
-            if (!CreatesChainForOpp(loc))
-                return loc;
-        }
-    }
+        return lowRiskLines[0];
 
-    // Apply double-cross strategy during the endgame.
-    if (isEndgame)
+    //Endgame: Control chains.
+    if (emptylines_cnt < 10)
     {
         for (const Loc &loc : highPriorityLines)
         {
             if (CreatesDoubleCross(loc))
-                return loc; // Prioritize double-cross moves.
+                return loc;
         }
     }
 
-    // Use Minimax to evaluate fallback moves.
+    //Minimax fallback: Evaluate best move.
     int bestValue = -100000;
     Loc bestMove;
-    int depth = (isEndgame) ? 5 : (isMidgame ? 4 : 2); // Adjust depth dynamically.
 
     for (int i = 0; i < emptylines_cnt; i++)
     {
         Loc loc = emptylines[i];
-        if (board(loc) == ' ') // Ensure move is valid.
+        if (board(loc) == ' ')
         {
             board(loc) = player_line; // Simulate AI's move.
-
-            int moveValue = Minimax(depth, false);
+            int moveValue = Minimax(depth, false, isEndgame, isMidgame); // Pass the values
             if (moveValue > bestValue)
             {
                 bestValue = moveValue;
                 bestMove = loc;
             }
-
             board(loc) = ' '; // Undo simulation.
         }
     }
@@ -171,7 +153,7 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
     if (bestValue > -100000)
         return bestMove;
 
-    // Fallback to random move if all else fails.
+    //Fallback: Random move.
     if (emptylines_cnt > 0)
     {
         int randloc = rand() % emptylines_cnt;
@@ -183,45 +165,53 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
 
 
 
-int OzgeAkosa5177_DimitriNearchosdon5092_Player::Minimax(int depth, bool isMaximizing)
+
+int OzgeAkosa5177_DimitriNearchosdon5092_Player::Minimax(int depth, bool isMaximizing, bool isEndgame, bool isMidgame)
 {
-    // Base case: Max depth or no moves left
-    if (depth == 0 || emptylines_cnt == 0)
-        return EvaluateBoard(); // Use heuristic evaluation function.
+    if (depth == 0 || emptylines_cnt == 0) // Base case: max depth or no moves left.
+        return EvaluateBoard();           // Evaluate the current board state.
 
-    int bestValue = isMaximizing ? -100000 : 100000;
-
-    // Sort moves by their heuristic value to prioritize good moves early.
-    vector<Loc> sortedMoves(emptylines, emptylines + emptylines_cnt);
-    sort(sortedMoves.begin(), sortedMoves.end(), [this](const Loc &a, const Loc &b) {
-        return EvaluateMove(a) > EvaluateMove(b); // Sort descending by EvaluateMove().
-    });
-
-    // Loop through sorted moves.
-    for (const Loc &loc : sortedMoves)
+    if (isMaximizing)
     {
-        if (board(loc) == ' ') // Ensure the move is valid.
+        int bestValue = -100000;
+
+        for (int i = 0; i < emptylines_cnt; i++)
         {
-            // Simulate the move.
-            board(loc) = isMaximizing ? player_line : opponent_line;
+            Loc loc = emptylines[i];
+            if (board(loc) == ' ')
+            {
+                board(loc) = player_line; // Simulate move
 
-            // Recur with adjusted depth.
-            int value = Minimax(depth - 1, !isMaximizing);
-
-            // Undo the move.
-            board(loc) = ' ';
-
-            // Update the best value based on maximizing or minimizing.
-            if (isMaximizing)
+                int value = Minimax(depth - 1, false, isEndgame, isMidgame); // Pass the values
                 bestValue = max(bestValue, value);
-            else
-                bestValue = min(bestValue, value);
+
+                board(loc) = ' '; // Undo move
+            }
         }
+
+        return bestValue;
     }
+    else
+    {
+        int bestValue = 100000;
 
-    return bestValue;
+        for (int i = 0; i < emptylines_cnt; i++)
+        {
+            Loc loc = emptylines[i];
+            if (board(loc) == ' ')
+            {
+                board(loc) = opponent_line; // Simulate move
+
+                int value = Minimax(depth - 1, true, isEndgame, isMidgame); // Pass the values
+                bestValue = min(bestValue, value);
+
+                board(loc) = ' '; // Undo move
+            }
+        }
+
+        return bestValue;
+    }
 }
-
 
 
 

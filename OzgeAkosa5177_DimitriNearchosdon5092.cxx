@@ -423,27 +423,24 @@ bool OzgeAkosa5177_DimitriNearchosdon5092_Player::HandleChains() {
     // Strategy: Prefer creating short chains during the midgame.
     return (shortChains > longChains) || (shortChains > 0 && longChains == 0);
 }
+int OzgeAkosa5177_DimitriNearchosdon5092_Player::SimulateChainLength(const Loc &start) {
+    int chainLength = 0;
+    Loc current = start;
 
-bool OzgeAkosa5177_DimitriNearchosdon5092_Player::HandleChains() {
-    int shortChains = 0;
-    int longChains = 0;
+    while (board.CountSurroundingLines(current.row, current.col) == 2) {
+        chainLength++;
+        current = NextChainLocation(current);
 
-    for (int row = 1; row < board.GetRows(); row += 2) {
-        for (int col = 1; col < board.GetCols(); col += 2) {
-            if (board.CountSurroundingLines(row, col) == 2) {
-                int chainLength = SimulateChainLength({row, col});
-                if (chainLength <= 3) {
-                    shortChains++;
-                } else {
-                    longChains++;
-                }
-            }
+        // Add bounds checking to prevent invalid access.
+        if (current.row < 0 || current.row >= board.GetRows() ||
+            current.col < 0 || current.col >= board.GetCols()) {
+            break;
         }
     }
 
-    // Strategy: Prefer creating short chains during the midgame.
-    return (shortChains > longChains) || (shortChains > 0 && longChains == 0);
+    return chainLength;
 }
+
 
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::PredictOpponentMove(const Loc &loc) 
 {

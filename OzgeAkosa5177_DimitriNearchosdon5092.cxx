@@ -423,15 +423,20 @@ bool OzgeAkosa5177_DimitriNearchosdon5092_Player::HandleChains() {
     // Strategy: Prefer creating short chains during the midgame.
     return (shortChains > longChains) || (shortChains > 0 && longChains == 0);
 }
+
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::SimulateChainLength(const Loc &start) {
     int chainLength = 0;
     Loc current = start;
 
     while (board.CountSurroundingLines(current.row, current.col) == 2) {
+        Loc next = NextChainLocation(current);
+        if (next.row == current.row && next.col == current.col) {
+            break; // No valid next location, end the chain.
+        }
         chainLength++;
-        current = NextChainLocation(current);
+        current = next;
 
-        // Add bounds checking to prevent invalid access.
+        // Add bounds check to avoid invalid memory access.
         if (current.row < 0 || current.row >= board.GetRows() ||
             current.col < 0 || current.col >= board.GetCols()) {
             break;
@@ -439,6 +444,25 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::SimulateChainLength(const Loc &
     }
 
     return chainLength;
+}
+
+Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::NextChainLocation(const Loc &current) {
+    for (int dr = -1; dr <= 1; dr++) {
+        for (int dc = -1; dc <= 1; dc++) {
+            if ((dr == 0 && dc == 0) || abs(dr + dc) != 1) {
+                continue; // Skip invalid directions.
+            }
+            Loc neighbor(current.row + dr, current.col + dc);
+
+            // Check bounds and valid chain conditions.
+            if (neighbor.row >= 0 && neighbor.row < board.GetRows() &&
+                neighbor.col >= 0 && neighbor.col < board.GetCols() &&
+                board.CountSurroundingLines(neighbor.row, neighbor.col) == 2) {
+                return neighbor;
+            }
+        }
+    }
+    return current; // Return the same location if no valid next location is found.
 }
 
 

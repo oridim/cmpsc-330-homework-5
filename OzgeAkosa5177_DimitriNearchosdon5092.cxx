@@ -357,31 +357,34 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateBoardState(Board &curre
     return myScore - opponentScore; // Return the net score difference.
 }
 
-int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateBoard() 
-{
+int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateBoard() {
     int aiBoxes = 0, opponentBoxes = 0, chains = 0, safeMoves = 0;
 
-    for (int row = 1; row < board.GetRows(); row += 2) 
-    { // Only box rows
-        for (int col = 1; col < board.GetCols(); col += 2) 
-        { // Only box columns
-            if (board.CountSurroundingLines(row, col) == 4) 
-            {
-                if (board(row, col) == player_box)
-                    aiBoxes++;
-                else if (board(row, col) == opponent_line)
-                    opponentBoxes++;
-            } else if (board.CountSurroundingLines(row, col) == 2)
-             {
-                chains++;
-            } else if (board.CountSurroundingLines(row, col) <= 1) 
-            {
-                safeMoves++;
+    // Iterate through the grid with considerations for all strategic scenarios.
+    for (int row = 0; row < board.GetRows(); row++) {
+        for (int col = 0; col < board.GetCols(); col++) {
+            // Only process valid positions.
+            if ((row % 2 == 1 && col % 2 == 1)) { // Box positions
+                if (board.CountSurroundingLines(row, col) == 4) {
+                    if (board(row, col) == player_box)
+                        aiBoxes++;
+                    else if (board(row, col) == opponent_line)
+                        opponentBoxes++;
+                }
+            } else if ((row % 2 == 0 && col % 2 == 1) || (row % 2 == 1 && col % 2 == 0)) { // Line positions
+                if (board(row, col) == ' ') {
+                    // Check chains and safe moves based on surrounding lines.
+                    int surroundingLines = board.CountSurroundingLines(row, col);
+                    if (surroundingLines == 2) {
+                        chains++;
+                    } else if (surroundingLines <= 1) {
+                        safeMoves++;
+                    }
+                }
             }
         }
     }
-
-    // Improved scoring function.
+    
     return (aiBoxes - opponentBoxes) * 15 - chains * 10 + safeMoves * 5;
 }
 

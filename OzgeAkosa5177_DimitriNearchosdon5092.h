@@ -39,7 +39,7 @@ private:
     bool HandleChains();             // Handle chain management in the endgame.   
     int SimulateChainLength(const Loc &start); // Calculates the length of a chain.
     Loc NextChainLocation(const Loc &current); // Finds the next location in a chain.
-           
+    int ComputeSurroundingLineCount(const Loc &loc);     
 
 public:
     OzgeAkosa5177_DimitriNearchosdon5092_Player();

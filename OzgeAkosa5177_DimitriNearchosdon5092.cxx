@@ -409,6 +409,31 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateBoard()
     // Heuristic scoring function.
     return (aiBoxes - opponentBoxes) * 10 + chains * -5 + safeMoves * 2;
 }
+void OzgeAkosa5177_DimitriNearchosdon5092_Player::CategorizeMoves()
+{
+    highPriorityLines.clear();
+    lowRiskLines.clear();
+    neutralLines.clear();
+
+    for (int i = 0; i < emptylines_cnt; i++)
+    {
+        Loc loc = emptylines[i];
+        int surroundingLines = board.CountSurroundingLines(loc.row, loc.col);
+
+        if (surroundingLines == 3 && !CreatesChainForOpp(loc))
+        {
+            highPriorityLines.push_back(loc); // High-priority: Complete a box.
+        }
+        else if (surroundingLines == 2 && !CreatesChainForOpp(loc))
+        {
+            neutralLines.push_back(loc); // Midgame: Strategic moves.
+        }
+        else if (surroundingLines <= 1)
+        {
+            lowRiskLines.push_back(loc); // Low-risk: Safe moves.
+        }
+    }
+}
 
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::SimulateMove(const Loc &loc)
 {

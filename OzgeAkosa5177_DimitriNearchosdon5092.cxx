@@ -371,29 +371,31 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateBoardState(Board &curre
 }
 
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateBoard() {
-    int aiBoxes = 0, opponentBoxes = 0, chains = 0, opponentChains = 0, longChains = 0;
+    int aiBoxes = 0, opponentBoxes = 0, chains = 0, doubleBoxes = 0;
 
     for (int row = 1; row < board.GetRows(); row += 2) {
         for (int col = 1; col < board.GetCols(); col += 2) {
             int surroundingLines = board.CountSurroundingLines(row, col);
+
             if (surroundingLines == 4) {
-                if (board(row, col) == player_box)
+                if (board(row, col) == player_box) {
                     aiBoxes++;
-                else if (board(row, col) == opponent_line)
+                } else if (board(row, col) == opponent_line) {
                     opponentBoxes++;
+                }
             } else if (surroundingLines == 2) {
                 chains++;
-                if (!CreatesChainForOpp({row, col}))
-                    longChains++;
-            } else if (surroundingLines == 3) {
-                opponentChains++;
+                if (CreatesDoubleCross({row, col})) {
+                    doubleBoxes++;
+                }
             }
         }
     }
 
-    // Enhanced scoring with chain control.
-    return (aiBoxes - opponentBoxes) * 15 - chains * 5 - opponentChains * 10 + longChains * 10;
+    // Enhanced heuristic scoring:
+    return (aiBoxes - opponentBoxes) * 20 + doubleBoxes * 15 - chains * 10;
 }
+
 
 
 

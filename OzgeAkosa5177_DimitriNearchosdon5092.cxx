@@ -92,6 +92,26 @@ bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CreatesDoubleCross(const Loc &
     return doubleCrossCount >= 2; // More than 1 box can be completed.
 }
 
+Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectFirstMove() {
+    int midRow = board.GetRows() / 2;
+    int midCol = board.GetCols() / 2;
+
+    // Prefer moves near the center of the board.
+    Loc preferredMoves[] = {
+        {midRow - 1, midCol}, {midRow + 1, midCol}, {midRow, midCol - 1}, {midRow, midCol + 1}
+    };
+
+    for (const Loc &move : preferredMoves) {
+        if (board(move) == ' ') {
+            return move;
+        }
+    }
+
+    // Fallback to any available move.
+    return SelectLineLocation();
+}
+
+
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
 {
     ListEmptyLines(); // Populate empty lines.

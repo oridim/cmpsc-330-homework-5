@@ -50,6 +50,7 @@ public:
     void EventAddLine(const char bar, const Loc &loc);
     void EventAddBox(const char box, const Loc &loc);
     Loc SelectLineLocation();
+    Loc SelectFirstMove(); // Function to make a strong first move.
     void ListEmptyLines();
 };
 

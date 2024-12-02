@@ -117,15 +117,34 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
     // Strategic delaying moves in midgame (chains control).
     if (isMidgame && CanControlChains())
     {
-        if (!neutralLines.empty())
-            return neutralLines[0];
+        for (const Loc &loc : neutralLines)
+        {
+            if (!CreatesChainForOpp(loc)) // Ensure it doesn't create a chain.
+                return loc; // Delay chains strategically.
+        }
+    }
+
+    // Midgame logic: prioritize safe moves.
+    if (isMidgame)
+    {
+        for (const Loc &loc : neutralLines)
+        {
+            if (!CreatesChainForOpp(loc)) // Avoid creating chains.
+                return loc; // Make a neutral move during midgame.
+        }
     }
 
     // Avoid creating chains with low-risk moves.
     if (!lowRiskLines.empty())
-        return lowRiskLines[0];
+    {
+        for (const Loc &loc : lowRiskLines)
+        {
+            if (!CreatesChainForOpp(loc)) // Double-check it's a safe move.
+                return loc; // Make a low-risk move.
+        }
+    }
 
-    //Apply double-cross strategy during the endgame.
+    // Apply double-cross strategy during the endgame.
     if (isEndgame)
     {
         for (const Loc &loc : highPriorityLines)
@@ -135,7 +154,7 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
         }
     }
 
-    //Use Minimax to evaluate fallback moves.
+    // Use Minimax to evaluate fallback moves.
     int bestValue = -100000;
     Loc bestMove;
     int depth = (isEndgame) ? 5 : (isMidgame ? 4 : 2); // Adjust depth dynamically.
@@ -147,7 +166,8 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
         {
             board(loc) = player_line; // Simulate AI's move.
 
-            int moveValue = Minimax(depth, false);
+           int moveValue = Minimax(depth, false); // Original Minimax without alpha-beta pruning.
+
             if (moveValue > bestValue)
             {
                 bestValue = moveValue;

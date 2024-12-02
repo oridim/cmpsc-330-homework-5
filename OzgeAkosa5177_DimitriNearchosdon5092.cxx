@@ -404,21 +404,45 @@ bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CanControlChains() {
 }
 
 bool OzgeAkosa5177_DimitriNearchosdon5092_Player::HandleChains() {
-    int totalChains = 0;
-    int controlledChains = 0;
+    int shortChains = 0;
+    int longChains = 0;
 
     for (int row = 1; row < board.GetRows(); row += 2) {
         for (int col = 1; col < board.GetCols(); col += 2) {
             if (board.CountSurroundingLines(row, col) == 2) {
-                totalChains++;
-                if (!CreatesChainForOpp({row, col}))
-                    controlledChains++;
+                int chainLength = SimulateChainLength({row, col});
+                if (chainLength <= 3) {
+                    shortChains++;
+                } else {
+                    longChains++;
+                }
             }
         }
     }
 
-    // Return true if the AI controls most chains.
-    return controlledChains >= totalChains;
+    // Strategy: Prefer creating short chains during the midgame.
+    return (shortChains > longChains) || (shortChains > 0 && longChains == 0);
+}
+
+bool OzgeAkosa5177_DimitriNearchosdon5092_Player::HandleChains() {
+    int shortChains = 0;
+    int longChains = 0;
+
+    for (int row = 1; row < board.GetRows(); row += 2) {
+        for (int col = 1; col < board.GetCols(); col += 2) {
+            if (board.CountSurroundingLines(row, col) == 2) {
+                int chainLength = SimulateChainLength({row, col});
+                if (chainLength <= 3) {
+                    shortChains++;
+                } else {
+                    longChains++;
+                }
+            }
+        }
+    }
+
+    // Strategy: Prefer creating short chains during the midgame.
+    return (shortChains > longChains) || (shortChains > 0 && longChains == 0);
 }
 
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::PredictOpponentMove(const Loc &loc) 

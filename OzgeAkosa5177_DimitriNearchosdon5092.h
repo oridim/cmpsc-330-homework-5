@@ -36,7 +36,10 @@ private:
     int EvaluateBoard(); 
     int PredictOpponentMove(const Loc &loc);   
     bool CanControlChains();  
-    bool HandleChains();             // Handle chain management in the endgame.              
+    bool HandleChains();             // Handle chain management in the endgame.   
+    int SimulateChainLength(const Loc &start); // Calculates the length of a chain.
+    Loc NextChainLocation(const Loc &current); // Finds the next location in a chain.
+           
 
 public:
     OzgeAkosa5177_DimitriNearchosdon5092_Player();

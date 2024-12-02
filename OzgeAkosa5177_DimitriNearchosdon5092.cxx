@@ -112,60 +112,47 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectFirstMove() {
 }
 
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation() {
-    ListEmptyLines(); // Populate empty lines.
-    CategorizeMoves(); // Categorize moves into high-priority, low-risk, neutral, and delayed.
+    ListEmptyLines();
+    CategorizeMoves();
 
-    bool isEndgame = emptylines_cnt < 10;
-
-    //Prioritize high-priority moves to score first.
-    if (!highPriorityLines.empty()) {
-        return highPriorityLines[0]; // Complete a box.
-    }
-
-    //In the midgame, avoid creating chains.
-    if (!lowRiskLines.empty()) {
-        return lowRiskLines[0];
-    }
-
-    //Endgame chain control.
-    if (isEndgame && HandleChains()) {
-        for (const Loc &loc : lowRiskLines) {
-            if (!CreatesChainForOpp(loc)) {
-                return loc; // Prevent chain creation for the opponent.
-            }
+    // Validate and return the first high-priority move.
+    for (const Loc &loc : highPriorityLines) {
+        if (board(loc) == ' ') {
+            return loc;
         }
     }
 
-    //Minimax fallback to evaluate the best move.
-    int bestValue = -100000;
-    Loc bestMove;
+    // Validate and return the first low-risk move.
+    for (const Loc &loc : lowRiskLines) {
+        if (board(loc) == ' ') {
+            return loc;
+        }
+    }
 
+    // Validate and return the first neutral move.
+    for (const Loc &loc : neutralLines) {
+        if (board(loc) == ' ') {
+            return loc;
+        }
+    }
+
+    // Validate and return the first delayed move.
+    for (const Loc &loc : delayedMoves) {
+        if (board(loc) == ' ') {
+            return loc;
+        }
+    }
+
+    // Random fallback: Ensure random selection is also valid.
     for (int i = 0; i < emptylines_cnt; i++) {
         Loc loc = emptylines[i];
         if (board(loc) == ' ') {
-            board(loc) = player_line; // Simulate AI's move.
-            int moveValue = Minimax(3, false, -100000, 100000); // Use depth 3 for efficiency.
-            board(loc) = ' '; // Undo simulation.
-            if (moveValue > bestValue) {
-                bestValue = moveValue;
-                bestMove = loc;
-            }
+            return loc;
         }
     }
 
-    if (bestValue > -100000) {
-        return bestMove;
-    }
-
-    // Fallback: Random move.
-    if (emptylines_cnt > 0) {
-        int randloc = rand() % emptylines_cnt;
-        return emptylines[randloc];
-    }
-
-    return {0, 0}; // Default fallback.
+    return {0, 0}; // Return a default invalid location as a failsafe.
 }
-
 
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::Minimax(int depth, bool isMaximizing, int alpha, int beta) {
     if (depth == 0 || emptylines_cnt == 0) {
@@ -238,54 +225,29 @@ bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CreatesChainForOpp(const Loc &
     return opponentChains > 1;
 }
 
-void OzgeAkosa5177_DimitriNearchosdon5092_Player::ListEmptyLines()
-{
-    // Clear all strategic line categories.
+void OzgeAkosa5177_DimitriNearchosdon5092_Player::ListEmptyLines() {
     highPriorityLines.clear();
     lowRiskLines.clear();
     neutralLines.clear();
+    delayedMoves.clear();
     emptylines_cnt = 0; // Reset count of available lines.
 
-    for (int row = 0; row < board.GetRows(); row++)
-    {
-        for (int col = 0; col < board.GetCols(); col++)
-        {
-            // Skip irrelevant locations (dots and box centers).
-            if ((row % 2 == 0 && col % 2 == 0) || (row % 2 == 1 && col % 2 == 1))
-            {
+    for (int row = 0; row < board.GetRows(); row++) {
+        for (int col = 0; col < board.GetCols(); col++) {
+            // Skip invalid locations: dots and box centers.
+            if ((row % 2 == 0 && col % 2 == 0) || (row % 2 == 1 && col % 2 == 1)) {
                 continue;
             }
 
-            // If the location is empty, evaluate its value.
-            if (board(row, col) == ' ')
-            {
-                int surroundingLines = board.CountSurroundingLines(row, col);
-
-                if (surroundingLines == 3)
-                {
-                    // High-priority move (completes a box).
-                    highPriorityLines.push_back({row, col});
-                }
-                else if (surroundingLines <= 1)
-                {
-                    // Low-risk move.
-                    lowRiskLines.push_back({row, col});
-                }
-                else
-                {
-                    // Neutral or other cases.
-                    neutralLines.push_back({row, col});
-                }
-
-                // Add to the generic list of empty lines.
-                emptylines[emptylines_cnt].row = row;
-                emptylines[emptylines_cnt].col = col;
-                emptylines_cnt++;
+            // Check if the location is empty.
+            if (board(row, col) == ' ') {
+                Loc loc(row, col);
+                emptylines[emptylines_cnt++] = loc; // Add to the empty lines array.
             }
         }
     }
 }
-// Helper function: Evaluate a move's value.
+
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateMove(const Loc &loc)
 {
     if (CreatesChainForOpp(loc))
@@ -356,7 +318,7 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateBoardState(Board &curre
 }
 
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateBoard() {
-    int aiBoxes = 0, opponentBoxes = 0, chains = 0, doubleBoxes = 0;
+    int aiBoxes = 0, opponentBoxes = 0, chainRisk = 0;
 
     for (int row = 1; row < board.GetRows(); row += 2) {
         for (int col = 1; col < board.GetCols(); col += 2) {
@@ -368,22 +330,15 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateBoard() {
                 } else if (board(row, col) == opponent_line) {
                     opponentBoxes++;
                 }
-            } else if (surroundingLines == 2) {
-                chains++;
-                if (CreatesDoubleCross({row, col})) {
-                    doubleBoxes++;
-                }
+            } else if (surroundingLines == 3) {
+                chainRisk++; // Penalize moves that allow opponents to score.
             }
         }
     }
 
-    // Enhanced heuristic scoring:
-    return (aiBoxes - opponentBoxes) * 20 + doubleBoxes * 15 - chains * 10;
+    // Reward AI boxes and penalize chain risks.
+    return (aiBoxes - opponentBoxes) * 20 - chainRisk * 10;
 }
-
-
-
-
 
 bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CanControlChains() {
     int chainsControlled = 0;
@@ -447,7 +402,6 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::ComputeSurroundingLineCount(con
 
     return lineCount;
 }
-
 
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::SimulateChainLength(const Loc &start) {
     int chainLength = 0;

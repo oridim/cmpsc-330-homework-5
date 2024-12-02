@@ -28,6 +28,7 @@ OzgeAkosa5177_DimitriNearchosdon5092_Player::OzgeAkosa5177_DimitriNearchosdon509
     srand(time(0));
     emptylines = nullptr;
     emptylines_cnt = 0;
+    isBoardAllocated = false; // Initialize the flag.
 }
 
 OzgeAkosa5177_DimitriNearchosdon5092_Player::~OzgeAkosa5177_DimitriNearchosdon5092_Player()
@@ -46,6 +47,8 @@ void OzgeAkosa5177_DimitriNearchosdon5092_Player::Init(int _dots_in_rows, int _d
     player_line = _player_line;
     opponent_line = (player_line == 'A') ? 'B' : 'A';
     emptylines = new Loc[board.GetRows() * board.GetCols()];
+
+    isBoardAllocated = true; // Mark the board as allocated.
 }
 
 
@@ -59,6 +62,7 @@ if (emptylines)
     delete[] emptylines;
     emptylines = nullptr;
 }
+ isBoardAllocated = false; // Mark the board as deallocated.
 }
 
 void OzgeAkosa5177_DimitriNearchosdon5092_Player::EventAddLine(const char bar, const Loc &loc)
@@ -234,54 +238,54 @@ bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CreatesChainForOpp(const Loc &
     return opponentChains > 1;
 }
 
-void OzgeAkosa5177_DimitriNearchosdon5092_Player::ListEmptyLines()
-{
+void OzgeAkosa5177_DimitriNearchosdon5092_Player::ListEmptyLines() {
+    // Check if the board is allocated before proceeding.
+    if (!isBoardAllocated) {
+        cerr << "Error: Board is not allocated in ListEmptyLines!" << endl;
+        return; // Safely exit if the board is not ready.
+    }
+
     // Clear all strategic line categories.
     highPriorityLines.clear();
     lowRiskLines.clear();
     neutralLines.clear();
     emptylines_cnt = 0; // Reset count of available lines.
 
-    for (int row = 0; row < board.GetRows(); row++)
-    {
-        for (int col = 0; col < board.GetCols(); col++)
-        {
-            // Skip irrelevant locations (dots and box centers).
-            if ((row % 2 == 0 && col % 2 == 0) || (row % 2 == 1 && col % 2 == 1))
-            {
-                continue;
+    // Iterate through the board rows and columns.
+    for (int row = 0; row < board.GetRows(); row++) {
+        for (int col = 0; col < board.GetCols(); col++) {
+            // Skip invalid locations (dots and box centers).
+            if ((row % 2 == 0 && col % 2 == 0) || (row % 2 == 1 && col % 2 == 1)) {
+                continue; // Dots and box centers are not valid line locations.
             }
 
-            // If the location is empty, evaluate its value.
-            if (board(row, col) == ' ')
-            {
+            // Check if the current location is empty.
+            if (board(row, col) == ' ') {
                 int surroundingLines = board.CountSurroundingLines(row, col);
 
-                if (surroundingLines == 3)
-                {
-                    // High-priority move (completes a box).
-                    highPriorityLines.push_back({row, col});
-                }
-                else if (surroundingLines <= 1)
-                {
-                    // Low-risk move.
-                    lowRiskLines.push_back({row, col});
-                }
-                else
-                {
-                    // Neutral or other cases.
-                    neutralLines.push_back({row, col});
+                // Categorize the move based on the surrounding lines.
+                if (surroundingLines == 3) {
+                    highPriorityLines.push_back({row, col}); // High-priority move.
+                } else if (surroundingLines <= 1) {
+                    lowRiskLines.push_back({row, col}); // Low-risk move.
+                } else {
+                    neutralLines.push_back({row, col}); // Neutral or delayed move.
                 }
 
-                // Add to the generic list of empty lines.
-                emptylines[emptylines_cnt].row = row;
-                emptylines[emptylines_cnt].col = col;
-                emptylines_cnt++;
+                // Add the location to the list of empty lines.
+                if (emptylines_cnt < board.GetRows() * board.GetCols()) {
+                    emptylines[emptylines_cnt].row = row;
+                    emptylines[emptylines_cnt].col = col;
+                    emptylines_cnt++;
+                } else {
+                    cerr << "Warning: Too many empty lines detected in ListEmptyLines!" << endl;
+                }
             }
         }
     }
 }
-// Helper function: Evaluate a move's value.
+
+
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateMove(const Loc &loc)
 {
     if (CreatesChainForOpp(loc))
@@ -415,16 +419,23 @@ bool OzgeAkosa5177_DimitriNearchosdon5092_Player::HandleChains() {
     // Favor long chains in endgame.
     return longChains > shortChains;
 }
-
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::SimulateChainLength(const Loc &start) {
+    if (!isBoardAllocated) {
+        cerr << "Error: Board not allocated in SimulateChainLength!" << endl;
+        return 0;
+    }
+
     int chainLength = 0;
     Loc current = start;
 
     while (board.CountSurroundingLines(current.row, current.col) == 2) {
+        Loc next = NextChainLocation(current);
+        if (next.row == current.row && next.col == current.col) {
+            break;
+        }
         chainLength++;
-        current = NextChainLocation(current);
+        current = next;
 
-        // Add bounds check to prevent invalid access.
         if (current.row < 0 || current.row >= board.GetRows() || current.col < 0 || current.col >= board.GetCols()) {
             break;
         }
@@ -432,6 +443,7 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::SimulateChainLength(const Loc &
 
     return chainLength;
 }
+
 
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::NextChainLocation(const Loc &current) {
     for (int dr = -1; dr <= 1; dr++) {

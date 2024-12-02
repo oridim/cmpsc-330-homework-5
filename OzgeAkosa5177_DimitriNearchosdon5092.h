@@ -39,6 +39,7 @@ private:
     bool HandleChains();             // Handle chain management in the endgame. 
     int SimulateChainLength(const Loc &start); // Calculate the length of a chain starting from a location.
     Loc NextChainLocation(const Loc &current); // Find the next location in a chain.             
+    bool isBoardAllocated; // Flag to track if the board is allocated.
 
 public:
     OzgeAkosa5177_DimitriNearchosdon5092_Player();

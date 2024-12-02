@@ -422,39 +422,36 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::SimulateChainLength(const Loc &
 
     while (board.CountSurroundingLines(current.row, current.col) == 2) {
         chainLength++;
-        current = NextChainLocation(current); // Find next link in the chain.
+        current = NextChainLocation(current);
+
+        // Add bounds check to prevent invalid access.
+        if (current.row < 0 || current.row >= board.GetRows() || current.col < 0 || current.col >= board.GetCols()) {
+            break;
+        }
     }
 
     return chainLength;
 }
 
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::NextChainLocation(const Loc &current) {
-    // Logic to find the next location in a chain (e.g., next box with 2 sides filled).
     for (int dr = -1; dr <= 1; dr++) {
         for (int dc = -1; dc <= 1; dc++) {
             if (dr != 0 || dc != 0) {
                 Loc neighbor(current.row + dr, current.col + dc);
-                if (board.CountSurroundingLines(neighbor.row, neighbor.col) == 2) {
+
+                // Add bounds checking.
+                if (neighbor.row >= 0 && neighbor.row < board.GetRows() &&
+                    neighbor.col >= 0 && neighbor.col < board.GetCols() &&
+                    board.CountSurroundingLines(neighbor.row, neighbor.col) == 2) {
                     return neighbor;
                 }
             }
         }
     }
-    return current;
+    return current; // Return the current location if no valid neighbor is found.
 }
 
-int OzgeAkosa5177_DimitriNearchosdon5092_Player::PredictOpponentMove(const Loc &loc) {
-    board(loc) = opponent_line; // Simulate opponent move
-    int opponentScore = EvaluateBoard(); // Evaluate their advantage
 
-    // Simulate chain control.
-    if (HandleChains()) {
-        opponentScore += 20; // Penalize moves that let the opponent control chains.
-    }
-
-    board(loc) = ' '; // Undo simulation
-    return opponentScore;
-}
 void OzgeAkosa5177_DimitriNearchosdon5092_Player::CategorizeMoves() {
     highPriorityLines.clear();
     lowRiskLines.clear();

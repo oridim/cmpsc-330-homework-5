@@ -424,6 +424,31 @@ bool OzgeAkosa5177_DimitriNearchosdon5092_Player::HandleChains() {
     return (shortChains > longChains) || (shortChains > 0 && longChains == 0);
 }
 
+int OzgeAkosa5177_DimitriNearchosdon5092_Player::ComputeSurroundingLineCount(const Loc &loc) {
+    int lineCount = 0;
+
+    // Check all four directions around the given location.
+    for (int dr = -1; dr <= 1; dr++) {
+        for (int dc = -1; dc <= 1; dc++) {
+            if ((dr == 0 && dc == 0) || abs(dr + dc) != 1) {
+                continue; // Skip invalid directions.
+            }
+            Loc neighbor(loc.row + dr, loc.col + dc);
+            if (neighbor.row < 0 || neighbor.row >= board.GetRows() ||
+                neighbor.col < 0 || neighbor.col >= board.GetCols()) {
+                continue; // Skip out-of-bounds locations.
+            }
+
+            if (board(neighbor) == player_line || board(neighbor) == opponent_line) {
+                lineCount++;
+            }
+        }
+    }
+
+    return lineCount;
+}
+
+
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::SimulateChainLength(const Loc &start) {
     int chainLength = 0;
     Loc current = start;

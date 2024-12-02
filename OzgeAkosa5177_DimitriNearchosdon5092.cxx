@@ -444,6 +444,16 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::SimulateChainLength(const Loc &
     return chainLength;
 }
 
+int OzgeAkosa5177_DimitriNearchosdon5092_Player::PredictOpponentMove(const Loc &loc) {
+    // Simulate the opponent's move.
+    board(loc) = opponent_line; // Place opponent's line on the board.
+
+    int score = EvaluateBoard(); // Evaluate the board state after the move.
+
+    board(loc) = ' '; // Undo the simulated move.
+    return score;
+}
+
 
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::NextChainLocation(const Loc &current) {
     for (int dr = -1; dr <= 1; dr++) {

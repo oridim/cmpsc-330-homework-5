@@ -76,6 +76,7 @@ void OzgeAkosa5177_DimitriNearchosdon5092_Player::EventAddBox(const char box, co
 
     board(loc) = box;
 }
+
 bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CreatesDoubleCross(const Loc &loc) {
     board(loc) = player_line; // Simulate move
     int doubleCrossCount = 0;
@@ -89,7 +90,7 @@ bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CreatesDoubleCross(const Loc &
     }
 
     board(loc) = ' '; // Undo move
-    return doubleCrossCount >= 2; // More than 1 box can be completed.
+    return doubleCrossCount >= 2;
 }
 
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
@@ -351,7 +352,7 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateBoardState(Board &curre
 }
 
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateBoard() {
-    int aiBoxes = 0, opponentBoxes = 0, chains = 0, opponentChains = 0, longChains = 0;
+    int aiBoxes = 0, opponentBoxes = 0, chains = 0, opponentChains = 0, chainScore = 0;
 
     for (int row = 1; row < board.GetRows(); row += 2) {
         for (int col = 1; col < board.GetCols(); col += 2) {
@@ -363,19 +364,16 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateBoard() {
                     opponentBoxes++;
             } else if (surroundingLines == 2) {
                 chains++;
-                if (!CreatesChainForOpp({row, col}))
-                    longChains++;
+                chainScore += SimulateChainLength({row, col});
             } else if (surroundingLines == 3) {
                 opponentChains++;
             }
         }
     }
 
-    // Enhanced scoring with chain control.
-    return (aiBoxes - opponentBoxes) * 15 - chains * 5 - opponentChains * 10 + longChains * 10;
+    // Heuristic scoring with chain control and risk management.
+    return (aiBoxes - opponentBoxes) * 20 - opponentChains * 10 + chains * 5 + chainScore * 2;
 }
-
-
 
 
 bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CanControlChains() {
@@ -397,31 +395,66 @@ bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CanControlChains() {
 }
 
 bool OzgeAkosa5177_DimitriNearchosdon5092_Player::HandleChains() {
-    int totalChains = 0;
-    int controlledChains = 0;
+    int shortChains = 0;
+    int longChains = 0;
 
     for (int row = 1; row < board.GetRows(); row += 2) {
         for (int col = 1; col < board.GetCols(); col += 2) {
             if (board.CountSurroundingLines(row, col) == 2) {
-                totalChains++;
-                if (!CreatesChainForOpp({row, col}))
-                    controlledChains++;
+                // Check chain length
+                int chainLength = SimulateChainLength({row, col});
+                if (chainLength <= 3) {
+                    shortChains++;
+                } else {
+                    longChains++;
+                }
             }
         }
     }
 
-    // Return true if the AI controls most chains.
-    return controlledChains >= totalChains;
+    // Favor long chains in endgame.
+    return longChains > shortChains;
 }
 
-int OzgeAkosa5177_DimitriNearchosdon5092_Player::PredictOpponentMove(const Loc &loc) 
-{
+int OzgeAkosa5177_DimitriNearchosdon5092_Player::SimulateChainLength(const Loc &start) {
+    int chainLength = 0;
+    Loc current = start;
+
+    while (board.CountSurroundingLines(current.row, current.col) == 2) {
+        chainLength++;
+        current = NextChainLocation(current); // Find next link in the chain.
+    }
+
+    return chainLength;
+}
+
+Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::NextChainLocation(const Loc &current) {
+    // Logic to find the next location in a chain (e.g., next box with 2 sides filled).
+    for (int dr = -1; dr <= 1; dr++) {
+        for (int dc = -1; dc <= 1; dc++) {
+            if (dr != 0 || dc != 0) {
+                Loc neighbor(current.row + dr, current.col + dc);
+                if (board.CountSurroundingLines(neighbor.row, neighbor.col) == 2) {
+                    return neighbor;
+                }
+            }
+        }
+    }
+    return current;
+}
+
+int OzgeAkosa5177_DimitriNearchosdon5092_Player::PredictOpponentMove(const Loc &loc) {
     board(loc) = opponent_line; // Simulate opponent move
     int opponentScore = EvaluateBoard(); // Evaluate their advantage
+
+    // Simulate chain control.
+    if (HandleChains()) {
+        opponentScore += 20; // Penalize moves that let the opponent control chains.
+    }
+
     board(loc) = ' '; // Undo simulation
     return opponentScore;
 }
-
 void OzgeAkosa5177_DimitriNearchosdon5092_Player::CategorizeMoves() {
     highPriorityLines.clear();
     lowRiskLines.clear();

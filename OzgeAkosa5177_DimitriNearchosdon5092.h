@@ -33,8 +33,7 @@ private:
     bool CreatesChainForOpp(const Loc &loc);
     bool CreatesDoubleCross(const Loc &loc); // Checks if a move creates a double-cross.
     int Minimax(int depth, bool isMaximizing, int alpha, int beta);
-    int EvaluateBoard(); 
-    int PredictOpponentMove(const Loc &loc);   
+    int EvaluateBoard();   
     bool CanControlChains();  
     bool HandleChains();             // Handle chain management in the endgame. 
     int SimulateChainLength(const Loc &start); // Calculate the length of a chain starting from a location.

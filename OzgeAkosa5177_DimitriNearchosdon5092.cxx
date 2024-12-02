@@ -76,30 +76,20 @@ void OzgeAkosa5177_DimitriNearchosdon5092_Player::EventAddBox(const char box, co
 
     board(loc) = box;
 }
-bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CreatesDoubleCross(const Loc &loc)
-{
-    // Simulate adding the line.
-    board(loc) = player_line;
-
+bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CreatesDoubleCross(const Loc &loc) {
+    board(loc) = player_line; // Simulate move
     int doubleCrossCount = 0;
 
-    // Check all boxes near the current line.
-    for (int row = 0; row < board.GetRows(); row++)
-    {
-        for (int col = 0; col < board.GetCols(); col++)
-        {
-            if (board.CountSurroundingLines(row, col) == 3) // Box with 3 sides filled.
-            {
+    for (int row = 1; row < board.GetRows(); row += 2) {
+        for (int col = 1; col < board.GetCols(); col += 2) {
+            if (board.CountSurroundingLines(row, col) == 3) {
                 doubleCrossCount++;
             }
         }
     }
 
-    // Undo the move.
-    board(loc) = ' ';
-
-    // A double-cross happens when two boxes have 3 sides filled.
-    return doubleCrossCount >= 2;
+    board(loc) = ' '; // Undo move
+    return doubleCrossCount >= 2; // More than 1 box can be completed.
 }
 
 
@@ -147,6 +137,16 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
                 bestMove = loc;
             }
             board(loc) = ' '; // Undo simulation.
+        }
+    }
+    if (emptylines_cnt < 10 && HandleChains()) {
+        // Endgame: prioritize moves that maximize chain control.
+        for (const Loc &loc : lowRiskLines) 
+        {
+            if (!CreatesChainForOpp(loc)) 
+            {
+                return loc;
+          }
         }
     }
 
@@ -345,26 +345,30 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateBoardState(Board &curre
 }
 
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateBoard() {
-    int aiBoxes = 0, opponentBoxes = 0, chains = 0, opponentChains = 0;
+    int aiBoxes = 0, opponentBoxes = 0, chains = 0, opponentChains = 0, longChains = 0;
 
-    for (int row = 1; row < board.GetRows(); row += 2) { // Only box rows
-        for (int col = 1; col < board.GetCols(); col += 2) { // Only box columns
-            if (board.CountSurroundingLines(row, col) == 4) {
+    for (int row = 1; row < board.GetRows(); row += 2) {
+        for (int col = 1; col < board.GetCols(); col += 2) {
+            int surroundingLines = board.CountSurroundingLines(row, col);
+            if (surroundingLines == 4) {
                 if (board(row, col) == player_box)
                     aiBoxes++;
                 else if (board(row, col) == opponent_line)
                     opponentBoxes++;
-            } else if (board.CountSurroundingLines(row, col) == 2) {
+            } else if (surroundingLines == 2) {
                 chains++;
-            } else if (board.CountSurroundingLines(row, col) == 3) {
+                if (!CreatesChainForOpp({row, col}))
+                    longChains++;
+            } else if (surroundingLines == 3) {
                 opponentChains++;
             }
         }
     }
 
-    // Strategic scoring heuristic.
-    return (aiBoxes - opponentBoxes) * 10 - chains * 5 - opponentChains * 15;
+    // Enhanced scoring with chain control.
+    return (aiBoxes - opponentBoxes) * 15 - chains * 5 - opponentChains * 10 + longChains * 10;
 }
+
 
 
 
@@ -386,6 +390,23 @@ bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CanControlChains() {
     return chainsControlled >= totalChains / 2; // Control at least half the chains.
 }
 
+bool OzgeAkosa5177_DimitriNearchosdon5092_Player::HandleChains() {
+    int totalChains = 0;
+    int controlledChains = 0;
+
+    for (int row = 1; row < board.GetRows(); row += 2) {
+        for (int col = 1; col < board.GetCols(); col += 2) {
+            if (board.CountSurroundingLines(row, col) == 2) {
+                totalChains++;
+                if (!CreatesChainForOpp({row, col}))
+                    controlledChains++;
+            }
+        }
+    }
+
+    // Return true if the AI controls most chains.
+    return controlledChains >= totalChains;
+}
 
 
 void OzgeAkosa5177_DimitriNearchosdon5092_Player::CategorizeMoves() {
@@ -411,6 +432,9 @@ void OzgeAkosa5177_DimitriNearchosdon5092_Player::CategorizeMoves() {
                     neutralLines.push_back(loc); // Neutral moves
                 } else {
                     delayedMoves.push_back(loc); // Risky moves
+                }
+                if (surroundingLines == 3 && !CreatesDoubleCross(loc)) {
+                    highPriorityLines.push_back(loc); // Avoid double cross scenarios.
                 }
 
                 emptylines[emptylines_cnt++] = loc; // Add to generic list of empty lines

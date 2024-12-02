@@ -357,35 +357,32 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateBoardState(Board &curre
     return myScore - opponentScore; // Return the net score difference.
 }
 
-int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateBoard()
-{
-    int aiBoxes = 0, opponentBoxes = 0, chains = 0, safeMoves = 0;
+// Modified EvaluateBoard function
+int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateBoard() {
+    int aiBoxes = 0, opponentBoxes = 0, chains = 0, safeMoves = 0, potentialChains = 0;
 
-    for (int row = 0; row < board.GetRows(); row++)
-    {
-        for (int col = 0; col < board.GetCols(); col++)
-        {
-            if (board.CountSurroundingLines(row, col) == 4)
-            {
+    for (int row = 0; row < board.GetRows(); row++) {
+        for (int col = 0; col < board.GetCols(); col++) {
+            int surroundingLines = board.CountSurroundingLines(row, col);
+            if (surroundingLines == 4) {
                 if (board(row, col) == player_box)
                     aiBoxes++;
                 else if (board(row, col) == opponent_line)
                     opponentBoxes++;
-            }
-            else if (board.CountSurroundingLines(row, col) == 2)
-            {
+            } else if (surroundingLines == 2) {
                 chains++;
-            }
-            else if (board.CountSurroundingLines(row, col) <= 1)
-            {
+                if (!CreatesChainForOpp({row, col}))
+                    potentialChains++;
+            } else if (surroundingLines <= 1) {
                 safeMoves++;
             }
         }
     }
 
-    // Heuristic scoring function.
-    return (aiBoxes - opponentBoxes) * 10 + chains * -5 + safeMoves * 2;
+    // Improved scoring function
+    return (aiBoxes - opponentBoxes) * 15 - chains * 10 + safeMoves * 5 + potentialChains * 3;
 }
+
 bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CanControlChains()
 {
     int chainsControlled = 0;

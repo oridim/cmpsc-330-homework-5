@@ -101,60 +101,44 @@ bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CreatesDoubleCross(const Loc &
     return doubleCrossCount >= 2;
 }
 
+
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
 {
     ListEmptyLines(); // Populate empty lines.
-    CategorizeMoves(); // Categorize high-priority, low-risk, and neutral moves.
+    CategorizeMoves(); // Categorize moves into high-priority, low-risk, neutral, and delayed.
 
     bool isEndgame = emptylines_cnt < 10; // Identify the endgame.
+    bool isMidgame = (emptylines_cnt >= 10 && emptylines_cnt <= 20); // Identify midgame.
 
     // High-priority moves to complete a box.
-    for (int i = 0; i < emptylines_cnt; i++)
-    {
-        Loc loc = emptylines[i];
-        if (board.CountSurroundingLines(loc.row, loc.col) == 3 && !CreatesChainForOpp(loc))
-        {
-            return loc; // Complete the box safely.
-        }
-    }
+    if (!highPriorityLines.empty())
+        return highPriorityLines[0];
 
-    // Midgame prioritization (focus on moves with 2 surrounding lines).
-    for (int i = 0; i < emptylines_cnt; i++)
+    // Strategic delaying moves in midgame (chains control).
+    if (isMidgame && CanControlChains())
     {
-        Loc loc = emptylines[i];
-        if (board.CountSurroundingLines(loc.row, loc.col) == 2 && !CreatesChainForOpp(loc))
-        {
-            return loc; // Prioritize strategic midgame moves.
-        }
+        if (!neutralLines.empty())
+            return neutralLines[0];
     }
 
     // Avoid creating chains with low-risk moves.
-    for (int i = 0; i < emptylines_cnt; i++)
-    {
-        Loc loc = emptylines[i];
-        if (board.CountSurroundingLines(loc.row, loc.col) <= 1)
-        {
-            return loc; // Make a safe move.
-        }
-    }
+    if (!lowRiskLines.empty())
+        return lowRiskLines[0];
 
-    // Apply double-cross strategy during the endgame.
+    //Apply double-cross strategy during the endgame.
     if (isEndgame)
     {
-        for (int i = 0; i < emptylines_cnt; i++)
+        for (const Loc &loc : highPriorityLines)
         {
-            Loc loc = emptylines[i];
-            if (CreatesDoubleCross(loc)) // Check for double-cross potential.
-            {
+            if (CreatesDoubleCross(loc))
                 return loc; // Prioritize double-cross moves.
-            }
         }
     }
 
     //Use Minimax to evaluate fallback moves.
     int bestValue = -100000;
     Loc bestMove;
-    int depth = (isEndgame) ? 5 : 3; // Adjust depth dynamically for endgame.
+    int depth = (isEndgame) ? 5 : (isMidgame ? 4 : 2); // Adjust depth dynamically.
 
     for (int i = 0; i < emptylines_cnt; i++)
     {
@@ -163,7 +147,7 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
         {
             board(loc) = player_line; // Simulate AI's move.
 
-            int moveValue = Minimax(depth, false); // Evaluate with Minimax.
+            int moveValue = Minimax(depth, false);
             if (moveValue > bestValue)
             {
                 bestValue = moveValue;
@@ -175,9 +159,7 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
     }
 
     if (bestValue > -100000)
-    {
-        return bestMove; // Return best move from Minimax.
-    }
+        return bestMove;
 
     // Fallback to random move if all else fails.
     if (emptylines_cnt > 0)
@@ -188,6 +170,8 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
 
     return {0, 0}; // Default fallback.
 }
+
+
 
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::Minimax(int depth, bool isMaximizing)
 {
@@ -409,6 +393,30 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateBoard()
     // Heuristic scoring function.
     return (aiBoxes - opponentBoxes) * 10 + chains * -5 + safeMoves * 2;
 }
+bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CanControlChains()
+{
+    int chainsControlled = 0;
+    int totalChains = 0;
+
+    for (int row = 0; row < board.GetRows(); row++)
+    {
+        for (int col = 0; col < board.GetCols(); col++)
+        {
+            if (board.CountSurroundingLines(row, col) == 2)
+            {
+                totalChains++;
+                if (!CreatesChainForOpp({row, col}))
+                {
+                    chainsControlled++;
+                }
+            }
+        }
+    }
+
+    return chainsControlled >= totalChains; // True if AI controls all chains.
+}
+
+
 void OzgeAkosa5177_DimitriNearchosdon5092_Player::CategorizeMoves()
 {
     highPriorityLines.clear();

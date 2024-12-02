@@ -22,6 +22,7 @@ private:
     vector<Loc> highPriorityLines; // Strategic vector
     vector<Loc> lowRiskLines;
     vector<Loc> neutralLines;
+    vector<Loc> delayedMoves; // Moves to delay to avoid triggering chains too early.
 
     void CategorizeMoves(); // Categorize moves into high-priority, low-risk, and neutral.
     int EvaluateBoardState(Board &currentBoard) const;
@@ -32,7 +33,8 @@ private:
     bool CreatesChainForOpp(const Loc &loc);
     bool CreatesDoubleCross(const Loc &loc); // Checks if a move creates a double-cross.
     int Minimax(int depth, bool isMaximizing); // Recursive Minimax function for lookahead.
-    int EvaluateBoard();                     
+    int EvaluateBoard();     
+    bool CanControlChains();                
 
 public:
     OzgeAkosa5177_DimitriNearchosdon5092_Player();

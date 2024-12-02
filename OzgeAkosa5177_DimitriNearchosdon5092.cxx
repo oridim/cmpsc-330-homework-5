@@ -383,77 +383,45 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateBoard() {
     return (aiBoxes - opponentBoxes) * 15 - chains * 10 + safeMoves * 5 + potentialChains * 3;
 }
 
-bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CanControlChains()
-{
+bool OzgeAkosa5177_DimitriNearchosdon5092_Player::CanControlChains() {
     int chainsControlled = 0;
     int totalChains = 0;
 
-    for (int row = 0; row < board.GetRows(); row++)
-    {
-        for (int col = 0; col < board.GetCols(); col++)
-        {
-            if (board.CountSurroundingLines(row, col) == 2)
-            {
+    for (int row = 0; row < board.GetRows(); row++) {
+        for (int col = 0; col < board.GetCols(); col++) {
+            if (board.CountSurroundingLines(row, col) == 2) {
                 totalChains++;
-                if (!CreatesChainForOpp({row, col}))
-                {
+                if (!CreatesChainForOpp({row, col})) {
                     chainsControlled++;
                 }
             }
         }
     }
 
-    return chainsControlled >= totalChains; // True if AI controls all chains.
+    return chainsControlled >= totalChains / 2; // Control at least half the chains.
 }
 
 
-void OzgeAkosa5177_DimitriNearchosdon5092_Player::CategorizeMoves()
-{
+
+void OzgeAkosa5177_DimitriNearchosdon5092_Player::CategorizeMoves() {
     highPriorityLines.clear();
     lowRiskLines.clear();
     neutralLines.clear();
 
-    for (int i = 0; i < emptylines_cnt; i++)
-    {
+    for (int i = 0; i < emptylines_cnt; i++) {
         Loc loc = emptylines[i];
         int surroundingLines = board.CountSurroundingLines(loc.row, loc.col);
 
-        if (surroundingLines == 3 && !CreatesChainForOpp(loc))
-        {
+        if (surroundingLines == 3 && !CreatesChainForOpp(loc)) {
             highPriorityLines.push_back(loc); // High-priority: Complete a box.
-        }
-        else if (surroundingLines == 2 && !CreatesChainForOpp(loc))
-        {
-            neutralLines.push_back(loc); // Midgame: Strategic moves.
-        }
-        else if (surroundingLines <= 1)
-        {
-            lowRiskLines.push_back(loc); // Low-risk: Safe moves.
-        }
-    }
-}
-
-int OzgeAkosa5177_DimitriNearchosdon5092_Player::SimulateMove(const Loc &loc)
-{
-    // Simulate adding the line.
-    board(loc) = player_line;
-
-    // Count how many boxes are gained.
-    int boxesGained = 0;
-    for (int row = 0; row < board.GetRows(); row++)
-    {
-        for (int col = 0; col < board.GetCols(); col++)
-        {
-            if (board.CountSurroundingLines(row, col) == 4)
-            {
-                boxesGained++;
+        } else if (surroundingLines == 2 && !CreatesChainForOpp(loc)) {
+            if (CreatesDoubleCross(loc)) {
+                neutralLines.push_back(loc); // Double cross opportunity.
+            } else {
+                lowRiskLines.push_back(loc); // Safe moves.
             }
+        } else if (surroundingLines <= 1) {
+            lowRiskLines.push_back(loc); // Delayed moves for safety.
         }
     }
-
-    // Undo the simulated move.
-    board(loc) = ' ';
-
-    return boxesGained;
 }
-

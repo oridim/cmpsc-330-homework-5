@@ -4,9 +4,17 @@
 
 set -e
 
-# Ours vs. Random Player
+# Ours vs. First Opening Player
 
 # **NOTE**: We are sending 3 rows and 5 columns to the stdin of the game engine.
+
+echo "**************************************************"
+echo "Ours vs. First Opening Player"
+echo "**************************************************"
+
+./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./first_opening_player.so <<< "3 5"
+
+# Ours vs. Random Player
 
 echo "**************************************************"
 echo "Ours vs. Random Player"

@@ -1,7 +1,7 @@
-#include <iostream>
 #include <assert.h>
 #include <cstdlib> // for srand and rand
 #include <ctime>   // for time
+#include <iostream>
 
 #include "common.h"
 #include "player.h"

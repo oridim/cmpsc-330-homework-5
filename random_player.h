@@ -2,9 +2,11 @@
 #define __RANDOM_PLAYER__
 
 #include <iostream>
+
 #include "common.h"
 #include "player.h"
 #include "board.h"
+
 using namespace std;
 
 class RandomPlayer : public IPlayer

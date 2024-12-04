@@ -1,5 +1,5 @@
-#include <iostream>
 #include <assert.h>
+#include <iostream>
 
 #include "common.h"
 #include "player.h"

@@ -40,7 +40,7 @@ private:
     int SimulateChainLength(const Loc &start); // Calculates the length of a chain.
     Loc NextChainLocation(const Loc &current); // Finds the next location in a chain.
     int ComputeSurroundingLineCount(const Loc &loc);     
-
+    Loc FindScoringMove();
 public:
     OzgeAkosa5177_DimitriNearchosdon5092_Player();
     ~OzgeAkosa5177_DimitriNearchosdon5092_Player();
@@ -54,6 +54,7 @@ public:
     void EventAddBox(const char box, const Loc &loc);
     Loc SelectLineLocation();
     Loc SelectFirstMove(); // Function to make a strong first move.
+    
     void ListEmptyLines();
 };
 

@@ -2,6 +2,7 @@
 #define __MOCKERY_PLAYER__
 
 #include <iostream>
+#include <random> // for default_random_engine
 
 #include "common.h"
 #include "board.h"
@@ -17,6 +18,7 @@ private:
     char player_line;
 
     Loc last_move;
+    mt19937 random_engine;
 
 public:
     MockeryPlayer();
@@ -32,6 +34,12 @@ public:
     void EventAddLine(char bar, const Loc &loc);
 
     void EventAddBox(char box, const Loc &loc);
+
+    int CountLinesAroundSlot(const Loc &loc);
+
+    bool DoesMovePayoff(const Loc &loc);
+
+    bool DoesMoveSell(const Loc &loc);
 
     Loc SelectLineLocation();
 };

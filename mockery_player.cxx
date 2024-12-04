@@ -1,7 +1,8 @@
+#include <algorithm> // for shuffle
 #include <assert.h>
-#include <cstdlib> // for srand and rand
-#include <ctime>   // for time
+#include <ctime> // for time
 #include <iostream>
+#include <random> // for mersenne_twister_engine
 #include <vector>
 
 #include "common.h"
@@ -18,7 +19,7 @@ extern "C" IPlayer *PlayerFactory()
 
 MockeryPlayer::MockeryPlayer()
 {
-    srand(time(0));
+    random_engine = mt19937(time(0));
 }
 
 MockeryPlayer::~MockeryPlayer()
@@ -31,6 +32,7 @@ void MockeryPlayer::Init(int _dots_in_rows, int _dots_in_cols, char _player_box,
 
     player_box = _player_box;
     player_line = _player_line;
+
     last_move = Loc();
 }
 
@@ -58,6 +60,66 @@ void MockeryPlayer::EventAddBox(const char box, const Loc &loc)
     board(loc) = box;
 }
 
+int MockeryPlayer::CountLinesAroundSlot(const Loc &loc)
+{
+    int count = 0;
+
+    int column = loc.col;
+    int row = loc.row;
+
+    for (int deltaRowIndex = -1; deltaRowIndex <= 1; deltaRowIndex += 2)
+    {
+        if (board(row + deltaRowIndex, column) != ' ')
+        {
+            count += 1;
+        }
+    }
+
+    for (int deltaColumnIndex = -1; deltaColumnIndex <= 1; deltaColumnIndex += 2)
+    {
+        if (board(row, column + deltaColumnIndex) != ' ')
+        {
+            count += 1;
+        }
+    }
+
+    return count;
+}
+
+bool MockeryPlayer::DoesMovePayoff(const Loc &loc)
+{
+    int columns = board.GetCols();
+    int rows = board.GetRows();
+
+    int row = loc.row;
+    int column = loc.col;
+
+    Loc previousAdjacentLocation = loc.IsLineVerticalLocation() ? Loc(row, column - 1) : Loc(row - 1, column);
+    Loc nextAdjacentLocation = loc.IsLineVerticalLocation() ? Loc(row, column + 1) : Loc(row + 1, column);
+
+    int previousAdjacentLines = (previousAdjacentLocation.col >= 0 && previousAdjacentLocation.row >= 0) ? CountLinesAroundSlot(previousAdjacentLocation) : 0;
+    int nextAdjacentLines = (nextAdjacentLocation.col < columns && nextAdjacentLocation.row < rows) ? CountLinesAroundSlot(nextAdjacentLocation) : 0;
+
+    return ((previousAdjacentLines == 3) || (nextAdjacentLines == 3)) && !(previousAdjacentLines == 2 || nextAdjacentLines == 2);
+}
+
+bool MockeryPlayer::DoesMoveSell(const Loc &loc)
+{
+    int columns = board.GetCols();
+    int rows = board.GetRows();
+
+    int row = loc.row;
+    int column = loc.col;
+
+    Loc previousAdjacentLocation = loc.IsLineVerticalLocation() ? Loc(row, column - 1) : Loc(row - 1, column);
+    Loc nextAdjacentLocation = loc.IsLineVerticalLocation() ? Loc(row, column + 1) : Loc(row + 1, column);
+
+    int previousAdjacentLines = (previousAdjacentLocation.col >= 0 && previousAdjacentLocation.row >= 0) ? CountLinesAroundSlot(previousAdjacentLocation) : 0;
+    int nextAdjacentLines = (nextAdjacentLocation.col < columns && nextAdjacentLocation.row < rows) ? CountLinesAroundSlot(nextAdjacentLocation) : 0;
+
+    return (previousAdjacentLines == 2) || (nextAdjacentLines == 2);
+}
+
 Loc MockeryPlayer::SelectLineLocation()
 {
     int columns = board.GetCols();
@@ -67,34 +129,34 @@ Loc MockeryPlayer::SelectLineLocation()
 
     if (last_move.IsLineLocation())
     {
-        int row = last_move.row;
         int column = last_move.col;
+        int row = last_move.row;
 
-        int opposingRow = rows - last_move.row - 1;
-        int opposingColumn = columns - last_move.col - 1;
+        int opposingColumn = columns - column - 1;
+        int opposingRow = rows - row - 1;
 
-        switch (rand() % 3)
+        vector<Loc> mirroredMoves = vector<Loc>();
+
+        mirroredMoves.push_back(Loc(row, opposingColumn));
+        mirroredMoves.push_back(Loc(opposingRow, column));
+        mirroredMoves.push_back(Loc(opposingRow, opposingColumn));
+
+        shuffle(begin(mirroredMoves), end(mirroredMoves), random_engine);
+
+        for (const Loc &location : mirroredMoves)
         {
-        case 0:
-            row = opposingRow;
-
-            break;
-
-        case 1:
-            column = opposingColumn;
-
-            break;
-
-        case 2:
-            row = opposingRow;
-            column = opposingColumn;
-
-            break;
+            if (board(location) == ' ' && DoesMovePayoff(location))
+            {
+                return location;
+            }
         }
 
-        if (board(row, column) == ' ')
+        for (const Loc &location : mirroredMoves)
         {
-            return Loc(row, column);
+            if (board(location) == ' ' && !DoesMoveSell(location))
+            {
+                return location;
+            }
         }
     }
 
@@ -120,5 +182,5 @@ Loc MockeryPlayer::SelectLineLocation()
         }
     }
 
-    return legalMoves.at(rand() % legalMoves.size());
+    return legalMoves.at(random_engine() % legalMoves.size());
 }

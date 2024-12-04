@@ -185,6 +185,43 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindSafeMove()
 
     return {-1, -1}; // No safe move found
 }
+Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindDisruptiveMove()
+{
+    ListEmptyLines();
+
+    for (int i = 0; i < emptylines_cnt; i++)
+    {
+        Loc candidate = emptylines[i];
+        board(candidate) = player_line; // Simulate move
+
+        // Check if this disrupts opponents' scoring
+        bool disruptsOpponent = false;
+
+        for (int row = 1; row < board.GetRows(); row += 2)
+        {
+            for (int col = 1; col < board.GetCols(); col += 2)
+            {
+                if (board.CountSurroundingLines(row, col) == 2)
+                {
+                    disruptsOpponent = true;
+                    break;
+                }
+            }
+            if (disruptsOpponent)
+                break;
+        }
+
+        board(candidate) = ' '; // Undo simulation
+
+        if (disruptsOpponent)
+        {
+            return candidate; // Prioritize moves that block opponents
+        }
+    }
+
+    return {-1, -1}; // No disruptive move found
+}
+
 
 void OzgeAkosa5177_DimitriNearchosdon5092_Player::ListEmptyLines()
 {

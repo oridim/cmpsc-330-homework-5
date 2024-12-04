@@ -102,6 +102,55 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
     return emptylines[randloc];
 }
 
+int OzgeAkosa5177_DimitriNearchosdon5092_Player::SimulateChainLength(const Loc &start)
+{
+    int chainLength = 0;
+    Loc current = start;
+
+    while (board.CountSurroundingLines(current.row, current.col) == 2)
+    {
+        // Find the next location in the chain
+        Loc next = {-1, -1};
+        for (int dr = -1; dr <= 1; dr++)
+        {
+            for (int dc = -1; dc <= 1; dc++)
+            {
+                if ((dr == 0 && dc == 0) || abs(dr + dc) != 1)
+                {
+                    continue; // Skip invalid directions
+                }
+                Loc neighbor = {current.row + dr, current.col + dc};
+
+                // Ensure within bounds and valid chain conditions
+                if (neighbor.row >= 0 && neighbor.row < board.GetRows() &&
+                    neighbor.col >= 0 && neighbor.col < board.GetCols() &&
+                    board.CountSurroundingLines(neighbor.row, neighbor.col) == 2)
+                {
+                    next = neighbor;
+                    break;
+                }
+            }
+        }
+
+        if (next.row == -1 && next.col == -1)
+        {
+            break; // No valid next location, end the chain
+        }
+
+        chainLength++;
+        current = next;
+
+        // Avoid invalid memory access by ensuring bounds
+        if (current.row < 0 || current.row >= board.GetRows() ||
+            current.col < 0 || current.col >= board.GetCols())
+        {
+            break;
+        }
+    }
+
+    return chainLength;
+}
+
 
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindScoringMove()
 {

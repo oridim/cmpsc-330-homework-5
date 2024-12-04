@@ -145,7 +145,7 @@ Loc MockeryPlayer::SelectLineLocation()
 
         for (const Loc &location : mirroredMoves)
         {
-            if (board(location) == ' ' && DoesMovePayoff(location))
+            if (board(location) == ' ' && ((random_engine() % 10) < 7) && DoesMovePayoff(location))
             {
                 return location;
             }

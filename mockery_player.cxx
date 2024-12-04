@@ -58,6 +58,12 @@ void MockeryPlayer::EventAddBox(const char box, const Loc &loc)
     assert(board(loc) == ' ');
 
     board(loc) = box;
+
+    if (box == player_box)
+    {
+        last_move.col = -1;
+        last_move.row = -1;
+    }
 }
 
 int MockeryPlayer::CountLinesAroundSlot(const Loc &loc)

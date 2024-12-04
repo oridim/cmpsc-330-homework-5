@@ -5,7 +5,6 @@
 
 #include "common.h"
 #include "board.h"
-
 #include "player.h"
 
 using namespace std;
@@ -13,50 +12,36 @@ using namespace std;
 class OzgeAkosa5177_DimitriNearchosdon5092_Player : public IPlayer
 {
 private:
-    Board board;         // This is your Board instance.
-    Loc *emptylines;     // Array to store empty lines.
-    int emptylines_cnt;  // Count of empty lines.
-    char player_box;         // The player's box character.
-    char player_line;  
-    char opponent_line; // Line character for the opponent.
-    vector<Loc> highPriorityLines; // Strategic vector
-    vector<Loc> lowRiskLines;
-    vector<Loc> neutralLines;
-    vector<Loc> delayedMoves; // Moves to delay to avoid triggering chains too early.
+    Board board;         // Board instance to manage game state
+    Loc *emptylines;     // Array to store empty lines
+    int emptylines_cnt;  // Count of empty lines
+    char player_box;     // Player's box character
+    char player_line;    // Player's line character
+    char opponent_line;  // Opponent's line character
 
-    void CategorizeMoves(); // Categorize moves into high-priority, low-risk, and neutral.
-    int EvaluateBoardState(Board &currentBoard) const;
-    int EvaluateMove(const Loc &loc);                  // Evaluates a move's strategic value.
-    int SimulateMove(const Loc &loc);
-    int EvaluateFutureMoves(Board &currentBoard, int depth); // Recursively evaluate move outcomes.
-    int SimulateMoveAndEvaluate(Board &currentBoard, const Loc &loc, int depth); // Evaluate a specific move.
-    bool CreatesChainForOpp(const Loc &loc);
-    bool CreatesDoubleCross(const Loc &loc); // Checks if a move creates a double-cross.
-    int Minimax(int depth, bool isMaximizing, int alpha, int beta);
-    int EvaluateBoard(); 
-    int PredictOpponentMove(const Loc &loc);   
-    bool CanControlChains();  
-    bool HandleChains();             // Handle chain management in the endgame.   
-    int SimulateChainLength(const Loc &start); // Calculates the length of a chain.
-    Loc NextChainLocation(const Loc &current); // Finds the next location in a chain.
-    int ComputeSurroundingLineCount(const Loc &loc);     
-    Loc FindScoringMove();
-    Loc FindSafeMove();
+    // Core strategy functions
+    Loc FindScoringMove(); // Finds moves that complete a box
+    Loc FindSafeMove();    // Finds moves that avoid setting up a scoring opportunity for the opponent
+    void ListEmptyLines(); // Updates the list of all available empty lines
+
 public:
+    // Constructor and Destructor
     OzgeAkosa5177_DimitriNearchosdon5092_Player();
     ~OzgeAkosa5177_DimitriNearchosdon5092_Player();
 
+    // Player metadata
     string PlayerInfo() { return "Ozge Selin Ak (osa5177@psu.edu) + Dimitri Orion Nearchos (don5092@psu.edu)"; }
 
+    // Game lifecycle functions
     void Init(int _dots_in_rows, int _dots_in_cols, char _player_box, char _player_line);
     void Close();
 
+    // Event handling functions
     void EventAddLine(const char bar, const Loc &loc);
     void EventAddBox(const char box, const Loc &loc);
+
+    // Move selection function
     Loc SelectLineLocation();
-    Loc SelectFirstMove(); // Function to make a strong first move.
-    
-    void ListEmptyLines();
 };
 
 #endif

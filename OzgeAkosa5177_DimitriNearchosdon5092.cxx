@@ -113,17 +113,70 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectFirstMove() {
 
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
 {
-    // First, look for opportunities to complete a box
+    // Step 1: Prioritize completing a box with three sides
     Loc scoringMove = FindScoringMove();
     if (scoringMove.row != -1 && scoringMove.col != -1)
     {
         return scoringMove;
     }
 
-    // No scoring move found; fallback to a random empty line
+    // Step 2: Find a safe move (avoid creating three-line boxes for the opponent)
+    Loc safeMove = FindSafeMove();
+    if (safeMove.row != -1 && safeMove.col != -1)
+    {
+        return safeMove;
+    }
+
+    // Step 3: If no safe move, fall back to a random empty line
     ListEmptyLines();
     int randloc = rand() % emptylines_cnt;
     return emptylines[randloc];
+}
+
+Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindSafeMove()
+{
+    ListEmptyLines();
+
+    for (int i = 0; i < emptylines_cnt; i++)
+    {
+        Loc candidate = emptylines[i];
+        board(candidate) = player_line; // Temporarily make the move
+
+        // Check if this move creates any boxes with exactly three lines
+        bool createsThreeLineBox = false;
+        for (int row = 0; row < board.GetRows(); row++)
+        {
+            for (int col = 0; col < board.GetCols(); col++)
+            {
+                if (row % 2 == 1 && col % 2 == 1) // Check only box locations
+                {
+                    int lineCount = 0;
+                    if (board({row - 1, col}) != ' ') lineCount++; // Top
+                    if (board({row + 1, col}) != ' ') lineCount++; // Bottom
+                    if (board({row, col - 1}) != ' ') lineCount++; // Left
+                    if (board({row, col + 1}) != ' ') lineCount++; // Right
+
+                    if (lineCount == 3)
+                    {
+                        createsThreeLineBox = true;
+                        break;
+                    }
+                }
+            }
+            if (createsThreeLineBox)
+                break;
+        }
+
+        board(candidate) = ' '; // Revert the move
+
+        if (!createsThreeLineBox)
+        {
+            return candidate;
+        }
+    }
+
+    // No safe move found
+    return {-1, -1};
 }
 
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindScoringMove()

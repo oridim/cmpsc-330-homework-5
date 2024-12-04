@@ -41,6 +41,7 @@ private:
     Loc NextChainLocation(const Loc &current); // Finds the next location in a chain.
     int ComputeSurroundingLineCount(const Loc &loc);     
     Loc FindScoringMove();
+    Loc FindSafeMove();
 public:
     OzgeAkosa5177_DimitriNearchosdon5092_Player();
     ~OzgeAkosa5177_DimitriNearchosdon5092_Player();

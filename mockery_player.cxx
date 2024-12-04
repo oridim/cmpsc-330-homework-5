@@ -170,9 +170,16 @@ Loc MockeryPlayer::SelectLineLocation()
     {
         for (int column = 1; column < columns; column += 2)
         {
-            if (board(row, column) == ' ')
+            Loc location = Loc(row, column);
+
+            if (board(location) == ' ')
             {
-                legalMoves.push_back(Loc(row, column));
+                if (DoesMovePayoff(location) && ((random_engine() % 10) < 4))
+                {
+                    return location;
+                }
+
+                legalMoves.push_back(location);
             }
         }
     }
@@ -181,9 +188,16 @@ Loc MockeryPlayer::SelectLineLocation()
     {
         for (int column = 0; column < columns; column += 2)
         {
-            if (board(row, column) == ' ')
+            Loc location = Loc(row, column);
+
+            if (board(location) == ' ')
             {
-                legalMoves.push_back(Loc(row, column));
+                if (DoesMovePayoff(location) && ((random_engine() % 10) < 4))
+                {
+                    return location;
+                }
+
+                legalMoves.push_back(location);
             }
         }
     }

@@ -14,6 +14,16 @@ echo "**************************************************"
 
 ./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./first_opening_player.so <<< "3 5"
 
+# Ours vs. Edging Player
+
+# **NOTE**: We are sending 3 rows and 5 columns to the stdin of the game engine.
+
+echo "**************************************************"
+echo "Ours vs. Edging Player"
+echo "**************************************************"
+
+./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./edging_player.so <<< "3 5"
+
 # Ours vs. Random Player
 
 echo "**************************************************"

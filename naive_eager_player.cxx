@@ -117,7 +117,7 @@ Loc NaiveEagerPlayer::SelectLineLocation()
                     return location;
                 }
 
-                legalMoves.push_back(Loc(location));
+                legalMoves.push_back(location);
             }
         }
     }
@@ -135,7 +135,7 @@ Loc NaiveEagerPlayer::SelectLineLocation()
                     return location;
                 }
 
-                legalMoves.push_back(Loc(location));
+                legalMoves.push_back(location);
             }
         }
     }

@@ -36,7 +36,7 @@ echo "**************************************************"
 echo "Ours vs. Naive Eager Player"
 echo "**************************************************"
 
-./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./naive_eagar_player.so <<< "3 5"
+./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./naive_eager_player.so <<< "3 5"
 
 # Ours vs. Random Player
 
@@ -68,4 +68,4 @@ echo "**************************************************"
 echo "Strategic Player vs. Naive Eager Player"
 echo "**************************************************"
 
-./dotsboxes ./strategic_player.so ./naive_eagar_player.so <<< "3 5"
+./dotsboxes ./strategic_player.so ./naive_eager_player.so <<< "3 5"

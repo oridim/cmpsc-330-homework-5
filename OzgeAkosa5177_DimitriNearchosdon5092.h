@@ -19,12 +19,11 @@ private:
     char player_line;    // Player's line character
     char opponent_line;  // Opponent's line character
 
-     Loc FindScoringMove();             // Finds moves that complete a box
-    Loc FindSafeMove();                // Finds moves that avoid setting up a scoring opportunity for opponents
-    void ListEmptyLines();             // Updates the list of all available empty lines
-    bool ControlLongChains();          // Determines if chains can be controlled in the endgame
-    Loc FindLongestChainMove(const vector<Loc>& chainStartLocations); // Finds the best move to control a long chain
-    int SimulateChainLength(const Loc &start); // Calculates the length of a chain 
+    // Core strategy functions
+    Loc FindScoringMove(); // Finds moves that complete a box
+    Loc FindSafeMove();    // Finds moves that avoid setting up a scoring opportunity for the opponent
+    void ListEmptyLines(); // Updates the list of all available empty lines
+
 public:
     // Constructor and Destructor
     OzgeAkosa5177_DimitriNearchosdon5092_Player();

@@ -67,90 +67,18 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
         return scoringMove;
     }
 
-    // Step 2: Secure long chains in the endgame
-    vector<Loc> chainStartLocations;
-    for (int row = 1; row < board.GetRows(); row += 2)
-    {
-        for (int col = 1; col < board.GetCols(); col += 2)
-        {
-            if (board.CountSurroundingLines(row, col) == 2)
-            {
-                chainStartLocations.push_back({row, col});
-            }
-        }
-    }
-
-    if (!chainStartLocations.empty())
-    {
-        Loc chainMove = FindLongestChainMove(chainStartLocations);
-        if (chainMove.row != -1 && chainMove.col != -1)
-        {
-            return chainMove;
-        }
-    }
-
-    // Step 3: Find a safe move that avoids creating three-line boxes for any opponent
+    // Step 2: Find a safe move that avoids creating three-line boxes for the opponent
     Loc safeMove = FindSafeMove();
     if (safeMove.row != -1 && safeMove.col != -1)
     {
         return safeMove;
     }
 
-    // Step 4: Fallback to any available move
+    // Step 3: Fallback to any available move
     ListEmptyLines();
     int randloc = rand() % emptylines_cnt;
     return emptylines[randloc];
 }
-
-int OzgeAkosa5177_DimitriNearchosdon5092_Player::SimulateChainLength(const Loc &start)
-{
-    int chainLength = 0;
-    Loc current = start;
-
-    while (board.CountSurroundingLines(current.row, current.col) == 2)
-    {
-        // Find the next location in the chain
-        Loc next = {-1, -1};
-        for (int dr = -1; dr <= 1; dr++)
-        {
-            for (int dc = -1; dc <= 1; dc++)
-            {
-                if ((dr == 0 && dc == 0) || abs(dr + dc) != 1)
-                {
-                    continue; // Skip invalid directions
-                }
-                Loc neighbor = {current.row + dr, current.col + dc};
-
-                // Ensure within bounds and valid chain conditions
-                if (neighbor.row >= 0 && neighbor.row < board.GetRows() &&
-                    neighbor.col >= 0 && neighbor.col < board.GetCols() &&
-                    board.CountSurroundingLines(neighbor.row, neighbor.col) == 2)
-                {
-                    next = neighbor;
-                    break;
-                }
-            }
-        }
-
-        if (next.row == -1 && next.col == -1)
-        {
-            break; // No valid next location, end the chain
-        }
-
-        chainLength++;
-        current = next;
-
-        // Avoid invalid memory access by ensuring bounds
-        if (current.row < 0 || current.row >= board.GetRows() ||
-            current.col < 0 || current.col >= board.GetCols())
-        {
-            break;
-        }
-    }
-
-    return chainLength;
-}
-
 
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindScoringMove()
 {
@@ -223,8 +151,7 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindSafeMove()
         Loc candidate = emptylines[i];
         board(candidate) = player_line; // Simulate move
 
-        bool createsThreeLineBoxForAnyPlayer = false;
-
+        bool createsThreeLineBox = false;
         for (int row = 0; row < board.GetRows(); row++)
         {
             for (int col = 0; col < board.GetCols(); col++)
@@ -239,18 +166,18 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindSafeMove()
 
                     if (lineCount == 3)
                     {
-                        createsThreeLineBoxForAnyPlayer = true;
+                        createsThreeLineBox = true;
                         break;
                     }
                 }
             }
-            if (createsThreeLineBoxForAnyPlayer)
+            if (createsThreeLineBox)
                 break;
         }
 
         board(candidate) = ' '; // Undo simulated move
 
-        if (!createsThreeLineBoxForAnyPlayer)
+        if (!createsThreeLineBox)
         {
             return candidate; // Return the first safe move found
         }
@@ -280,52 +207,4 @@ void OzgeAkosa5177_DimitriNearchosdon5092_Player::ListEmptyLines()
             }
         }
     }
-}
-bool OzgeAkosa5177_DimitriNearchosdon5092_Player::ControlLongChains()
-{
-    ListEmptyLines();
-
-    // Scan for chains that are 2-line boxes and track them
-    vector<Loc> chainStartLocations;
-    for (int row = 1; row < board.GetRows(); row += 2)
-    {
-        for (int col = 1; col < board.GetCols(); col += 2)
-        {
-            if (board.CountSurroundingLines(row, col) == 2)
-            {
-                chainStartLocations.push_back({row, col});
-            }
-        }
-    }
-
-    // Secure the longest chain during your turn
-    if (!chainStartLocations.empty())
-    {
-        Loc chainMove = FindLongestChainMove(chainStartLocations);
-        if (chainMove.row != -1 && chainMove.col != -1)
-        {
-            board(chainMove) = player_line; // Make the move
-            return true;
-        }
-    }
-
-    return false; // No long chains available to control
-}
-
-Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindLongestChainMove(const vector<Loc>& chainStartLocations)
-{
-    Loc bestMove = {-1, -1};
-    int longestChainLength = 0;
-
-    for (const Loc& start : chainStartLocations)
-    {
-        int chainLength = SimulateChainLength(start);
-        if (chainLength > longestChainLength)
-        {
-            longestChainLength = chainLength;
-            bestMove = start;
-        }
-    }
-
-    return bestMove;
 }

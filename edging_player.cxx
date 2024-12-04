@@ -54,40 +54,85 @@ void EdgingPlayer::EventAddBox(const char box, const Loc &loc)
 
 Loc EdgingPlayer::SelectLineLocation()
 {
-    cout << board;
-
     int columns = board.GetCols();
     int rows = board.GetRows();
 
+    bool shouldScanOutwards = rand() % 2 == 0;
     int maximumEdgeLayers = min(rows / 2, columns / 2);
 
-    for (int layer = 0; layer < maximumEdgeLayers; layer++)
+    for (
+        int layer = shouldScanOutwards ? maximumEdgeLayers : 0;
+        shouldScanOutwards ? (layer >= 0) : (layer < maximumEdgeLayers);
+        shouldScanOutwards ? layer-- : layer++)
     {
-        for (int row = layer + 1; row < (rows - layer); row += 2)
-        {
-            int opposingColumn = columns - layer - 1;
+        // **HACK:** Does the code reuse suck? Yes?
+        // Do I care? No.
+        // Should I care? Also no.
 
-            if (board(row, layer) == ' ')
+        bool shouldInvertDirection = rand() % 2 == 0;
+
+        if (shouldInvertDirection)
+        {
+            for (int column = layer + 1; column < (columns - layer); column += 2)
             {
-                return Loc(row, layer);
+                bool shouldInvertScan = rand() % 2 != 0;
+                int opposingRow = rows - layer - 1;
+
+                if (board(shouldInvertScan ? opposingRow : layer, column) == ' ')
+                {
+                    return Loc(shouldInvertScan ? opposingRow : layer, column);
+                }
+                else if (board(shouldInvertScan ? layer : opposingRow, column) == ' ')
+                {
+                    return Loc(shouldInvertScan ? layer : opposingRow, column);
+                }
             }
-            else if (board(row, opposingColumn) == ' ')
+
+            for (int row = layer + 1; row < (rows - layer); row += 2)
             {
-                return Loc(row, opposingColumn);
+                bool shouldInvertScan = rand() % 2 != 0;
+                int opposingColumn = columns - layer - 1;
+
+                if (board(row, shouldInvertScan ? opposingColumn : layer) == ' ')
+                {
+                    return Loc(row, shouldInvertScan ? opposingColumn : layer);
+                }
+                else if (board(row, shouldInvertScan ? layer : opposingColumn) == ' ')
+                {
+                    return Loc(row, shouldInvertScan ? layer : opposingColumn);
+                }
             }
         }
-
-        for (int column = layer + 1; column < (columns - layer); column += 2)
+        else
         {
-            int opposingRow = rows - layer - 1;
+            for (int row = layer + 1; row < (rows - layer); row += 2)
+            {
+                bool shouldInvertScan = rand() % 2 != 0;
+                int opposingColumn = columns - layer - 1;
 
-            if (board(layer, column) == ' ')
-            {
-                return Loc(layer, column);
+                if (board(row, shouldInvertScan ? opposingColumn : layer) == ' ')
+                {
+                    return Loc(row, shouldInvertScan ? opposingColumn : layer);
+                }
+                else if (board(row, shouldInvertScan ? layer : opposingColumn) == ' ')
+                {
+                    return Loc(row, shouldInvertScan ? layer : opposingColumn);
+                }
             }
-            else if (board(opposingRow, column) == ' ')
+
+            for (int column = layer + 1; column < (columns - layer); column += 2)
             {
-                return Loc(opposingRow, column);
+                bool shouldInvertScan = rand() % 2 != 0;
+                int opposingRow = rows - layer - 1;
+
+                if (board(shouldInvertScan ? opposingRow : layer, column) == ' ')
+                {
+                    return Loc(shouldInvertScan ? opposingRow : layer, column);
+                }
+                else if (board(shouldInvertScan ? layer : opposingRow, column) == ' ')
+                {
+                    return Loc(shouldInvertScan ? layer : opposingRow, column);
+                }
             }
         }
     }

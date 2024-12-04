@@ -22,6 +22,14 @@ echo "**************************************************"
 
 ./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./edging_player.so <<< "3 5"
 
+# Ours vs. Mockery Player
+
+echo "**************************************************"
+echo "Ours vs. Mockery Player"
+echo "**************************************************"
+
+./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./mockery_player.so <<< "3 5"
+
 # Ours vs. Random Player
 
 echo "**************************************************"

@@ -1,7 +1,5 @@
 #include <iostream>
 #include <assert.h>
-#include <cstdlib> // for srand and rand
-#include <ctime>   // for time
 
 #include "common.h"
 #include "player.h"
@@ -17,7 +15,6 @@ extern "C" IPlayer *PlayerFactory()
 
 FirstOpeningPlayer::FirstOpeningPlayer()
 {
-    srand(time(0));
 }
 
 FirstOpeningPlayer::~FirstOpeningPlayer()

@@ -24,4 +24,8 @@ g++ -shared -fPIC -ansi -pedantic -std=c++14 -Wall -g \
 
 g++ -shared -fPIC -ansi -pedantic -std=c++14 -Wall -g \
     "./board.cxx" \
+    "./naive_eager_player.cxx" -o "./naive_eager_player.so"
+
+g++ -shared -fPIC -ansi -pedantic -std=c++14 -Wall -g \
+    "./board.cxx" \
     "./OzgeAkosa5177_DimitriNearchosdon5092.cxx" -o "./OzgeAkosa5177_DimitriNearchosdon5092.so"

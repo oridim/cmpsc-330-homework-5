@@ -67,18 +67,41 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
         return scoringMove;
     }
 
-    // Step 2: Find a safe move that avoids creating three-line boxes for the opponent
+    // Step 2: Secure long chains in the endgame
+    vector<Loc> chainStartLocations;
+    for (int row = 1; row < board.GetRows(); row += 2)
+    {
+        for (int col = 1; col < board.GetCols(); col += 2)
+        {
+            if (board.CountSurroundingLines(row, col) == 2)
+            {
+                chainStartLocations.push_back({row, col});
+            }
+        }
+    }
+
+    if (!chainStartLocations.empty())
+    {
+        Loc chainMove = FindLongestChainMove(chainStartLocations);
+        if (chainMove.row != -1 && chainMove.col != -1)
+        {
+            return chainMove;
+        }
+    }
+
+    // Step 3: Find a safe move that avoids creating three-line boxes for any opponent
     Loc safeMove = FindSafeMove();
     if (safeMove.row != -1 && safeMove.col != -1)
     {
         return safeMove;
     }
 
-    // Step 3: Fallback to any available move
+    // Step 4: Fallback to any available move
     ListEmptyLines();
     int randloc = rand() % emptylines_cnt;
     return emptylines[randloc];
 }
+
 
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindScoringMove()
 {
@@ -151,7 +174,8 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindSafeMove()
         Loc candidate = emptylines[i];
         board(candidate) = player_line; // Simulate move
 
-        bool createsThreeLineBox = false;
+        bool createsThreeLineBoxForAnyPlayer = false;
+
         for (int row = 0; row < board.GetRows(); row++)
         {
             for (int col = 0; col < board.GetCols(); col++)
@@ -166,18 +190,18 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindSafeMove()
 
                     if (lineCount == 3)
                     {
-                        createsThreeLineBox = true;
+                        createsThreeLineBoxForAnyPlayer = true;
                         break;
                     }
                 }
             }
-            if (createsThreeLineBox)
+            if (createsThreeLineBoxForAnyPlayer)
                 break;
         }
 
         board(candidate) = ' '; // Undo simulated move
 
-        if (!createsThreeLineBox)
+        if (!createsThreeLineBoxForAnyPlayer)
         {
             return candidate; // Return the first safe move found
         }
@@ -207,4 +231,52 @@ void OzgeAkosa5177_DimitriNearchosdon5092_Player::ListEmptyLines()
             }
         }
     }
+}
+bool OzgeAkosa5177_DimitriNearchosdon5092_Player::ControlLongChains()
+{
+    ListEmptyLines();
+
+    // Scan for chains that are 2-line boxes and track them
+    vector<Loc> chainStartLocations;
+    for (int row = 1; row < board.GetRows(); row += 2)
+    {
+        for (int col = 1; col < board.GetCols(); col += 2)
+        {
+            if (board.CountSurroundingLines(row, col) == 2)
+            {
+                chainStartLocations.push_back({row, col});
+            }
+        }
+    }
+
+    // Secure the longest chain during your turn
+    if (!chainStartLocations.empty())
+    {
+        Loc chainMove = FindLongestChainMove(chainStartLocations);
+        if (chainMove.row != -1 && chainMove.col != -1)
+        {
+            board(chainMove) = player_line; // Make the move
+            return true;
+        }
+    }
+
+    return false; // No long chains available to control
+}
+
+Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindLongestChainMove(const vector<Loc>& chainStartLocations)
+{
+    Loc bestMove = {-1, -1};
+    int longestChainLength = 0;
+
+    for (const Loc& start : chainStartLocations)
+    {
+        int chainLength = SimulateChainLength(start);
+        if (chainLength > longestChainLength)
+        {
+            longestChainLength = chainLength;
+            bestMove = start;
+        }
+    }
+
+    return bestMove;
 }

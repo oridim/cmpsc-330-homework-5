@@ -1,6 +1,8 @@
-#include <algorithm>
+#include <algorithm> // for min
 #include <assert.h>
-#include <cmath>
+#include <cmath> // for max
+#include <cstdlib> // for srand and rand
+#include <ctime>   // for time
 #include <iostream>
 
 #include "common.h"

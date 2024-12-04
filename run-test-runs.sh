@@ -16,8 +16,6 @@ echo "**************************************************"
 
 # Ours vs. Edging Player
 
-# **NOTE**: We are sending 3 rows and 5 columns to the stdin of the game engine.
-
 echo "**************************************************"
 echo "Ours vs. Edging Player"
 echo "**************************************************"

@@ -5,6 +5,7 @@
 
 #include "common.h"
 #include "player.h"
+
 #include "first_opening_player.h"
 
 using namespace std;

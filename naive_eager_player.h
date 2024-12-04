@@ -1,5 +1,5 @@
-#ifndef __MOCKERY_PLAYER__
-#define __MOCKERY_PLAYER__
+#ifndef __NAIVE_EAGER_PLAYER__
+#define __NAIVE_EAGER_PLAYER__
 
 #include <iostream>
 

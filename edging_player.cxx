@@ -17,6 +17,7 @@ extern "C" IPlayer *PlayerFactory()
 
 EdgingPlayer::EdgingPlayer()
 {
+    srand(time(0));
 }
 
 EdgingPlayer::~EdgingPlayer()

@@ -20,7 +20,7 @@ class Board : public IBoard
 {
 private:
     char **board;
-    
+
     int columns;
 
     int rows;
@@ -58,7 +58,7 @@ public:
 
     int CountAdjacentNextSurroundingLines(int row, int column) const;
 
-    int CountAdjacentNextSurroundingLines(const Loc &location) const;
+    int CountAdjacentNextSurroundingLines(const Loc &location) const { return CountAdjacentNextSurroundingLines(location.row, location.col); };
 
     int CountSurroundingLines(int row, int column) const;
 

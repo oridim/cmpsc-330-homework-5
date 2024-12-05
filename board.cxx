@@ -102,11 +102,6 @@ int Board::CountSurroundingLines(int row, int column) const
     return lineCount;
 }
 
-int Board::CountSurroundingLines(const Loc &location) const
-{
-    return CountSurroundingLines(location.row, location.col);
-}
-
 void Board::FreeBoard()
 {
     if (board != nullptr)

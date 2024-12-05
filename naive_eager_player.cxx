@@ -94,7 +94,7 @@ bool NaiveEagerPlayer::DoesMovePayoff(const Loc &loc)
     int previousAdjacentLines = (previousAdjacentLocation.col >= 0 && previousAdjacentLocation.row >= 0) ? CountLinesAroundSlot(previousAdjacentLocation) : 0;
     int nextAdjacentLines = (nextAdjacentLocation.col < columns && nextAdjacentLocation.row < rows) ? CountLinesAroundSlot(nextAdjacentLocation) : 0;
 
-    return ((previousAdjacentLines == 3) || (nextAdjacentLines == 3)) && !(previousAdjacentLines == 2 || nextAdjacentLines == 2);
+    return (previousAdjacentLines == 3) || (nextAdjacentLines == 3);
 }
 
 Loc NaiveEagerPlayer::SelectLineLocation()

@@ -3,22 +3,8 @@
     "tasks": [
         {
             "label": "Build Our Player",
-            "type": "cppbuild",
-            "command": "g++",
-            "args": [
-                "-fdiagnostics-color=always",
-                "-shared",
-                "-fPIC",
-                "-ansi",
-                "-pedantic",
-                "-std=c++14",
-                "-Wall",
-                "-g",
-                "${workspaceFolder}/board.cxx",
-                "${workspaceFolder}/OzgeAkosa5177_DimitriNearchosdon5092.cxx",
-                "-o",
-                "${workspaceFolder}/OzgeAkosa5177_DimitriNearchosdon5092.so"
-            ],
+            "type": "shell",
+            "command": "./compile-player.sh",
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -26,27 +12,13 @@
             "group": {
                 "kind": "build",
                 "isDefault": true
-            },
-            "detail": "compiler: g++"
+            }
         },
 
         {
             "label": "Build Game Engine",
-            "type": "cppbuild",
-            "command": "g++",
-            "args": [
-                "-fdiagnostics-color=always",
-                "-ansi",
-                "-pedantic",
-                "-std=c++14",
-                "-Wall",
-                "-g",
-                "${workspaceFolder}/board.cxx",
-                "${workspaceFolder}/dotsboxesgm.cxx",
-                "${workspaceFolder}/main.cxx",
-                "-o",
-                "${workspaceFolder}/dotsboxes"
-            ],
+            "type": "shell",
+            "command": "./compile-game-engine.sh",
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -54,8 +26,7 @@
             "group": {
                 "kind": "build",
                 "isDefault": true
-            },
-            "detail": "compiler: g++"
+            }
         },
 
         {

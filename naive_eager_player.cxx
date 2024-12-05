@@ -57,15 +57,24 @@ void NaiveEagerPlayer::EventAddBox(const char box, const Loc &loc)
 Loc NaiveEagerPlayer::SelectLineLocation()
 {
     vector<Loc> legalMoves = board.CollectLegalMoves();
-    
+
+    vector<Loc> chainingCaptures = vector<Loc>();
     vector<Loc> chainingMoves = vector<Loc>();
+    vector<Loc> nonChainingCaptures = vector<Loc>();
     vector<Loc> nonChainingMoves = vector<Loc>();
 
     for (Loc &location : legalMoves)
     {
         if (board.DoesMoveYieldCapture(location))
         {
-            return location;
+            if (board.DoesMoveYieldChain(location))
+            {
+                chainingCaptures.push_back(location);
+            }
+            else
+            {
+                nonChainingCaptures.push_back(location);
+            }
         }
         else if (board.DoesMoveYieldChain(location))
         {
@@ -77,7 +86,15 @@ Loc NaiveEagerPlayer::SelectLineLocation()
         }
     }
 
-    if (nonChainingMoves.size() > 0)
+    if (chainingCaptures.size() > 0)
+    {
+        return chainingCaptures.at(rand() % chainingCaptures.size());
+    }
+    else if (nonChainingCaptures.size() > 0)
+    {
+        return nonChainingCaptures.at(rand() % nonChainingCaptures.size());
+    }
+    else if (nonChainingMoves.size() > 0)
     {
         return nonChainingMoves.at(rand() % nonChainingMoves.size());
     }

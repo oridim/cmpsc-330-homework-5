@@ -1,6 +1,8 @@
 #ifndef __BOARD__
 #define __BOARD__
 
+#include <vector>
+
 class IBoard
 {
 public:
@@ -47,6 +49,7 @@ public:
     char &operator()(const Loc &loc) { return board[loc.row][loc.col]; }
     char operator()(const Loc &loc) const { return board[loc.row][loc.col]; }
 
+    vector<Loc> CollectLegalMoves() const;
     int CountSurroundingLines(int row, int col) const;
     int CountSurroundingLines(const Loc &loc) const;
 

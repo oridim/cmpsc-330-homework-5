@@ -1,5 +1,7 @@
-#include <iostream>
 #include <assert.h>
+#include <iostream>
+#include <vector>
+
 #include "common.h"
 #include "board.h"
 
@@ -27,6 +29,35 @@ void Board::AllocateBoard(int dots_in_rows, int dots_in_cols, int& blanklinecoun
     for(int r = 0; r < rows; r += 2)
         for(int c = 0; c < cols; c += 2)
             board[r][c] = '.';
+}
+
+vector<Loc> Board::CollectLegalMoves() const
+{
+    vector<Loc> legalMoves = vector<Loc>();
+
+    for (int row = 0; row < rows; row += 2)
+    {
+        for (int column = 1; column < cols; column += 2)
+        {
+            if (board[row][column] == ' ')
+            {
+                legalMoves.push_back(Loc(row, column));
+            }
+        }
+    }
+
+    for (int row = 1; row < rows; row += 2)
+    {
+        for (int column = 0; column < cols; column += 2)
+        {
+            if (board[row][column] == ' ')
+            {
+                legalMoves.push_back(Loc(row, column));
+            }
+        }
+    }
+
+    return legalMoves;
 }
 
 int Board::CountSurroundingLines(int row, int col) const

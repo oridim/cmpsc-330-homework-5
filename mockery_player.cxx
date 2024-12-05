@@ -66,32 +66,6 @@ void MockeryPlayer::EventAddBox(const char box, const Loc &loc)
     }
 }
 
-int MockeryPlayer::CountLinesAroundSlot(const Loc &loc)
-{
-    int count = 0;
-
-    int column = loc.col;
-    int row = loc.row;
-
-    for (int deltaRowIndex = -1; deltaRowIndex <= 1; deltaRowIndex += 2)
-    {
-        if (board(row + deltaRowIndex, column) != ' ')
-        {
-            count += 1;
-        }
-    }
-
-    for (int deltaColumnIndex = -1; deltaColumnIndex <= 1; deltaColumnIndex += 2)
-    {
-        if (board(row, column + deltaColumnIndex) != ' ')
-        {
-            count += 1;
-        }
-    }
-
-    return count;
-}
-
 bool MockeryPlayer::DoesMovePayoff(const Loc &loc)
 {
     int columns = board.GetCols();
@@ -103,8 +77,8 @@ bool MockeryPlayer::DoesMovePayoff(const Loc &loc)
     Loc previousAdjacentLocation = loc.IsLineVerticalLocation() ? Loc(row, column - 1) : Loc(row - 1, column);
     Loc nextAdjacentLocation = loc.IsLineVerticalLocation() ? Loc(row, column + 1) : Loc(row + 1, column);
 
-    int previousAdjacentLines = (previousAdjacentLocation.col >= 0 && previousAdjacentLocation.row >= 0) ? CountLinesAroundSlot(previousAdjacentLocation) : 0;
-    int nextAdjacentLines = (nextAdjacentLocation.col < columns && nextAdjacentLocation.row < rows) ? CountLinesAroundSlot(nextAdjacentLocation) : 0;
+    int previousAdjacentLines = (previousAdjacentLocation.col >= 0 && previousAdjacentLocation.row >= 0) ? board.CountSurroundingLines(previousAdjacentLocation) : 0;
+    int nextAdjacentLines = (nextAdjacentLocation.col < columns && nextAdjacentLocation.row < rows) ? board.CountSurroundingLines(nextAdjacentLocation) : 0;
 
     return (previousAdjacentLines == 3) || (nextAdjacentLines == 3);
 }
@@ -120,8 +94,8 @@ bool MockeryPlayer::DoesMoveSell(const Loc &loc)
     Loc previousAdjacentLocation = loc.IsLineVerticalLocation() ? Loc(row, column - 1) : Loc(row - 1, column);
     Loc nextAdjacentLocation = loc.IsLineVerticalLocation() ? Loc(row, column + 1) : Loc(row + 1, column);
 
-    int previousAdjacentLines = (previousAdjacentLocation.col >= 0 && previousAdjacentLocation.row >= 0) ? CountLinesAroundSlot(previousAdjacentLocation) : 0;
-    int nextAdjacentLines = (nextAdjacentLocation.col < columns && nextAdjacentLocation.row < rows) ? CountLinesAroundSlot(nextAdjacentLocation) : 0;
+    int previousAdjacentLines = (previousAdjacentLocation.col >= 0 && previousAdjacentLocation.row >= 0) ? board.CountSurroundingLines(previousAdjacentLocation) : 0;
+    int nextAdjacentLines = (nextAdjacentLocation.col < columns && nextAdjacentLocation.row < rows) ? board.CountSurroundingLines(nextAdjacentLocation) : 0;
 
     return (previousAdjacentLines == 2) || (nextAdjacentLines == 2);
 }

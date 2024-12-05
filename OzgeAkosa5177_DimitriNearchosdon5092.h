@@ -21,6 +21,7 @@ private:
 
     // Core strategy functions
     Loc FindDisruptiveMove();
+    Loc FindChainControlMove();
     Loc FindScoringMove(); // Finds moves that complete a box
     Loc FindSafeMove();    // Finds moves that avoid setting up a scoring opportunity for the opponent
     void ListEmptyLines(); // Updates the list of all available empty lines

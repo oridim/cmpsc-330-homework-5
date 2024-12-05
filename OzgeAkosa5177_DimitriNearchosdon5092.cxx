@@ -60,24 +60,63 @@ void OzgeAkosa5177_DimitriNearchosdon5092_Player::EventAddBox(const char box, co
 
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
 {
-    // Step 1: Complete a box with three sides if possible
+    // Step 1: Complete a box if possible
     Loc scoringMove = FindScoringMove();
     if (scoringMove.row != -1 && scoringMove.col != -1)
     {
         return scoringMove;
     }
 
-    // Step 2: Find a safe move that avoids creating three-line boxes for the opponent
+    // Step 2: Control chain-like situations
+    Loc chainControlMove = FindChainControlMove();
+    if (chainControlMove.row != -1 && chainControlMove.col != -1)
+    {
+        return chainControlMove; // Control chains to maintain an advantage
+    }
+
+    // Step 3: Block or disrupt opponents' scoring opportunities
+    Loc disruptiveMove = FindDisruptiveMove();
+    if (disruptiveMove.row != -1 && disruptiveMove.col != -1)
+    {
+        return disruptiveMove;
+    }
+
+    // Step 4: Avoid creating three-line boxes for the opponent
     Loc safeMove = FindSafeMove();
     if (safeMove.row != -1 && safeMove.col != -1)
     {
         return safeMove;
     }
 
-    // Step 3: Fallback to any available move
+    // Step 5: Fallback to any available move
     ListEmptyLines();
-    int randloc = rand() % emptylines_cnt;
-    return emptylines[randloc];
+    if (emptylines_cnt > 0)
+    {
+        int randloc = rand() % emptylines_cnt;
+        return emptylines[randloc];
+    }
+
+    return {-1, -1}; // No valid moves left
+}
+
+
+Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindChainControlMove()
+{
+    for (int row = 1; row < board.GetRows(); row += 2)
+    {
+        for (int col = 1; col < board.GetCols(); col += 2)
+        {
+            if (board.CountSurroundingLines(row, col) == 2) // Part of a chain
+            {
+                // Look for a line to maintain the chain without completing it
+                if (board({row - 1, col}) == ' ') return {row - 1, col};
+                if (board({row + 1, col}) == ' ') return {row + 1, col};
+                if (board({row, col - 1}) == ' ') return {row, col - 1};
+                if (board({row, col + 1}) == ' ') return {row, col + 1};
+            }
+        }
+    }
+    return {-1, -1}; // No chain to control
 }
 
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindScoringMove()
@@ -142,84 +181,43 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindScoringMove()
     return {-1, -1}; // No scoring move found
 }
 
-Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindSafeMove()
-{
-    ListEmptyLines();
-
-    for (int i = 0; i < emptylines_cnt; i++)
-    {
-        Loc candidate = emptylines[i];
-        board(candidate) = player_line; // Simulate move
-
-        bool createsThreeLineBox = false;
-        for (int row = 0; row < board.GetRows(); row++)
-        {
-            for (int col = 0; col < board.GetCols(); col++)
-            {
-                if (row % 2 == 1 && col % 2 == 1) // Check only box locations
-                {
-                    int lineCount = 0;
-                    if (board({row - 1, col}) != ' ') lineCount++;
-                    if (board({row + 1, col}) != ' ') lineCount++;
-                    if (board({row, col - 1}) != ' ') lineCount++;
-                    if (board({row, col + 1}) != ' ') lineCount++;
-
-                    if (lineCount == 3)
-                    {
-                        createsThreeLineBox = true;
-                        break;
-                    }
-                }
-            }
-            if (createsThreeLineBox)
-                break;
-        }
-
-        board(candidate) = ' '; // Undo simulated move
-
-        if (!createsThreeLineBox)
-        {
-            return candidate; // Return the first safe move found
-        }
-    }
-
-    return {-1, -1}; // No safe move found
-}
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindDisruptiveMove()
 {
-    ListEmptyLines();
-
-    for (int i = 0; i < emptylines_cnt; i++)
+    for (int row = 1; row < board.GetRows(); row += 2)
     {
-        Loc candidate = emptylines[i];
-        board(candidate) = player_line; // Simulate move
-
-        // Check if this disrupts opponents' scoring
-        bool disruptsOpponent = false;
-
-        for (int row = 1; row < board.GetRows(); row += 2)
+        for (int col = 1; col < board.GetCols(); col += 2)
         {
-            for (int col = 1; col < board.GetCols(); col += 2)
+            if (board.CountSurroundingLines(row, col) == 2)
             {
-                if (board.CountSurroundingLines(row, col) == 2)
-                {
-                    disruptsOpponent = true;
-                    break;
-                }
+                // Check adjacent lines to disrupt
+                if (board({row - 1, col}) == ' ') return {row - 1, col};
+                if (board({row + 1, col}) == ' ') return {row + 1, col};
+                if (board({row, col - 1}) == ' ') return {row, col - 1};
+                if (board({row, col + 1}) == ' ') return {row, col + 1};
             }
-            if (disruptsOpponent)
-                break;
-        }
-
-        board(candidate) = ' '; // Undo simulation
-
-        if (disruptsOpponent)
-        {
-            return candidate; // Prioritize moves that block opponents
         }
     }
+    return {-1, -1};
+}
 
-    return {-1, -1}; // No disruptive move found
+
+Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindDisruptiveMove()
+{
+    for (int row = 1; row < board.GetRows(); row += 2)
+    {
+        for (int col = 1; col < board.GetCols(); col += 2)
+        {
+            if (board.CountSurroundingLines(row, col) == 2)
+            {
+                // Check adjacent lines to disrupt
+                if (board({row - 1, col}) == ' ') return {row - 1, col};
+                if (board({row + 1, col}) == ' ') return {row + 1, col};
+                if (board({row, col - 1}) == ' ') return {row, col - 1};
+                if (board({row, col + 1}) == ' ') return {row, col + 1};
+            }
+        }
+    }
+    return {-1, -1};
 }
 
 

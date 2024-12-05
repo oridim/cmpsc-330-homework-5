@@ -200,27 +200,6 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindDisruptiveMove()
     return {-1, -1};
 }
 
-
-Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindDisruptiveMove()
-{
-    for (int row = 1; row < board.GetRows(); row += 2)
-    {
-        for (int col = 1; col < board.GetCols(); col += 2)
-        {
-            if (board.CountSurroundingLines(row, col) == 2)
-            {
-                // Check adjacent lines to disrupt
-                if (board({row - 1, col}) == ' ') return {row - 1, col};
-                if (board({row + 1, col}) == ' ') return {row + 1, col};
-                if (board({row, col - 1}) == ' ') return {row, col - 1};
-                if (board({row, col + 1}) == ' ') return {row, col + 1};
-            }
-        }
-    }
-    return {-1, -1};
-}
-
-
 void OzgeAkosa5177_DimitriNearchosdon5092_Player::ListEmptyLines()
 {
     emptylines_cnt = 0;

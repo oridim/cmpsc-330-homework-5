@@ -76,12 +76,12 @@ vector<Loc> EdgingPlayer::ComputeLegalEdgeMoves()
             Loc location = Loc(layer, column);
             Loc opposingLocation = Loc(rows - layer - 1, column);
 
-            if (board(location) == ' ' && !DoesMoveSell(location))
+            if (board(location) == ' ' && !board.DoesMoveYieldChain(location))
             {
                 legalEdgeMoves.push_back(location);
             }
 
-            if (board(opposingLocation) == ' ' && !DoesMoveSell(opposingLocation))
+            if (board(opposingLocation) == ' ' && !board.DoesMoveYieldChain(opposingLocation))
             {
                 legalEdgeMoves.push_back(opposingLocation);
             }
@@ -92,12 +92,12 @@ vector<Loc> EdgingPlayer::ComputeLegalEdgeMoves()
             Loc location = Loc(row, layer);
             Loc opposingLocation = Loc(row, columns - layer - 1);
 
-            if (board(location) == ' ' && !DoesMoveSell(location))
+            if (board(location) == ' ' && !board.DoesMoveYieldCapture(location))
             {
                 legalEdgeMoves.push_back(location);
             }
 
-            if (board(opposingLocation) == ' ' && !DoesMoveSell(opposingLocation))
+            if (board(opposingLocation) == ' ' && !board.DoesMoveYieldChain(opposingLocation))
             {
                 legalEdgeMoves.push_back(opposingLocation);
             }
@@ -169,7 +169,7 @@ vector<Loc> EdgingPlayer::ComputePayoffMoves()
         {
             Loc location = Loc(row, column);
 
-            if (board(location) == ' ' && DoesMovePayoff(location))
+            if (board(location) == ' ' && board.DoesMoveYieldCapture(location))
             {
                 payoffMoves.push_back(location);
             }
@@ -182,7 +182,7 @@ vector<Loc> EdgingPlayer::ComputePayoffMoves()
         {
             Loc location = Loc(row, column);
 
-            if (board(location) == ' ' && DoesMovePayoff(location))
+            if (board(location) == ' ' && board.DoesMoveYieldCapture(location))
             {
                 payoffMoves.push_back(location);
             }
@@ -190,40 +190,6 @@ vector<Loc> EdgingPlayer::ComputePayoffMoves()
     }
 
     return payoffMoves;
-}
-
-bool EdgingPlayer::DoesMovePayoff(const Loc &loc)
-{
-    int columns = board.GetCols();
-    int rows = board.GetRows();
-
-    int row = loc.row;
-    int column = loc.col;
-
-    Loc previousAdjacentLocation = loc.IsLineVerticalLocation() ? Loc(row, column - 1) : Loc(row - 1, column);
-    Loc nextAdjacentLocation = loc.IsLineVerticalLocation() ? Loc(row, column + 1) : Loc(row + 1, column);
-
-    int previousAdjacentLines = (previousAdjacentLocation.col >= 0 && previousAdjacentLocation.row >= 0) ? board.CountSurroundingLines(previousAdjacentLocation) : 0;
-    int nextAdjacentLines = (nextAdjacentLocation.col < columns && nextAdjacentLocation.row < rows) ? board.CountSurroundingLines(nextAdjacentLocation) : 0;
-
-    return (previousAdjacentLines == 3) || (nextAdjacentLines == 3);
-}
-
-bool EdgingPlayer::DoesMoveSell(const Loc &loc)
-{
-    int columns = board.GetCols();
-    int rows = board.GetRows();
-
-    int row = loc.row;
-    int column = loc.col;
-
-    Loc previousAdjacentLocation = loc.IsLineVerticalLocation() ? Loc(row, column - 1) : Loc(row - 1, column);
-    Loc nextAdjacentLocation = loc.IsLineVerticalLocation() ? Loc(row, column + 1) : Loc(row + 1, column);
-
-    int previousAdjacentLines = (previousAdjacentLocation.col >= 0 && previousAdjacentLocation.row >= 0) ? board.CountSurroundingLines(previousAdjacentLocation) : 0;
-    int nextAdjacentLines = (nextAdjacentLocation.col < columns && nextAdjacentLocation.row < rows) ? board.CountSurroundingLines(nextAdjacentLocation) : 0;
-
-    return (previousAdjacentLines == 2) || (nextAdjacentLines == 2);
 }
 
 Loc EdgingPlayer::SelectLineLocation()

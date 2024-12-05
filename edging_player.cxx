@@ -155,49 +155,13 @@ vector<Loc> EdgingPlayer::ComputeLegalEdgeMoves()
     return legalEdgeMoves;
 }
 
-vector<Loc> EdgingPlayer::ComputePayoffMoves()
-{
-    int columns = board.GetCols();
-    int rows = board.GetRows();
-
-    vector<Loc> payoffMoves = vector<Loc>();
-
-    for (int row = 0; row < rows; row += 2)
-    {
-        for (int column = 1; column < columns; column += 2)
-        {
-            Loc location = Loc(row, column);
-
-            if (board(location) == ' ' && board.DoesMoveYieldCapture(location))
-            {
-                payoffMoves.push_back(location);
-            }
-        }
-    }
-
-    for (int row = 1; row < rows; row += 2)
-    {
-        for (int column = 0; column < columns; column += 2)
-        {
-            Loc location = Loc(row, column);
-
-            if (board(location) == ' ' && board.DoesMoveYieldCapture(location))
-            {
-                payoffMoves.push_back(location);
-            }
-        }
-    }
-
-    return payoffMoves;
-}
-
 Loc EdgingPlayer::SelectLineLocation()
 {
-    vector<Loc> payoffMoves = ComputePayoffMoves();
+    vector<Loc> captureMoves = board.CollectLegalMoves(Board::YIELD_KINDS::capture);
 
-    if (payoffMoves.size() > 0)
+    if (captureMoves.size() > 0)
     {
-        return payoffMoves.at(rand() % payoffMoves.size());
+        return captureMoves.at(rand() % captureMoves.size());
     }
 
     vector<Loc> legalEdgeMoves = ComputeLegalEdgeMoves();

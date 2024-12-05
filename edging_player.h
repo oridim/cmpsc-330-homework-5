@@ -34,8 +34,6 @@ public:
 
     vector<Loc> ComputeLegalEdgeMoves();
 
-    vector<Loc> ComputePayoffMoves();
-
     Loc SelectLineLocation();
 };
 

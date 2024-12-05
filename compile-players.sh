@@ -29,3 +29,7 @@ g++ -shared -fPIC -ansi -pedantic -std=c++14 -Wall -g \
 g++ -shared -fPIC -ansi -pedantic -std=c++14 -Wall -g \
     "./board.cxx" \
     "./OzgeAkosa5177_DimitriNearchosdon5092.cxx" -o "./OzgeAkosa5177_DimitriNearchosdon5092.so"
+
+g++ -shared -fPIC -ansi -pedantic -std=c++14 -Wall -g \
+    "./board.cxx" \
+    "./snake_oil_player.cxx" -o "./snake_oil_player.so"

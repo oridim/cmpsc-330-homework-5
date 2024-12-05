@@ -12,35 +12,35 @@ void Board::AllocateBoard(int dots_in_rows, int dots_in_cols, int &blanklinecoun
     assert(board == nullptr);
 
     rows = dots_in_rows * 2 - 1;
-    cols = dots_in_cols * 2 - 1;
+    columns = dots_in_cols * 2 - 1;
 
     board = new char *[rows];
 
-    for (int r = 0; r < rows; r++)
+    for (int row = 0; row < rows; row++)
     {
-        board[r] = new char[cols];
+        board[row] = new char[columns];
     }
 
     blanklinecount = 0;
 
-    for (int r = 0; r < rows; r++)
+    for (int row = 0; row < rows; row++)
     {
-        for (int c = 0; c < cols; c++)
+        for (int column = 0; column < columns; column++)
         {
-            board[r][c] = ' ';
+            board[row][column] = ' ';
 
-            if (Loc(r, c).IsLineLocation())
+            if (Loc(row, column).IsLineLocation())
             {
                 blanklinecount++;
             }
         }
     }
 
-    for (int r = 0; r < rows; r += 2)
+    for (int row = 0; row < rows; row += 2)
     {
-        for (int c = 0; c < cols; c += 2)
+        for (int column = 0; column < columns; column += 2)
         {
-            board[r][c] = '.';
+            board[row][column] = '.';
         }
     }
 }
@@ -51,7 +51,7 @@ vector<Loc> Board::CollectLegalMoves() const
 
     for (int row = 0; row < rows; row += 2)
     {
-        for (int column = 1; column < cols; column += 2)
+        for (int column = 1; column < columns; column += 2)
         {
             if (board[row][column] == ' ')
             {
@@ -62,7 +62,7 @@ vector<Loc> Board::CollectLegalMoves() const
 
     for (int row = 1; row < rows; row += 2)
     {
-        for (int column = 0; column < cols; column += 2)
+        for (int column = 0; column < columns; column += 2)
         {
             if (board[row][column] == ' ')
             {
@@ -74,27 +74,27 @@ vector<Loc> Board::CollectLegalMoves() const
     return legalMoves;
 }
 
-int Board::CountSurroundingLines(int row, int col) const
+int Board::CountSurroundingLines(int row, int column) const
 {
     int lineCount = 0;
 
     // Check the four possible surrounding positions of the cell (top, bottom, left, right).
-    if (row > 0 && this->operator()(row - 1, col) != ' ')
+    if (row > 0 && this->operator()(row - 1, column) != ' ')
     {
         lineCount++; // Above
     }
 
-    if (row < GetRows() - 1 && this->operator()(row + 1, col) != ' ')
+    if (row < GetRows() - 1 && this->operator()(row + 1, column) != ' ')
     {
         lineCount++; // Below
     }
 
-    if (col > 0 && this->operator()(row, col - 1) != ' ')
+    if (column > 0 && this->operator()(row, column - 1) != ' ')
     {
         lineCount++; // Left
     }
 
-    if (col < GetCols() - 1 && this->operator()(row, col + 1) != ' ')
+    if (column < GetCols() - 1 && this->operator()(row, column + 1) != ' ')
     {
         lineCount++; // Right
     }
@@ -102,18 +102,18 @@ int Board::CountSurroundingLines(int row, int col) const
     return lineCount;
 }
 
-int Board::CountSurroundingLines(const Loc &loc) const
+int Board::CountSurroundingLines(const Loc &location) const
 {
-    return CountSurroundingLines(loc.row, loc.col);
+    return CountSurroundingLines(location.row, location.col);
 }
 
 void Board::FreeBoard()
 {
     if (board != nullptr)
     {
-        for (int r = 0; r < rows; r++)
+        for (int row = 0; row < rows; row++)
         {
-            delete[] board[r];
+            delete[] board[row];
         }
 
         delete[] board;
@@ -121,15 +121,15 @@ void Board::FreeBoard()
     }
 }
 
-ostream &operator<<(ostream &os, const Board &board)
+ostream &operator<<(ostream &outputStream, const Board &board)
 {
     cout << "   ";
 
-    for (int i = 0; i < board.cols; i++)
+    for (int column = 0; column < board.columns; column++)
     {
-        if (i % 10 == 0)
+        if (column % 10 == 0)
         {
-            cout << (i / 10);
+            cout << (column / 10);
         }
         else
         {
@@ -140,49 +140,49 @@ ostream &operator<<(ostream &os, const Board &board)
     cout << endl;
     cout << "   ";
 
-    for (int i = 0; i < board.cols; i++)
+    for (int column = 0; column < board.columns; column++)
     {
-        cout << (i % 10);
+        cout << (column % 10);
     }
 
     cout << endl;
 
-    for (int r = 0; r < board.GetRows(); r++)
+    for (int row = 0; row < board.GetRows(); row++)
     {
-        if (r % 10 == 0)
+        if (row % 10 == 0)
         {
-            cout << (r / 10) << (r % 10) << ' ';
+            cout << (row / 10) << (row % 10) << ' ';
         }
         else
         {
-            cout << ' ' << (r % 10) << ' ';
+            cout << ' ' << (row % 10) << ' ';
         }
 
-        for (int c = 0; c < board.GetCols(); c++)
+        for (int column = 0; column < board.GetCols(); column++)
         {
-            Loc loc(r, c);
-            char b_rc = board(r, c);
+            Loc location = Loc(row, column);
+            char displayCharacter = board(row, column);
 
-            if (b_rc == ' ')
+            if (displayCharacter == ' ')
             {
-                cout << b_rc;
+                cout << displayCharacter;
             }
-            else if (loc.IsLineVerticalLocation() && b_rc != ' ')
+            else if (location.IsLineVerticalLocation() && displayCharacter != ' ')
             {
                 cout << "|";
             }
-            else if (loc.IsLineHorizontalLocation() && b_rc != ' ')
+            else if (location.IsLineHorizontalLocation() && displayCharacter != ' ')
             {
                 cout << "-";
             }
             else
             {
-                cout << b_rc;
+                cout << displayCharacter;
             }
         }
 
         cout << endl;
     }
 
-    return os;
+    return outputStream;
 }

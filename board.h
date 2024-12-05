@@ -20,12 +20,15 @@ class Board : public IBoard
 {
 private:
     char **board;
-    int rows, cols;
+    
+    int columns;
+
+    int rows;
 
 public:
     Board()
     {
-        rows = cols = -1;
+        rows = columns = -1;
         board = nullptr;
     }
 
@@ -44,20 +47,24 @@ public:
 
     // **MAKE SURE THESE ARE PUBLIC**
     int GetRows() const { return rows; }
-    int GetCols() const { return cols; }
+    int GetCols() const { return columns; }
 
-    char &operator()(int row, int col) { return board[row][col]; }
-    char operator()(int row, int col) const { return board[row][col]; }
-    char &operator()(const Loc &loc) { return board[loc.row][loc.col]; }
-    char operator()(const Loc &loc) const { return board[loc.row][loc.col]; }
+    char &operator()(int row, int column) { return board[row][column]; }
+    char operator()(int row, int column) const { return board[row][column]; }
+    char &operator()(const Loc &location) { return board[location.row][location.col]; }
+    char operator()(const Loc &location) const { return board[location.row][location.col]; }
 
     vector<Loc> CollectLegalMoves() const;
 
-    int CountSurroundingLines(int row, int col) const;
+    int CountAdjacentNextSurroundingLines(int row, int col) const;
 
-    int CountSurroundingLines(const Loc &loc) const;
+    int CountAdjacentNextSurroundingLines(const Loc &location) const;
 
-    friend ostream &operator<<(ostream &os, const Board &board);
+    int CountSurroundingLines(int row, int column) const;
+
+    int CountSurroundingLines(const Loc &location) const;
+
+    friend ostream &operator<<(ostream &outputStream, const Board &board);
 };
 
 #endif

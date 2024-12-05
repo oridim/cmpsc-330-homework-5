@@ -2,6 +2,7 @@
 #define __EDGING_PLAYER__
 
 #include <iostream>
+#include <vector>
 
 #include "common.h"
 #include "board.h"
@@ -30,6 +31,8 @@ public:
     void EventAddLine(char bar, const Loc &loc);
 
     void EventAddBox(char box, const Loc &loc);
+
+    vector<Loc> ComputeLegalEdgeMoves();
 
     Loc SelectLineLocation();
 };

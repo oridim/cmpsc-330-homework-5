@@ -1,6 +1,6 @@
 #include <algorithm> // for min
 #include <assert.h>
-#include <cmath> // for max
+#include <cmath>   // for max
 #include <cstdlib> // for srand and rand
 #include <ctime>   // for time
 #include <iostream>
@@ -55,8 +55,10 @@ void EdgingPlayer::EventAddBox(const char box, const Loc &loc)
     board(loc) = box;
 }
 
-Loc EdgingPlayer::SelectLineLocation()
+vector<Loc> EdgingPlayer::ComputeLegalEdgeMoves()
 {
+    vector<Loc> legalEdgeMoves = vector<Loc>();
+
     int columns = board.GetCols();
     int rows = board.GetRows();
 
@@ -68,77 +70,51 @@ Loc EdgingPlayer::SelectLineLocation()
         shouldScanOutwards ? (layer >= 0) : (layer < maximumEdgeLayers);
         shouldScanOutwards ? layer-- : layer++)
     {
-        // **HACK:** Does the code reuse suck? Yes?
-        // Do I care? No.
-        // Should I care? Also no.
 
-        bool shouldInvertDirection = rand() % 2 == 0;
-
-        if (shouldInvertDirection)
+        for (int column = layer + 1; column < (columns - layer); column += 2)
         {
-            for (int column = layer + 1; column < (columns - layer); column += 2)
-            {
-                bool shouldInvertScan = rand() % 2 != 0;
-                int opposingRow = rows - layer - 1;
+            Loc location = Loc(layer, column);
+            Loc opposingLocation = Loc(rows - layer - 1, column);
 
-                if (board(shouldInvertScan ? opposingRow : layer, column) == ' ')
-                {
-                    return Loc(shouldInvertScan ? opposingRow : layer, column);
-                }
-                else if (board(shouldInvertScan ? layer : opposingRow, column) == ' ')
-                {
-                    return Loc(shouldInvertScan ? layer : opposingRow, column);
-                }
+            if (board(location) == ' ')
+            {
+                legalEdgeMoves.push_back(location);
             }
 
-            for (int row = layer + 1; row < (rows - layer); row += 2)
+            if (board(opposingLocation) == ' ')
             {
-                bool shouldInvertScan = rand() % 2 != 0;
-                int opposingColumn = columns - layer - 1;
-
-                if (board(row, shouldInvertScan ? opposingColumn : layer) == ' ')
-                {
-                    return Loc(row, shouldInvertScan ? opposingColumn : layer);
-                }
-                else if (board(row, shouldInvertScan ? layer : opposingColumn) == ' ')
-                {
-                    return Loc(row, shouldInvertScan ? layer : opposingColumn);
-                }
+                legalEdgeMoves.push_back(opposingLocation);
             }
         }
-        else
+
+        for (int row = layer + 1; row < (rows - layer); row += 2)
         {
-            for (int row = layer + 1; row < (rows - layer); row += 2)
-            {
-                bool shouldInvertScan = rand() % 2 != 0;
-                int opposingColumn = columns - layer - 1;
+            Loc location = Loc(row, layer);
+            Loc opposingLocation = Loc(row, columns - layer - 1);
 
-                if (board(row, shouldInvertScan ? opposingColumn : layer) == ' ')
-                {
-                    return Loc(row, shouldInvertScan ? opposingColumn : layer);
-                }
-                else if (board(row, shouldInvertScan ? layer : opposingColumn) == ' ')
-                {
-                    return Loc(row, shouldInvertScan ? layer : opposingColumn);
-                }
+            if (board(location) == ' ')
+            {
+                legalEdgeMoves.push_back(location);
             }
 
-            for (int column = layer + 1; column < (columns - layer); column += 2)
+            if (board(opposingLocation) == ' ')
             {
-                bool shouldInvertScan = rand() % 2 != 0;
-                int opposingRow = rows - layer - 1;
-
-                if (board(shouldInvertScan ? opposingRow : layer, column) == ' ')
-                {
-                    return Loc(shouldInvertScan ? opposingRow : layer, column);
-                }
-                else if (board(shouldInvertScan ? layer : opposingRow, column) == ' ')
-                {
-                    return Loc(shouldInvertScan ? layer : opposingRow, column);
-                }
+                legalEdgeMoves.push_back(opposingLocation);
             }
+        }
+
+        if (legalEdgeMoves.size() > 0)
+        {
+            break;
         }
     }
 
-    throw "PANIC THIS SHOULD NEVER HAPPEN!";
+    return legalEdgeMoves;
+}
+
+Loc EdgingPlayer::SelectLineLocation()
+{
+    vector<Loc> legalEdgeMoves = ComputeLegalEdgeMoves();
+
+    return legalEdgeMoves.at(rand() % legalEdgeMoves.size());
 }

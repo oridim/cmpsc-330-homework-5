@@ -202,5 +202,25 @@ Loc MockeryPlayer::SelectLineLocation()
         }
     }
 
-    return legalMoves.at(random_engine() % legalMoves.size());
+    vector<Loc> sellingMoves = vector<Loc>();
+    vector<Loc> nonSellingMoves = vector<Loc>();
+
+    for (Loc &location : legalMoves)
+    {
+        if (DoesMoveSell(location))
+        {
+            sellingMoves.push_back(location);
+        }
+        else
+        {
+            nonSellingMoves.push_back(location);
+        }
+    }
+
+    if (nonSellingMoves.size() > 0)
+    {
+        return nonSellingMoves.at(random_engine() % nonSellingMoves.size());
+    }
+
+    return sellingMoves.at(random_engine() % sellingMoves.size());
 }

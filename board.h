@@ -57,13 +57,25 @@ public:
 
     vector<Loc> CollectLegalMoves() const;
 
-    int CountAdjacentNextSurroundingLines(int row, int column) const;
+    int CountAdjacentNextSurroundingLines(int row, int column) const { return CountAdjacentNextSurroundingLines(Loc(row, column)); };
 
-    int CountAdjacentNextSurroundingLines(const Loc &location) const { return CountAdjacentNextSurroundingLines(location.row, location.col); };
+    int CountAdjacentNextSurroundingLines(const Loc &location) const;
+
+    int CountAdjacentPreviousSurroundingLines(int row, int column) const { return CountAdjacentPreviousSurroundingLines(Loc(row, column)); };
+
+    int CountAdjacentPreviousSurroundingLines(const Loc &location) const;
 
     int CountSurroundingLines(int row, int column) const;
 
     int CountSurroundingLines(const Loc &location) const { return CountSurroundingLines(location.row, location.col); };
+
+    bool DoesMoveYieldChain(const Loc &location) const;
+
+    bool DoesMoveYieldChain(int row, int column) const { return DoesMoveYieldChain(Loc(row, column)); };
+
+    bool DoesMoveYieldCapture(const Loc &location) const;
+
+    bool DoesMoveYieldCapture(int row, int column) const { return DoesMoveYieldCapture(Loc(row, column)); };
 
     friend ostream &operator<<(ostream &outputStream, const Board &board);
 };

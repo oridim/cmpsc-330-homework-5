@@ -88,6 +88,34 @@ vector<Loc> Board::CollectLegalMoves() const
     return legalMoves;
 }
 
+int Board::CountAdjacentNextSurroundingLines(const Loc &location) const
+{
+    if (location.IsLineVerticalLocation())
+    {
+        int nextColumn = location.col + 1;
+
+        return (nextColumn < columns) ? CountSurroundingLines(location.row, nextColumn) : 0;
+    }
+
+    int nextRow = location.row + 1;
+
+    return (nextRow < rows) ? CountSurroundingLines(nextRow, location.col) : 0;
+}
+
+int Board::CountAdjacentPreviousSurroundingLines(const Loc &location) const
+{
+    if (location.IsLineVerticalLocation())
+    {
+        int previousColumn = location.col - 1;
+
+        return (previousColumn >= 0) ? CountSurroundingLines(location.row, previousColumn) : 0;
+    }
+
+    int previousRow = location.row - 1;
+
+    return (previousRow >= 0) ? CountSurroundingLines(previousRow, location.col) : 0;
+}
+
 int Board::CountSurroundingLines(int row, int column) const
 {
     int lineCount = 0;
@@ -114,6 +142,22 @@ int Board::CountSurroundingLines(int row, int column) const
     }
 
     return lineCount;
+}
+
+bool Board::DoesMoveYieldChain(const Loc &location) const
+{
+    int previousAdjacentLines = CountAdjacentPreviousSurroundingLines(location);
+    int nextAdjacentLines = CountAdjacentNextSurroundingLines(location);
+
+    return (previousAdjacentLines == 2) || (nextAdjacentLines == 2);
+}
+
+bool Board::DoesMoveYieldCapture(const Loc &location) const
+{
+    int previousAdjacentLines = CountAdjacentPreviousSurroundingLines(location);
+    int nextAdjacentLines = CountAdjacentNextSurroundingLines(location);
+
+    return (previousAdjacentLines == 3) || (nextAdjacentLines == 3);
 }
 
 ostream &operator<<(ostream &outputStream, const Board &board)

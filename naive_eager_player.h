@@ -31,10 +31,6 @@ public:
 
     void EventAddBox(char box, const Loc &loc);
 
-    bool DoesMovePayoff(const Loc &loc);
-
-    bool DoesMoveSell(const Loc &loc);
-
     Loc SelectLineLocation();
 };
 

@@ -62,7 +62,7 @@ public:
 
     int CountSurroundingLines(int row, int column) const;
 
-    int CountSurroundingLines(const Loc &location) const;
+    int CountSurroundingLines(const Loc &location) const { return CountSurroundingLines(location.row, location.col); };
 
     friend ostream &operator<<(ostream &outputStream, const Board &board);
 };

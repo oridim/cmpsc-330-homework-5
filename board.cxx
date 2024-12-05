@@ -59,17 +59,35 @@ void Board::FreeBoard()
     }
 }
 
-vector<Loc> Board::CollectLegalMoves() const
+vector<Loc> Board::CollectBoxes(char displayCharacter) const
 {
-    vector<Loc> legalMoves = vector<Loc>();
+    vector<Loc> availableBoxes = vector<Loc>();
+
+    for (int row = 1; row < rows; row += 2)
+    {
+        for (int column = 1; column < columns; column += 2)
+        {
+            if (board[row][column] == displayCharacter)
+            {
+                availableBoxes.push_back(Loc(row, column));
+            }
+        }
+    }
+
+    return availableBoxes;
+}
+
+vector<Loc> Board::CollectMoves(char displayCharacter) const
+{
+    vector<Loc> availableBoxes = vector<Loc>();
 
     for (int row = 0; row < rows; row += 2)
     {
         for (int column = 1; column < columns; column += 2)
         {
-            if (board[row][column] == ' ')
+            if (board[row][column] == displayCharacter)
             {
-                legalMoves.push_back(Loc(row, column));
+                availableBoxes.push_back(Loc(row, column));
             }
         }
     }
@@ -78,14 +96,14 @@ vector<Loc> Board::CollectLegalMoves() const
     {
         for (int column = 0; column < columns; column += 2)
         {
-            if (board[row][column] == ' ')
+            if (board[row][column] == displayCharacter)
             {
-                legalMoves.push_back(Loc(row, column));
+                availableBoxes.push_back(Loc(row, column));
             }
         }
     }
 
-    return legalMoves;
+    return availableBoxes;
 }
 
 int Board::CountAdjacentNextSurroundingLines(const Loc &location) const

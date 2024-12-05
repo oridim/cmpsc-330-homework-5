@@ -55,7 +55,13 @@ public:
     char &operator()(const Loc &location) { return board[location.row][location.col]; }
     char operator()(const Loc &location) const { return board[location.row][location.col]; }
 
-    vector<Loc> CollectLegalMoves() const;
+    vector<Loc> CollectBoxes(char displayCharacter) const;
+
+    vector<Loc> CollectMoves(char displayCharacter) const;
+
+    vector<Loc> CollectScorableBoxes() const { return CollectBoxes(' '); }
+
+    vector<Loc> CollectLegalMoves() const { return CollectMoves(' '); };
 
     int CountAdjacentNextSurroundingLines(int row, int column) const { return CountAdjacentNextSurroundingLines(Loc(row, column)); };
 

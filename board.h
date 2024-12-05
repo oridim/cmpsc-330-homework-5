@@ -18,6 +18,16 @@ public:
 
 class Board : public IBoard
 {
+public:
+    enum YIELD_KINDS
+    {
+        undefined,
+
+        capture,
+
+        chain
+    };
+
 private:
     char **board;
 
@@ -55,13 +65,13 @@ public:
     char &operator()(const Loc &location) { return board[location.row][location.col]; }
     char operator()(const Loc &location) const { return board[location.row][location.col]; }
 
-    vector<Loc> CollectBoxes(char displayCharacter) const;
+    vector<Loc> CollectBoxes(char displayCharacter, YIELD_KINDS yieldKind = YIELD_KINDS::undefined) const;
 
-    vector<Loc> CollectMoves(char displayCharacter) const;
+    vector<Loc> CollectMoves(char displayCharacter, YIELD_KINDS yieldKind = YIELD_KINDS::undefined) const;
 
-    vector<Loc> CollectLegalMoves() const { return CollectMoves(' '); };
+    vector<Loc> CollectLegalMoves(YIELD_KINDS yieldKind = YIELD_KINDS::undefined) const { return CollectMoves(' ', yieldKind); };
 
-    vector<Loc> CollectScorableBoxes() const { return CollectBoxes(' '); }
+    vector<Loc> CollectScorableBoxes(YIELD_KINDS yieldKind = YIELD_KINDS::undefined) const { return CollectBoxes(' ', yieldKind); }
 
     int CountAdjacentNextSurroundingLines(int row, int column) const { return CountAdjacentNextSurroundingLines(Loc(row, column)); };
 

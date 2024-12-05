@@ -59,7 +59,7 @@ void Board::FreeBoard()
     }
 }
 
-vector<Loc> Board::CollectBoxes(char displayCharacter) const
+vector<Loc> Board::CollectBoxes(char displayCharacter, YIELD_KINDS yieldKind) const
 {
     vector<Loc> availableBoxes = vector<Loc>();
 
@@ -69,6 +69,13 @@ vector<Loc> Board::CollectBoxes(char displayCharacter) const
         {
             if (board[row][column] == displayCharacter)
             {
+                if (
+                    (yieldKind == YIELD_KINDS::capture && !DoesBoxYieldCapture(row, column)) ||
+                    (yieldKind == YIELD_KINDS::chain && !DoesBoxYieldChain(row, column)))
+                {
+                    continue;
+                }
+
                 availableBoxes.push_back(Loc(row, column));
             }
         }
@@ -77,7 +84,7 @@ vector<Loc> Board::CollectBoxes(char displayCharacter) const
     return availableBoxes;
 }
 
-vector<Loc> Board::CollectMoves(char displayCharacter) const
+vector<Loc> Board::CollectMoves(char displayCharacter, YIELD_KINDS yieldKind) const
 {
     vector<Loc> availableBoxes = vector<Loc>();
 
@@ -87,6 +94,13 @@ vector<Loc> Board::CollectMoves(char displayCharacter) const
         {
             if (board[row][column] == displayCharacter)
             {
+                if (
+                    (yieldKind == YIELD_KINDS::capture && !DoesMoveYieldCapture(row, column)) ||
+                    (yieldKind == YIELD_KINDS::chain && !DoesMoveYieldChain(row, column)))
+                {
+                    continue;
+                }
+
                 availableBoxes.push_back(Loc(row, column));
             }
         }
@@ -98,6 +112,13 @@ vector<Loc> Board::CollectMoves(char displayCharacter) const
         {
             if (board[row][column] == displayCharacter)
             {
+                if (
+                    (yieldKind == YIELD_KINDS::capture && !DoesMoveYieldCapture(row, column)) ||
+                    (yieldKind == YIELD_KINDS::chain && !DoesMoveYieldChain(row, column)))
+                {
+                    continue;
+                }
+
                 availableBoxes.push_back(Loc(row, column));
             }
         }

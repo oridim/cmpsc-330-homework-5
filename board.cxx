@@ -162,6 +162,14 @@ int Board::CountSurroundingLines(int row, int column) const
     return lineCount;
 }
 
+bool Board::DoesBoxYieldCapture(int row, int col) const {
+    return CountSurroundingLines(row, col) == 3;
+}
+
+bool Board::DoesBoxYieldChain(int row, int col) const {
+    return CountSurroundingLines(row, col) == 2;
+}
+
 bool Board::DoesMoveYieldCapture(const Loc &location) const
 {
     int previousAdjacentLines = CountAdjacentPreviousSurroundingLines(location);

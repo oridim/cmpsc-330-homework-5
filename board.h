@@ -75,6 +75,14 @@ public:
 
     int CountSurroundingLines(const Loc &location) const { return CountSurroundingLines(location.row, location.col); };
 
+    bool DoesBoxYieldCapture(const Loc &location) const { return DoesBoxYieldCapture(location.row, location.col); };
+
+    bool DoesBoxYieldCapture(int row, int column) const;
+
+    bool DoesBoxYieldChain(const Loc &location) const { return DoesBoxYieldChain(location.row, location.col); };
+
+    bool DoesBoxYieldChain(int row, int column) const;
+
     bool DoesMoveYieldCapture(const Loc &location) const;
 
     bool DoesMoveYieldCapture(int row, int column) const { return DoesMoveYieldCapture(Loc(row, column)); };

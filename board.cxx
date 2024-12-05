@@ -183,11 +183,13 @@ int Board::CountSurroundingLines(int row, int column) const
     return lineCount;
 }
 
-bool Board::DoesBoxYieldCapture(int row, int col) const {
+bool Board::DoesBoxYieldCapture(int row, int col) const
+{
     return CountSurroundingLines(row, col) == 3;
 }
 
-bool Board::DoesBoxYieldChain(int row, int col) const {
+bool Board::DoesBoxYieldChain(int row, int col) const
+{
     return CountSurroundingLines(row, col) == 2;
 }
 

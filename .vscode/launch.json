@@ -8,7 +8,6 @@
             "program": "${workspaceFolder}/dotsboxes",
             "args": [
                 "./OzgeAkosa5177_DimitriNearchosdon5092.so",
-                "./random_player.so",
                 "./strategic_player.so",
                 "<<<",
                 "3 5"

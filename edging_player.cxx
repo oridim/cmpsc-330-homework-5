@@ -76,6 +76,50 @@ vector<Loc> EdgingPlayer::ComputeLegalEdgeMoves()
             Loc location = Loc(layer, column);
             Loc opposingLocation = Loc(rows - layer - 1, column);
 
+            if (board(location) == ' ' && !DoesMoveSell(location))
+            {
+                legalEdgeMoves.push_back(location);
+            }
+
+            if (board(opposingLocation) == ' ' && !DoesMoveSell(opposingLocation))
+            {
+                legalEdgeMoves.push_back(opposingLocation);
+            }
+        }
+
+        for (int row = layer + 1; row < (rows - layer); row += 2)
+        {
+            Loc location = Loc(row, layer);
+            Loc opposingLocation = Loc(row, columns - layer - 1);
+
+            if (board(location) == ' ' && !DoesMoveSell(location))
+            {
+                legalEdgeMoves.push_back(location);
+            }
+
+            if (board(opposingLocation) == ' ' && !DoesMoveSell(opposingLocation))
+            {
+                legalEdgeMoves.push_back(opposingLocation);
+            }
+        }
+
+        if (legalEdgeMoves.size() > 0)
+        {
+            break;
+        }
+    }
+
+    for (
+        int layer = shouldScanOutwards ? maximumEdgeLayers : 0;
+        shouldScanOutwards ? (layer >= 0) : (layer < maximumEdgeLayers);
+        shouldScanOutwards ? layer-- : layer++)
+    {
+
+        for (int column = layer + 1; column < (columns - layer); column += 2)
+        {
+            Loc location = Loc(layer, column);
+            Loc opposingLocation = Loc(rows - layer - 1, column);
+
             if (board(location) == ' ')
             {
                 legalEdgeMoves.push_back(location);
@@ -110,6 +154,23 @@ vector<Loc> EdgingPlayer::ComputeLegalEdgeMoves()
     }
 
     return legalEdgeMoves;
+}
+
+bool EdgingPlayer::DoesMoveSell(const Loc &loc)
+{
+    int columns = board.GetCols();
+    int rows = board.GetRows();
+
+    int row = loc.row;
+    int column = loc.col;
+
+    Loc previousAdjacentLocation = loc.IsLineVerticalLocation() ? Loc(row, column - 1) : Loc(row - 1, column);
+    Loc nextAdjacentLocation = loc.IsLineVerticalLocation() ? Loc(row, column + 1) : Loc(row + 1, column);
+
+    int previousAdjacentLines = (previousAdjacentLocation.col >= 0 && previousAdjacentLocation.row >= 0) ? board.CountSurroundingLines(previousAdjacentLocation) : 0;
+    int nextAdjacentLines = (nextAdjacentLocation.col < columns && nextAdjacentLocation.row < rows) ? board.CountSurroundingLines(nextAdjacentLocation) : 0;
+
+    return (previousAdjacentLines == 2) || (nextAdjacentLines == 2);
 }
 
 Loc EdgingPlayer::SelectLineLocation()

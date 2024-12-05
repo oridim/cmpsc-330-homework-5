@@ -34,6 +34,8 @@ public:
 
     vector<Loc> ComputeLegalEdgeMoves();
 
+    bool DoesMoveSell(const Loc &loc);
+
     Loc SelectLineLocation();
 };
 

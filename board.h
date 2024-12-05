@@ -48,6 +48,7 @@ public:
     char operator()(const Loc &loc) const { return board[loc.row][loc.col]; }
 
     int CountSurroundingLines(int row, int col) const;
+    int CountSurroundingLines(const Loc &loc) const;
 
     friend ostream &operator<<(ostream &os, const Board &board);
 };

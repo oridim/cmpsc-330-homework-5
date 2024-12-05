@@ -7,28 +7,42 @@
 
 using namespace std;
 
-void Board::AllocateBoard(int dots_in_rows, int dots_in_cols, int& blanklinecount)
+void Board::AllocateBoard(int dots_in_rows, int dots_in_cols, int &blanklinecount)
 {
     assert(board == nullptr);
+
     rows = dots_in_rows * 2 - 1;
     cols = dots_in_cols * 2 - 1;
 
-    board = new char* [rows];
-    for(int r = 0; r < rows; r++)
+    board = new char *[rows];
+
+    for (int r = 0; r < rows; r++)
+    {
         board[r] = new char[cols];
+    }
 
     blanklinecount = 0;
-    for(int r = 0; r < rows; r ++)
-        for(int c = 0; c < cols; c ++)
+
+    for (int r = 0; r < rows; r++)
+    {
+        for (int c = 0; c < cols; c++)
         {
             board[r][c] = ' ';
-            if(Loc(r, c).IsLineLocation())
-                blanklinecount++;
-        }
 
-    for(int r = 0; r < rows; r += 2)
-        for(int c = 0; c < cols; c += 2)
+            if (Loc(r, c).IsLineLocation())
+            {
+                blanklinecount++;
+            }
+        }
+    }
+
+    for (int r = 0; r < rows; r += 2)
+    {
+        for (int c = 0; c < cols; c += 2)
+        {
             board[r][c] = '.';
+        }
+    }
 }
 
 vector<Loc> Board::CollectLegalMoves() const
@@ -65,10 +79,25 @@ int Board::CountSurroundingLines(int row, int col) const
     int lineCount = 0;
 
     // Check the four possible surrounding positions of the cell (top, bottom, left, right).
-    if (row > 0 && this->operator()(row - 1, col) != ' ') lineCount++; // Above
-    if (row < GetRows() - 1 && this->operator()(row + 1, col) != ' ') lineCount++; // Below
-    if (col > 0 && this->operator()(row, col - 1) != ' ') lineCount++; // Left
-    if (col < GetCols() - 1 && this->operator()(row, col + 1) != ' ') lineCount++; // Right
+    if (row > 0 && this->operator()(row - 1, col) != ' ')
+    {
+        lineCount++; // Above
+    }
+
+    if (row < GetRows() - 1 && this->operator()(row + 1, col) != ' ')
+    {
+        lineCount++; // Below
+    }
+
+    if (col > 0 && this->operator()(row, col - 1) != ' ')
+    {
+        lineCount++; // Left
+    }
+
+    if (col < GetCols() - 1 && this->operator()(row, col + 1) != ' ')
+    {
+        lineCount++; // Right
+    }
 
     return lineCount;
 }
@@ -80,44 +109,80 @@ int Board::CountSurroundingLines(const Loc &loc) const
 
 void Board::FreeBoard()
 {
-    if(board != nullptr)
+    if (board != nullptr)
     {
-        for(int r = 0; r < rows; r++)
+        for (int r = 0; r < rows; r++)
+        {
             delete[] board[r];
+        }
+
         delete[] board;
         board = nullptr;
     }
 }
 
-ostream& operator << (ostream& os, const Board& board)
+ostream &operator<<(ostream &os, const Board &board)
 {
     cout << "   ";
-    for(int i=0; i<board.cols; i++)
+
+    for (int i = 0; i < board.cols; i++)
     {
-        if(i % 10 == 0) cout << (i/10);
-        else            cout << ' ';
+        if (i % 10 == 0)
+        {
+            cout << (i / 10);
+        }
+        else
+        {
+            cout << ' ';
+        }
     }
+
     cout << endl;
     cout << "   ";
-    for(int i=0; i<board.cols; i++)
-        cout << (i%10);
+
+    for (int i = 0; i < board.cols; i++)
+    {
+        cout << (i % 10);
+    }
+
     cout << endl;
 
-    for(int r=0; r<board.GetRows(); r++)
+    for (int r = 0; r < board.GetRows(); r++)
     {
-        if(r%10 == 0) cout << (r/10) << (r%10) << ' ';
-        else          cout << ' '    << (r%10) << ' ';
-
-        for(int c=0; c<board.GetCols(); c++)
+        if (r % 10 == 0)
         {
-            Loc loc(r,c);
-            char b_rc = board(r,c);
-            if(b_rc == ' ') cout << b_rc;
-            else if(loc.IsLineVerticalLocation  () && b_rc != ' ') cout << "|";
-            else if(loc.IsLineHorizontalLocation() && b_rc != ' ') cout << "-";
-            else cout << b_rc;
+            cout << (r / 10) << (r % 10) << ' ';
         }
+        else
+        {
+            cout << ' ' << (r % 10) << ' ';
+        }
+
+        for (int c = 0; c < board.GetCols(); c++)
+        {
+            Loc loc(r, c);
+            char b_rc = board(r, c);
+
+            if (b_rc == ' ')
+            {
+                cout << b_rc;
+            }
+            else if (loc.IsLineVerticalLocation() && b_rc != ' ')
+            {
+                cout << "|";
+            }
+            else if (loc.IsLineHorizontalLocation() && b_rc != ' ')
+            {
+                cout << "-";
+            }
+            else
+            {
+                cout << b_rc;
+            }
+        }
+
         cout << endl;
     }
+
     return os;
 }

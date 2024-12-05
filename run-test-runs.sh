@@ -76,6 +76,16 @@ echo "**************************************************"
 ./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./random_player.so ./strategic_player.so <<< "4 6"
 ./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./random_player.so ./strategic_player.so <<< "5 7"
 
+# Strategic Player vs. Mockery Player
+
+echo "**************************************************"
+echo "Strategic Player vs. Mockery Player"
+echo "**************************************************"
+
+./dotsboxes ./strategic_player.so ./mockery_player.so <<< "3 5"
+./dotsboxes ./strategic_player.so ./mockery_player.so <<< "4 6"
+./dotsboxes ./strategic_player.so ./mockery_player.so <<< "5 7"
+
 # Strategic Player vs. Naive Eager Player
 
 echo "**************************************************"

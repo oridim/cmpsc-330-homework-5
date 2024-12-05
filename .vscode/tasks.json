@@ -2,35 +2,6 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build Random Player",
-            "type": "cppbuild",
-            "command": "g++",
-            "args": [
-                "-fdiagnostics-color=always",
-                "-shared",
-                "-fPIC",
-                "-ansi",
-                "-pedantic",
-                "-std=c++14",
-                "-Wall",
-                "-g",
-                "${workspaceFolder}/board.cxx",
-                "${workspaceFolder}/random_player.cxx",
-                "-o",
-                "${workspaceFolder}/random_player.so"
-            ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "problemMatcher": ["$gcc"],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "detail": "compiler: g++"
-        },
-
-        {
             "label": "Build Our Player",
             "type": "cppbuild",
             "command": "g++",
@@ -89,11 +60,7 @@
 
         {
             "label": "Build Dots and Boxes",
-            "dependsOn": [
-                "Build Game Engine",
-                "Build Random Player",
-                "Build Our Player"
-            ],
+            "dependsOn": ["Build Game Engine", "Build Our Player"],
 
             "group": {
                 "kind": "build",

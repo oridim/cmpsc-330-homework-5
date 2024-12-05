@@ -45,6 +45,20 @@ void Board::AllocateBoard(int dots_in_rows, int dots_in_cols, int &blanklinecoun
     }
 }
 
+void Board::FreeBoard()
+{
+    if (board != nullptr)
+    {
+        for (int row = 0; row < rows; row++)
+        {
+            delete[] board[row];
+        }
+
+        delete[] board;
+        board = nullptr;
+    }
+}
+
 vector<Loc> Board::CollectLegalMoves() const
 {
     vector<Loc> legalMoves = vector<Loc>();
@@ -100,20 +114,6 @@ int Board::CountSurroundingLines(int row, int column) const
     }
 
     return lineCount;
-}
-
-void Board::FreeBoard()
-{
-    if (board != nullptr)
-    {
-        for (int row = 0; row < rows; row++)
-        {
-            delete[] board[row];
-        }
-
-        delete[] board;
-        board = nullptr;
-    }
 }
 
 ostream &operator<<(ostream &outputStream, const Board &board)

@@ -38,12 +38,13 @@ public:
     }
 
     void AllocateBoard(int dots_in_rows, int dots_in_cols, int &blanklinecount);
-    void FreeBoard();
     void AllocateBoard(int dots_in_rows, int dots_in_cols)
     {
         int blanklinecount;
         AllocateBoard(dots_in_rows, dots_in_cols, blanklinecount);
     }
+
+    void FreeBoard();
 
     // **MAKE SURE THESE ARE PUBLIC**
     int GetRows() const { return rows; }

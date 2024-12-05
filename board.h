@@ -59,9 +59,9 @@ public:
 
     vector<Loc> CollectMoves(char displayCharacter) const;
 
-    vector<Loc> CollectScorableBoxes() const { return CollectBoxes(' '); }
-
     vector<Loc> CollectLegalMoves() const { return CollectMoves(' '); };
+
+    vector<Loc> CollectScorableBoxes() const { return CollectBoxes(' '); }
 
     int CountAdjacentNextSurroundingLines(int row, int column) const { return CountAdjacentNextSurroundingLines(Loc(row, column)); };
 

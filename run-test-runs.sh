@@ -56,16 +56,6 @@ echo "**************************************************"
 ./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./random_player.so <<< "4 6"
 ./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./random_player.so <<< "5 7"
 
-# Ours vs. Strategic Player
-
-echo "**************************************************"
-echo "Ours vs. Strategic Player"
-echo "**************************************************"
-
-./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./strategic_player.so <<< "3 5"
-./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./strategic_player.so <<< "4 6"
-./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./strategic_player.so <<< "5 7"
-
 # Ours vs. Snake Oil Player
 
 echo "**************************************************"
@@ -75,6 +65,16 @@ echo "**************************************************"
 ./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./snake_oil_player.so <<< "3 5"
 ./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./snake_oil_player.so <<< "4 6"
 ./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./snake_oil_player.so <<< "5 7"
+
+# Ours vs. Strategic Player
+
+echo "**************************************************"
+echo "Ours vs. Strategic Player"
+echo "**************************************************"
+
+./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./strategic_player.so <<< "3 5"
+./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./strategic_player.so <<< "4 6"
+./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./strategic_player.so <<< "5 7"
 
 # Ours vs. Random Player vs. Strategic Player
 

@@ -4,19 +4,9 @@
 
 set -e
 
-# Ours vs. First Opening Player
+# Ours vs. Edging Player
 
 # **NOTE**: We are sending 3 rows and 5 columns to the stdin of the game engine.
-
-echo "**************************************************"
-echo "Ours vs. First Opening Player"
-echo "**************************************************"
-
-./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./first_opening_player.so <<< "3 5"
-./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./first_opening_player.so <<< "4 6"
-./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./first_opening_player.so <<< "5 7"
-
-# Ours vs. Edging Player
 
 echo "**************************************************"
 echo "Ours vs. Edging Player"
@@ -25,6 +15,16 @@ echo "**************************************************"
 ./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./edging_player.so <<< "3 5"
 ./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./edging_player.so <<< "4 6"
 ./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./edging_player.so <<< "5 7"
+
+# Ours vs. First Opening Player
+
+echo "**************************************************"
+echo "Ours vs. First Opening Player"
+echo "**************************************************"
+
+./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./first_opening_player.so <<< "3 5"
+./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./first_opening_player.so <<< "4 6"
+./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./first_opening_player.so <<< "5 7"
 
 # Ours vs. Mockery Player
 

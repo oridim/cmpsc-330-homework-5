@@ -56,7 +56,7 @@ public:
 
     vector<Loc> CollectLegalMoves() const;
 
-    int CountAdjacentNextSurroundingLines(int row, int col) const;
+    int CountAdjacentNextSurroundingLines(int row, int column) const;
 
     int CountAdjacentNextSurroundingLines(const Loc &location) const;
 

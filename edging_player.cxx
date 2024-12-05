@@ -156,6 +156,59 @@ vector<Loc> EdgingPlayer::ComputeLegalEdgeMoves()
     return legalEdgeMoves;
 }
 
+vector<Loc> EdgingPlayer::ComputePayoffMoves()
+{
+    int columns = board.GetCols();
+    int rows = board.GetRows();
+
+    vector<Loc> payoffMoves = vector<Loc>();
+
+    for (int row = 0; row < rows; row += 2)
+    {
+        for (int column = 1; column < columns; column += 2)
+        {
+            Loc location = Loc(row, column);
+
+            if (board(location) == ' ' && DoesMovePayoff(location))
+            {
+                payoffMoves.push_back(location);
+            }
+        }
+    }
+
+    for (int row = 1; row < rows; row += 2)
+    {
+        for (int column = 0; column < columns; column += 2)
+        {
+            Loc location = Loc(row, column);
+
+            if (board(location) == ' ' && DoesMovePayoff(location))
+            {
+                payoffMoves.push_back(location);
+            }
+        }
+    }
+
+    return payoffMoves;
+}
+
+bool EdgingPlayer::DoesMovePayoff(const Loc &loc)
+{
+    int columns = board.GetCols();
+    int rows = board.GetRows();
+
+    int row = loc.row;
+    int column = loc.col;
+
+    Loc previousAdjacentLocation = loc.IsLineVerticalLocation() ? Loc(row, column - 1) : Loc(row - 1, column);
+    Loc nextAdjacentLocation = loc.IsLineVerticalLocation() ? Loc(row, column + 1) : Loc(row + 1, column);
+
+    int previousAdjacentLines = (previousAdjacentLocation.col >= 0 && previousAdjacentLocation.row >= 0) ? board.CountSurroundingLines(previousAdjacentLocation) : 0;
+    int nextAdjacentLines = (nextAdjacentLocation.col < columns && nextAdjacentLocation.row < rows) ? board.CountSurroundingLines(nextAdjacentLocation) : 0;
+
+    return (previousAdjacentLines == 3) || (nextAdjacentLines == 3);
+}
+
 bool EdgingPlayer::DoesMoveSell(const Loc &loc)
 {
     int columns = board.GetCols();
@@ -175,6 +228,13 @@ bool EdgingPlayer::DoesMoveSell(const Loc &loc)
 
 Loc EdgingPlayer::SelectLineLocation()
 {
+    vector<Loc> payoffMoves = ComputePayoffMoves();
+
+    if (payoffMoves.size() > 0)
+    {
+        return payoffMoves.at(rand() % payoffMoves.size());
+    }
+
     vector<Loc> legalEdgeMoves = ComputeLegalEdgeMoves();
 
     return legalEdgeMoves.at(rand() % legalEdgeMoves.size());

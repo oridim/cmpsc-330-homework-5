@@ -34,6 +34,10 @@ public:
 
     vector<Loc> ComputeLegalEdgeMoves();
 
+    vector<Loc> ComputePayoffMoves();
+
+    bool DoesMovePayoff(const Loc &loc);
+
     bool DoesMoveSell(const Loc &loc);
 
     Loc SelectLineLocation();

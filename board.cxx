@@ -7,12 +7,12 @@
 
 using namespace std;
 
-void Board::AllocateBoard(int dots_in_rows, int dots_in_cols, int &blanklinecount)
+void Board::AllocateBoard(int dotsInRows, int dotsInColumns, int &blankLineCount)
 {
     assert(board == nullptr);
 
-    rows = dots_in_rows * 2 - 1;
-    columns = dots_in_cols * 2 - 1;
+    rows = dotsInRows * 2 - 1;
+    columns = dotsInColumns * 2 - 1;
 
     board = new char *[rows];
 
@@ -21,7 +21,7 @@ void Board::AllocateBoard(int dots_in_rows, int dots_in_cols, int &blanklinecoun
         board[row] = new char[columns];
     }
 
-    blanklinecount = 0;
+    blankLineCount = 0;
 
     for (int row = 0; row < rows; row++)
     {
@@ -31,7 +31,7 @@ void Board::AllocateBoard(int dots_in_rows, int dots_in_cols, int &blanklinecoun
 
             if (Loc(row, column).IsLineLocation())
             {
-                blanklinecount++;
+                blankLineCount++;
             }
         }
     }

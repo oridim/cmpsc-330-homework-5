@@ -37,11 +37,11 @@ public:
         FreeBoard();
     }
 
-    void AllocateBoard(int dots_in_rows, int dots_in_cols, int &blanklinecount);
-    void AllocateBoard(int dots_in_rows, int dots_in_cols)
+    void AllocateBoard(int dotsInRows, int dotsInColumns, int &blankLineCount);
+    void AllocateBoard(int dotsInRows, int dotsInColumns)
     {
-        int blanklinecount;
-        AllocateBoard(dots_in_rows, dots_in_cols, blanklinecount);
+        int blankLineCount;
+        AllocateBoard(dotsInRows, dotsInColumns, blankLineCount);
     }
 
     void FreeBoard();

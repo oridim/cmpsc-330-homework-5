@@ -1,7 +1,7 @@
 #include <assert.h>
-#include <cstdlib> // for srand and rand
-#include <ctime>   // for time
+#include <ctime> // for time
 #include <iostream>
+#include <random> // rand / srand
 #include <vector>
 
 #include "common.h"
@@ -10,11 +10,10 @@
 
 #include "OzgeAkosa5177_DimitriNearchosdon5092.h"
 
-using namespace std;
-
 extern "C" IPlayer *PlayerFactory()
 {
     return new OzgeAkosa5177_DimitriNearchosdon5092_Player();
+
 }
 
 OzgeAkosa5177_DimitriNearchosdon5092_Player::OzgeAkosa5177_DimitriNearchosdon5092_Player()
@@ -33,7 +32,7 @@ void OzgeAkosa5177_DimitriNearchosdon5092_Player::Init(int _dots_in_rows, int _d
     board.AllocateBoard(_dots_in_rows, _dots_in_cols);
     player_box = _player_box;
     player_line = _player_line;
-    opponent_line = (player_line == 'A') ? 'B' : 'A'; // Assuming 2 players: A and B
+    opponent_line = (player_line == 'A') ? 'B' : 'A';
     emptylines = new Loc[board.GetRows() * board.GetCols()];
 }
 
@@ -60,24 +59,36 @@ void OzgeAkosa5177_DimitriNearchosdon5092_Player::EventAddBox(const char box, co
 
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
 {
-    // Step 1: Complete a box with three sides if possible
+    // Step 1: Prioritize completing a box
     Loc scoringMove = FindScoringMove();
     if (scoringMove.row != -1 && scoringMove.col != -1)
     {
         return scoringMove;
     }
 
-    // Step 2: Find a safe move that avoids creating three-line boxes for the opponent
+    // Step 2: Avoid giving the opponent easy opportunities
     Loc safeMove = FindSafeMove();
     if (safeMove.row != -1 && safeMove.col != -1)
     {
         return safeMove;
     }
 
-    // Step 3: Fallback to any available move
+    // Step 3: Look for disruptive opportunities
+    Loc disruptiveMove = FindDisruptiveMove();
+    if (disruptiveMove.row != -1 && disruptiveMove.col != -1)
+    {
+        return disruptiveMove;
+    }
+
+    // Step 4: Fallback to any available move
     ListEmptyLines();
-    int randloc = rand() % emptylines_cnt;
-    return emptylines[randloc];
+    if (emptylines_cnt > 0)
+    {
+        int randloc = rand() % emptylines_cnt;
+        return emptylines[randloc];
+    }
+
+    return {-1, -1}; // No valid moves left
 }
 
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindScoringMove()
@@ -91,54 +102,27 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindScoringMove()
                 int lineCount = 0;
                 Loc emptyLine = {-1, -1};
 
-                Loc top = {row - 1, col};
-                if (board(top) != ' ')
-                {
-                    lineCount++;
-                }
-                else
-                {
-                    emptyLine = top;
-                }
+                // Check all sides of the box
+                if (board({row - 1, col}) == ' ') emptyLine = {row - 1, col};
+                else lineCount++;
 
-                Loc bottom = {row + 1, col};
-                if (board(bottom) != ' ')
-                {
-                    lineCount++;
-                }
-                else
-                {
-                    emptyLine = bottom;
-                }
+                if (board({row + 1, col}) == ' ') emptyLine = {row + 1, col};
+                else lineCount++;
 
-                Loc left = {row, col - 1};
-                if (board(left) != ' ')
-                {
-                    lineCount++;
-                }
-                else
-                {
-                    emptyLine = left;
-                }
+                if (board({row, col - 1}) == ' ') emptyLine = {row, col - 1};
+                else lineCount++;
 
-                Loc right = {row, col + 1};
-                if (board(right) != ' ')
-                {
-                    lineCount++;
-                }
-                else
-                {
-                    emptyLine = right;
-                }
+                if (board({row, col + 1}) == ' ') emptyLine = {row, col + 1};
+                else lineCount++;
 
-                if (lineCount == 3) // Return the empty line that completes the box
+                // If the box has three lines, return the empty line
+                if (lineCount == 3)
                 {
                     return emptyLine;
                 }
             }
         }
     }
-
     return {-1, -1}; // No scoring move found
 }
 
@@ -151,40 +135,35 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindSafeMove()
         Loc candidate = emptylines[i];
         board(candidate) = player_line; // Simulate move
 
-        bool createsThreeLineBox = false;
+        // Check if this move leaves the opponent an easy opportunity
+        bool createsOpportunity = false;
         for (int row = 0; row < board.GetRows(); row++)
         {
             for (int col = 0; col < board.GetCols(); col++)
             {
-                if (row % 2 == 1 && col % 2 == 1) // Check only box locations
+                if (row % 2 == 1 && col % 2 == 1) // Check box locations
                 {
-                    int lineCount = 0;
-                    if (board({row - 1, col}) != ' ') lineCount++;
-                    if (board({row + 1, col}) != ' ') lineCount++;
-                    if (board({row, col - 1}) != ' ') lineCount++;
-                    if (board({row, col + 1}) != ' ') lineCount++;
-
-                    if (lineCount == 3)
+                    if (board.CountSurroundingLines(row, col) == 3)
                     {
-                        createsThreeLineBox = true;
+                        createsOpportunity = true;
                         break;
                     }
                 }
             }
-            if (createsThreeLineBox)
-                break;
+            if (createsOpportunity) break;
         }
 
         board(candidate) = ' '; // Undo simulated move
 
-        if (!createsThreeLineBox)
+        if (!createsOpportunity)
         {
-            return candidate; // Return the first safe move found
+            return candidate; // Return the first safe move
         }
     }
 
     return {-1, -1}; // No safe move found
 }
+
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindDisruptiveMove()
 {
     ListEmptyLines();
@@ -194,21 +173,19 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindDisruptiveMove()
         Loc candidate = emptylines[i];
         board(candidate) = player_line; // Simulate move
 
-        // Check if this disrupts opponents' scoring
+        // Check if this disrupts opponent setups
         bool disruptsOpponent = false;
-
         for (int row = 1; row < board.GetRows(); row += 2)
         {
             for (int col = 1; col < board.GetCols(); col += 2)
             {
-                if (board.CountSurroundingLines(row, col) == 2)
+                if (board.CountSurroundingLines(row, col) == 2) // Opponent can form a chain
                 {
                     disruptsOpponent = true;
                     break;
                 }
             }
-            if (disruptsOpponent)
-                break;
+            if (disruptsOpponent) break;
         }
 
         board(candidate) = ' '; // Undo simulation
@@ -221,7 +198,6 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindDisruptiveMove()
 
     return {-1, -1}; // No disruptive move found
 }
-
 
 void OzgeAkosa5177_DimitriNearchosdon5092_Player::ListEmptyLines()
 {

@@ -19,12 +19,11 @@ private:
     char player_line;    // Player's line character
     char opponent_line;  // Opponent's line character
 
-    // Core strategy functions
-    Loc FindDisruptiveMove();
-    Loc FindChainControlMove();
-    Loc FindScoringMove(); // Finds moves that complete a box
-    Loc FindSafeMove();   // Finds moves that avoid setting up a scoring opportunity for the opponent
-    void ListEmptyLines(); // Updates the list of all available empty lines
+    Loc FindScoringMove();       // Finds a move to complete a box
+    Loc FindSafeMove();          // Finds a move that avoids risky setups
+    Loc FindDisruptiveMove();    // Finds a move to disrupt the opponent's plans
+    void ListEmptyLines();       // Updates the list of all available empty lines
+
 
 public:
     // Constructor and Destructor

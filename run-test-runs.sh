@@ -106,12 +106,12 @@ echo "**************************************************"
 ./dotsboxes ./strategic_player.so ./naive_eager_player.so <<< "4 6"
 ./dotsboxes ./strategic_player.so ./naive_eager_player.so <<< "5 7"
 
-# Edging Player vs. Mockery Player vs. Naive Eager Player
+# Edging Player vs. First Opening Player vs. Mockery Player vs. Naive Eager Player
 
 echo "**************************************************"
-echo "Edging Player vs. Mockery Player vs. Naive Eager Player"
+echo "Edging Player vs. First Opening Player vs. Mockery Player vs. Naive Eager Player"
 echo "**************************************************"
 
-./dotsboxes ./edging_player.so ./mockery_player.so ./naive_eager_player.so <<< "3 5"
-./dotsboxes ./edging_player.so ./mockery_player.so ./naive_eager_player.so <<< "4 6"
-./dotsboxes ./edging_player.so ./mockery_player.so ./naive_eager_player.so <<< "5 7"
+./dotsboxes ./edging_player.so ./first_opening_player.so ./mockery_player.so ./naive_eager_player.so <<< "3 5"
+./dotsboxes ./edging_player.so ./first_opening_player.so ./mockery_player.so ./naive_eager_player.so <<< "4 6"
+./dotsboxes ./edging_player.so ./first_opening_player.so ./mockery_player.so ./naive_eager_player.so <<< "5 7"

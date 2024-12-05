@@ -56,66 +56,31 @@ void NaiveEagerPlayer::EventAddBox(const char box, const Loc &loc)
 
 Loc NaiveEagerPlayer::SelectLineLocation()
 {
-    int columns = board.GetCols();
-    int rows = board.GetRows();
-
-    vector<Loc> legalMoves = vector<Loc>();
-
-    for (int row = 0; row < rows; row += 2)
-    {
-        for (int column = 1; column < columns; column += 2)
-        {
-            Loc location = Loc(row, column);
-
-            if (board(location) == ' ')
-            {
-                if (board.DoesMoveYieldCapture(location))
-                {
-                    return location;
-                }
-
-                legalMoves.push_back(location);
-            }
-        }
-    }
-
-    for (int row = 1; row < rows; row += 2)
-    {
-        for (int column = 0; column < columns; column += 2)
-        {
-            Loc location = Loc(row, column);
-
-            if (board(location) == ' ')
-            {
-                if (board.DoesMoveYieldCapture(location))
-                {
-                    return location;
-                }
-
-                legalMoves.push_back(location);
-            }
-        }
-    }
-
-    vector<Loc> sellingMoves = vector<Loc>();
-    vector<Loc> nonSellingMoves = vector<Loc>();
+    vector<Loc> legalMoves = board.CollectLegalMoves();
+    
+    vector<Loc> chainingMoves = vector<Loc>();
+    vector<Loc> nonChainingMoves = vector<Loc>();
 
     for (Loc &location : legalMoves)
     {
-        if (board.DoesMoveYieldChain(location))
+        if (board.DoesMoveYieldCapture(location))
         {
-            sellingMoves.push_back(location);
+            return location;
+        }
+        else if (board.DoesMoveYieldChain(location))
+        {
+            chainingMoves.push_back(location);
         }
         else
         {
-            nonSellingMoves.push_back(location);
+            nonChainingMoves.push_back(location);
         }
     }
 
-    if (nonSellingMoves.size() > 0)
+    if (nonChainingMoves.size() > 0)
     {
-        return nonSellingMoves.at(rand() % nonSellingMoves.size());
+        return nonChainingMoves.at(rand() % nonChainingMoves.size());
     }
 
-    return sellingMoves.at(rand() % sellingMoves.size());
+    return chainingMoves.at(rand() % chainingMoves.size());
 }

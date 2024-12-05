@@ -144,20 +144,20 @@ int Board::CountSurroundingLines(int row, int column) const
     return lineCount;
 }
 
-bool Board::DoesMoveYieldChain(const Loc &location) const
-{
-    int previousAdjacentLines = CountAdjacentPreviousSurroundingLines(location);
-    int nextAdjacentLines = CountAdjacentNextSurroundingLines(location);
-
-    return (previousAdjacentLines == 2) || (nextAdjacentLines == 2);
-}
-
 bool Board::DoesMoveYieldCapture(const Loc &location) const
 {
     int previousAdjacentLines = CountAdjacentPreviousSurroundingLines(location);
     int nextAdjacentLines = CountAdjacentNextSurroundingLines(location);
 
     return (previousAdjacentLines == 3) || (nextAdjacentLines == 3);
+}
+
+bool Board::DoesMoveYieldChain(const Loc &location) const
+{
+    int previousAdjacentLines = CountAdjacentPreviousSurroundingLines(location);
+    int nextAdjacentLines = CountAdjacentNextSurroundingLines(location);
+
+    return (previousAdjacentLines == 2) || (nextAdjacentLines == 2);
 }
 
 ostream &operator<<(ostream &outputStream, const Board &board)

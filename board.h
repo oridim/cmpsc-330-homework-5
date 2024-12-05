@@ -69,13 +69,13 @@ public:
 
     int CountSurroundingLines(const Loc &location) const { return CountSurroundingLines(location.row, location.col); };
 
-    bool DoesMoveYieldChain(const Loc &location) const;
-
-    bool DoesMoveYieldChain(int row, int column) const { return DoesMoveYieldChain(Loc(row, column)); };
-
     bool DoesMoveYieldCapture(const Loc &location) const;
 
     bool DoesMoveYieldCapture(int row, int column) const { return DoesMoveYieldCapture(Loc(row, column)); };
+
+    bool DoesMoveYieldChain(const Loc &location) const;
+
+    bool DoesMoveYieldChain(int row, int column) const { return DoesMoveYieldChain(Loc(row, column)); };
 
     friend ostream &operator<<(ostream &outputStream, const Board &board);
 };

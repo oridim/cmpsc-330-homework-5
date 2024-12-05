@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include "./common.h"
+
 class IBoard
 {
 public:

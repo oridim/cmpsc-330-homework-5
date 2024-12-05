@@ -96,6 +96,16 @@ echo "**************************************************"
 ./dotsboxes ./strategic_player.so ./edging_player.so <<< "4 6"
 ./dotsboxes ./strategic_player.so ./edging_player.so <<< "5 7"
 
+# Strategic Player vs. First Opening Player
+
+echo "**************************************************"
+echo "Strategic Player vs. First Opening Player"
+echo "**************************************************"
+
+./dotsboxes ./strategic_player.so ./first_opening_player.so <<< "3 5"
+./dotsboxes ./strategic_player.so ./first_opening_player.so <<< "4 6"
+./dotsboxes ./strategic_player.so ./first_opening_player.so <<< "5 7"
+
 # Strategic Player vs. Mockery Player
 
 echo "**************************************************"

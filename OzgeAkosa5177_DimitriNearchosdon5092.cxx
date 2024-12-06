@@ -75,10 +75,10 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
     }
 
     // Step 3: Look for disruptive opportunities
-    Loc disruptiveMove = FindDisruptiveMove();
-    if (disruptiveMove.row != -1 && disruptiveMove.col != -1)
+    Loc *disruptiveMove = FindDisruptiveMove(legalMoves);
+    if (disruptiveMove != nullptr)
     {
-        return disruptiveMove;
+        return *disruptiveMove;
     }
 
     // Step 4: Fallback to any available move randomly.
@@ -111,40 +111,17 @@ Loc *OzgeAkosa5177_DimitriNearchosdon5092_Player::FindSafeMove(const vector<Loc>
     return nullptr;
 }
 
-Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindDisruptiveMove()
+Loc *OzgeAkosa5177_DimitriNearchosdon5092_Player::FindDisruptiveMove(const vector<Loc> &locations) const
 {
-    ListEmptyLines();
-
-    for (int i = 0; i < emptylines_cnt; i++)
+    for (const Loc &location : locations)
     {
-        Loc candidate = emptylines[i];
-        board(candidate) = player_line; // Simulate move
-
-        // Check if this disrupts opponent setups
-        bool disruptsOpponent = false;
-        for (int row = 1; row < board.GetRows(); row += 2)
+        if (board.DoesMoveYieldPrevention(location))
         {
-            for (int col = 1; col < board.GetCols(); col += 2)
-            {
-                if (board.CountSurroundingLines(row, col) == 2) // Opponent can form a chain
-                {
-                    disruptsOpponent = true;
-                    break;
-                }
-            }
-            if (disruptsOpponent)
-                break;
-        }
-
-        board(candidate) = ' '; // Undo simulation
-
-        if (disruptsOpponent)
-        {
-            return candidate; // Prioritize moves that block opponents
+            return (Loc *)&location;
         }
     }
 
-    return {-1, -1}; // No disruptive move found
+    return nullptr;
 }
 
 void OzgeAkosa5177_DimitriNearchosdon5092_Player::ListEmptyLines()

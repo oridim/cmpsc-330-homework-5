@@ -68,10 +68,10 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
     }
 
     // Step 2: Avoid giving the opponent easy opportunities
-    Loc safeMove = FindSafeMove();
-    if (safeMove.row != -1 && safeMove.col != -1)
+    Loc *safeMove = FindSafeMove(legalMoves);
+    if (safeMove != nullptr)
     {
-        return safeMove;
+        return *safeMove;
     }
 
     // Step 3: Look for disruptive opportunities
@@ -98,43 +98,17 @@ Loc *OzgeAkosa5177_DimitriNearchosdon5092_Player::FindScoringMove(const vector<L
     return nullptr;
 }
 
-Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindSafeMove()
+Loc *OzgeAkosa5177_DimitriNearchosdon5092_Player::FindSafeMove(const vector<Loc> &locations) const
 {
-    ListEmptyLines();
-
-    for (int i = 0; i < emptylines_cnt; i++)
+    for (const Loc &location : locations)
     {
-        Loc candidate = emptylines[i];
-        board(candidate) = player_line; // Simulate move
-
-        // Check if this move leaves the opponent an easy opportunity
-        bool createsOpportunity = false;
-        for (int row = 0; row < board.GetRows(); row++)
+        if (!board.DoesMoveYieldChain(location))
         {
-            for (int col = 0; col < board.GetCols(); col++)
-            {
-                if (row % 2 == 1 && col % 2 == 1) // Check box locations
-                {
-                    if (board.CountSurroundingLines(row, col) == 3)
-                    {
-                        createsOpportunity = true;
-                        break;
-                    }
-                }
-            }
-            if (createsOpportunity)
-                break;
-        }
-
-        board(candidate) = ' '; // Undo simulated move
-
-        if (!createsOpportunity)
-        {
-            return candidate; // Return the first safe move
+            return (Loc *)&location;
         }
     }
 
-    return {-1, -1}; // No safe move found
+    return nullptr;
 }
 
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindDisruptiveMove()

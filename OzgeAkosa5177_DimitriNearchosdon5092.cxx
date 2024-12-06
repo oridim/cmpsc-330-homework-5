@@ -55,27 +55,21 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
 {
     vector<Loc> legalMoves = board.CollectLegalMoves();
 
-    // Step 1: Prioritize completing a box
     for (const Loc &move : legalMoves)
     {
+        // Step 1: Prioritize completing a box
         if (board.DoesMoveYieldCapture(move))
         {
             return move;
         }
-    }
 
-    // Step 2: Avoid giving the opponent easy opportunities
-    for (const Loc &move : legalMoves)
-    {
+        // Step 2: Avoid giving the opponent easy opportunities
         if (!board.DoesMoveYieldChain(move))
         {
             return move;
         }
-    }
 
-    // Step 3: Look for disruptive opportunities
-    for (const Loc &move : legalMoves)
-    {
+        // Step 3: Look for disruptive opportunities
         if (board.DoesMoveYieldPrevention(move))
         {
             return move;

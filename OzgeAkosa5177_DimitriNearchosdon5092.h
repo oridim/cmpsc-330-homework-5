@@ -17,6 +17,8 @@ private:
     char player_line;    // Player's line character
     int board_rows;      // Number of rows in the board
     int board_cols;      // Number of columns in the board
+    
+
 
 public:
     // Constructor and Destructor
@@ -36,6 +38,9 @@ public:
 
     // Move selection function
     Loc SelectLineLocation();
+
+    int EvaluateMove(const Loc &move);
+
 };
 
 #endif

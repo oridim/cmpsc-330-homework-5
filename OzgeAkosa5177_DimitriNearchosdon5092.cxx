@@ -110,3 +110,12 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
     // Step 4: Fallback to any available move
     return legalMoves.at(rand() % legalMoves.size());
 }
+
+int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateMove(const Loc &move)
+{
+    int score = 0;
+    if (board.DoesMoveYieldCapture(move)) score += 10; // Favor moves completing boxes.
+    if (board.DoesMoveYieldChain(move)) score -= 5;    // Penalize moves leaving chains.
+  
+    return score;
+}

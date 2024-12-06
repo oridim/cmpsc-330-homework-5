@@ -100,7 +100,7 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
         // Evaluate neighbors for safe moves
         for (const Loc &neighbor : neighbors)
         {
-            if (!board.DoesMoveYieldChain(neighbor))
+            if (board.DoesBoxYieldPrevention(neighbor))
             {
                 return move; // Use neighbor logic for strategic play
             }

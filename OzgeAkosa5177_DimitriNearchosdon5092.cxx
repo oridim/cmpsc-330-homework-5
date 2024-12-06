@@ -56,65 +56,32 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
     vector<Loc> legalMoves = board.CollectLegalMoves();
 
     // Step 1: Prioritize completing a box
-    Loc *scoringMove = FindScoringMove(legalMoves);
-    if (scoringMove != nullptr)
+    for (const Loc &move : legalMoves)
     {
-        return *scoringMove;
+        if (board.DoesMoveYieldCapture(move))
+        {
+            return move;
+        }
     }
 
     // Step 2: Avoid giving the opponent easy opportunities
-    Loc *safeMove = FindSafeMove(legalMoves);
-    if (safeMove != nullptr)
+    for (const Loc &move : legalMoves)
     {
-        return *safeMove;
+        if (!board.DoesMoveYieldChain(move))
+        {
+            return move;
+        }
     }
 
     // Step 3: Look for disruptive opportunities
-    Loc *disruptiveMove = FindDisruptiveMove(legalMoves);
-    if (disruptiveMove != nullptr)
+    for (const Loc &move : legalMoves)
     {
-        return *disruptiveMove;
+        if (board.DoesMoveYieldPrevention(move))
+        {
+            return move;
+        }
     }
 
     // Step 4: Fallback to any available move randomly.
     return legalMoves.at(rand() % legalMoves.size());
-}
-
-Loc *OzgeAkosa5177_DimitriNearchosdon5092_Player::FindScoringMove(const vector<Loc> &locations) const
-{
-    for (const Loc &location : locations)
-    {
-        if (board.DoesMoveYieldCapture(location))
-        {
-            return (Loc *)&location;
-        }
-    }
-
-    return nullptr;
-}
-
-Loc *OzgeAkosa5177_DimitriNearchosdon5092_Player::FindSafeMove(const vector<Loc> &locations) const
-{
-    for (const Loc &location : locations)
-    {
-        if (!board.DoesMoveYieldChain(location))
-        {
-            return (Loc *)&location;
-        }
-    }
-
-    return nullptr;
-}
-
-Loc *OzgeAkosa5177_DimitriNearchosdon5092_Player::FindDisruptiveMove(const vector<Loc> &locations) const
-{
-    for (const Loc &location : locations)
-    {
-        if (board.DoesMoveYieldPrevention(location))
-        {
-            return (Loc *)&location;
-        }
-    }
-
-    return nullptr;
 }

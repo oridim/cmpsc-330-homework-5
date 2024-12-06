@@ -16,10 +16,6 @@ private:
     char player_box;     // Player's box character
     char player_line;    // Player's line character
 
-    Loc *FindScoringMove(const vector<Loc> &locations) const;       // Finds a move to complete a box
-    Loc *FindSafeMove(const vector<Loc> &locations) const;          // Finds a move that avoids risky setups
-    Loc *FindDisruptiveMove(const vector<Loc> &locations) const;    // Finds a move to disrupt the opponent's plans
-
 public:
     // Constructor and Destructor
     OzgeAkosa5177_DimitriNearchosdon5092_Player();

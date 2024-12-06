@@ -57,25 +57,25 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
 
     for (const Loc &move : legalMoves)
     {
-        // Step 1: Prioritize completing a box
+        // Priority 1: Look for moves that score us a point.
         if (board.DoesMoveYieldCapture(move))
         {
             return move;
         }
 
-        // Step 2: Avoid giving the opponent easy opportunities
-        if (!board.DoesMoveYieldChain(move))
+        // Priority 2: Look for moves that prevent an opponent taking taking a safe move.
+        if (board.DoesMoveYieldPrevention(move))
         {
             return move;
         }
 
-        // Step 3: Look for disruptive opportunities
-        if (board.DoesMoveYieldPrevention(move))
+        // Priority 3: Look for moves the do not at least lead to an opponent scoring.
+        if (board.DoesMoveYieldFreebie(move))
         {
             return move;
         }
     }
 
-    // Step 4: Fallback to any available move randomly.
+    // Priority 4: Fallback to any available move randomly.
     return legalMoves.at(rand() % legalMoves.size());
 }

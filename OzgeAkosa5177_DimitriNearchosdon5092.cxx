@@ -1,7 +1,7 @@
 #include <assert.h>
-#include <ctime> // for time
+#include <ctime>
 #include <iostream>
-#include <random> // rand / srand
+#include <random>
 #include <vector>
 
 #include "common.h"
@@ -28,6 +28,8 @@ OzgeAkosa5177_DimitriNearchosdon5092_Player::~OzgeAkosa5177_DimitriNearchosdon50
 void OzgeAkosa5177_DimitriNearchosdon5092_Player::Init(int _dots_in_rows, int _dots_in_cols, char _player_box, char _player_line)
 {
     board.AllocateBoard(_dots_in_rows, _dots_in_cols);
+    board_rows = _dots_in_rows;
+    board_cols = _dots_in_cols;
     player_box = _player_box;
     player_line = _player_line;
 }
@@ -51,31 +53,74 @@ void OzgeAkosa5177_DimitriNearchosdon5092_Player::EventAddBox(const char box, co
     board(loc) = box;
 }
 
+
+bool IsHorizontalLine(const Loc &move, int rows, int cols)
+{
+    // A horizontal line affects columns in the same row
+    return move.row >= 0 && move.row < rows && move.col >= 0 && move.col < cols - 1;
+}
+
+bool IsVerticalLine(const Loc &move, int rows, int cols)
+{
+    // A vertical line affects rows in the same column
+    return move.row >= 0 && move.row < rows - 1 && move.col >= 0 && move.col < cols;
+}
+
+
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
 {
     vector<Loc> legalMoves = board.CollectLegalMoves();
 
+    // Step 1: Look for moves that immediately complete a box
     for (const Loc &move : legalMoves)
     {
-        // Priority 1: Look for moves that score us a point.
         if (board.DoesMoveYieldCapture(move))
         {
-            return move;
-        }
-
-        // Priority 2: Look for moves that prevent an opponent taking taking a safe move.
-        if (board.DoesMoveYieldPrevention(move))
-        {
-            return move;
-        }
-
-        // Priority 3: Look for moves the do not at least lead to an opponent scoring.
-        if (board.DoesMoveYieldFreebie(move))
-        {
-            return move;
+            return move; // Prioritize completing a box
         }
     }
 
-    // Priority 4: Fallback to any available move randomly.
+    // Step 2: Avoid moves that set up the opponent for a score
+    for (const Loc &move : legalMoves)
+    {
+        if (!board.DoesMoveYieldChain(move))
+        {
+            return move; // Prefer safe moves
+        }
+    }
+
+    // Step 3: Check neighboring boxes for disruption opportunities
+    for (const Loc &move : legalMoves)
+    {
+        vector<Loc> neighbors;
+
+        if (IsHorizontalLine(move, board_rows, board_cols))
+        {
+            // Check above and below the horizontal line
+            if (move.row > 0)
+                neighbors.emplace_back(move.row - 1, move.col);
+            if (move.row < board_rows - 1)
+                neighbors.emplace_back(move.row, move.col);
+        }
+        else if (IsVerticalLine(move, board_rows, board_cols))
+        {
+            // Check left and right of the vertical line
+            if (move.col > 0)
+                neighbors.emplace_back(move.row, move.col - 1);
+            if (move.col < board_cols - 1)
+                neighbors.emplace_back(move.row, move.col);
+        }
+
+        // Evaluate neighbors for safe moves
+        for (const Loc &neighbor : neighbors)
+        {
+            if (!board.DoesMoveYieldChain(neighbor))
+            {
+                return move; // Use neighbor logic for strategic play
+            }
+        }
+    }
+
+    // Step 4: Fallback to any available move
     return legalMoves.at(rand() % legalMoves.size());
 }

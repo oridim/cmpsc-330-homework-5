@@ -53,20 +53,6 @@ void OzgeAkosa5177_DimitriNearchosdon5092_Player::EventAddBox(const char box, co
     board(loc) = box;
 }
 
-
-bool IsHorizontalLine(const Loc &move, int rows, int cols)
-{
-    // A horizontal line affects columns in the same row
-    return move.row >= 0 && move.row < rows && move.col >= 0 && move.col < cols - 1;
-}
-
-bool IsVerticalLine(const Loc &move, int rows, int cols)
-{
-    // A vertical line affects rows in the same column
-    return move.row >= 0 && move.row < rows - 1 && move.col >= 0 && move.col < cols;
-}
-
-
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
 {
     vector<Loc> legalMoves = board.CollectLegalMoves();
@@ -94,7 +80,7 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
     {
         vector<Loc> neighbors;
 
-        if (IsHorizontalLine(move, board_rows, board_cols))
+        if (move.IsLineHorizontalLocation())
         {
             // Check above and below the horizontal line
             if (move.row > 0)
@@ -102,7 +88,7 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
             if (move.row < board_rows - 1)
                 neighbors.emplace_back(move.row, move.col);
         }
-        else if (IsVerticalLine(move, board_rows, board_cols))
+        else if (move.IsLineVerticalLocation())
         {
             // Check left and right of the vertical line
             if (move.col > 0)

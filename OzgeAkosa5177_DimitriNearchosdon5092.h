@@ -17,7 +17,7 @@ private:
     char player_line;    // Player's line character
     int board_rows;      // Number of rows in the board
     int board_cols;      // Number of columns in the board
-    
+    queue<Loc> priorityMoves;
 
 
 public:

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <random>
 #include <vector>
+#include <queue>
 
 #include "common.h"
 #include "board.h"
@@ -44,6 +45,33 @@ void OzgeAkosa5177_DimitriNearchosdon5092_Player::EventAddLine(const char bar, c
     assert(loc.IsLineLocation());
     assert(board(loc) == ' ');
     board(loc) = bar;
+
+    // Check for boxes with three lines after the opponent's move
+    vector<Loc> neighbors;
+
+    // Collect neighboring boxes affected by the line added
+    if (loc.IsLineHorizontalLocation())
+    {
+        if (loc.row > 0)
+            neighbors.emplace_back(loc.row - 1, loc.col); // Box above the line
+        if (loc.row < board_rows - 1)
+            neighbors.emplace_back(loc.row, loc.col);     // Box below the line
+    }
+    else if (loc.IsLineVerticalLocation())
+    {
+        if (loc.col > 0)
+            neighbors.emplace_back(loc.row, loc.col - 1); // Box to the left of the line
+        if (loc.col < board_cols - 1)
+            neighbors.emplace_back(loc.row, loc.col);     // Box to the right of the line
+    }
+
+    for (const Loc &neighbor : neighbors)
+    {
+        if (board.CountSurroundingLines(neighbor) == 3)
+        {
+            priorityMoves.push(neighbor); // Store boxes with three lines as priority
+        }
+    }
 }
 
 void OzgeAkosa5177_DimitriNearchosdon5092_Player::EventAddBox(const char box, const Loc &loc)

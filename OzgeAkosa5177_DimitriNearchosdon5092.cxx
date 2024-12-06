@@ -13,7 +13,6 @@
 extern "C" IPlayer *PlayerFactory()
 {
     return new OzgeAkosa5177_DimitriNearchosdon5092_Player();
-
 }
 
 OzgeAkosa5177_DimitriNearchosdon5092_Player::OzgeAkosa5177_DimitriNearchosdon5092_Player()
@@ -59,11 +58,13 @@ void OzgeAkosa5177_DimitriNearchosdon5092_Player::EventAddBox(const char box, co
 
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
 {
+    vector<Loc> legalMoves = board.CollectLegalMoves();
+
     // Step 1: Prioritize completing a box
-    Loc scoringMove = FindScoringMove();
-    if (scoringMove.row != -1 && scoringMove.col != -1)
+    Loc *scoringMove = FindScoringMove(legalMoves);
+    if (scoringMove != nullptr)
     {
-        return scoringMove;
+        return *scoringMove;
     }
 
     // Step 2: Avoid giving the opponent easy opportunities
@@ -91,39 +92,17 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
     return {-1, -1}; // No valid moves left
 }
 
-Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindScoringMove()
+Loc *OzgeAkosa5177_DimitriNearchosdon5092_Player::FindScoringMove(const vector<Loc> &locations) const
 {
-    for (int row = 0; row < board.GetRows(); row++)
+    for (const Loc &location : locations)
     {
-        for (int col = 0; col < board.GetCols(); col++)
+        if (board.DoesMoveYieldCapture(location))
         {
-            if (row % 2 == 1 && col % 2 == 1) // Only check box locations
-            {
-                int lineCount = 0;
-                Loc emptyLine = {-1, -1};
-
-                // Check all sides of the box
-                if (board({row - 1, col}) == ' ') emptyLine = {row - 1, col};
-                else lineCount++;
-
-                if (board({row + 1, col}) == ' ') emptyLine = {row + 1, col};
-                else lineCount++;
-
-                if (board({row, col - 1}) == ' ') emptyLine = {row, col - 1};
-                else lineCount++;
-
-                if (board({row, col + 1}) == ' ') emptyLine = {row, col + 1};
-                else lineCount++;
-
-                // If the box has three lines, return the empty line
-                if (lineCount == 3)
-                {
-                    return emptyLine;
-                }
-            }
+            return (Loc *)&location;
         }
     }
-    return {-1, -1}; // No scoring move found
+
+    return nullptr;
 }
 
 Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindSafeMove()
@@ -150,7 +129,8 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindSafeMove()
                     }
                 }
             }
-            if (createsOpportunity) break;
+            if (createsOpportunity)
+                break;
         }
 
         board(candidate) = ' '; // Undo simulated move
@@ -185,7 +165,8 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::FindDisruptiveMove()
                     break;
                 }
             }
-            if (disruptsOpponent) break;
+            if (disruptsOpponent)
+                break;
         }
 
         board(candidate) = ' '; // Undo simulation

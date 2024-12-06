@@ -19,7 +19,7 @@ private:
     char player_line;    // Player's line character
     char opponent_line;  // Opponent's line character
 
-    Loc FindScoringMove();       // Finds a move to complete a box
+    Loc *FindScoringMove(const vector<Loc> &locations) const;       // Finds a move to complete a box
     Loc FindSafeMove();          // Finds a move that avoids risky setups
     Loc FindDisruptiveMove();    // Finds a move to disrupt the opponent's plans
     void ListEmptyLines();       // Updates the list of all available empty lines

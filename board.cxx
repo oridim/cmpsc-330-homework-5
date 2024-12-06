@@ -224,7 +224,8 @@ bool Board::DoesMoveYieldFreebie(const Loc &location) const
     int previousAdjacentLines = CountAdjacentPreviousSurroundingLines(location);
     int nextAdjacentLines = CountAdjacentNextSurroundingLines(location);
 
-    return (previousAdjacentLines == 0) || (nextAdjacentLines == 0);
+    return (previousAdjacentLines == 0 && nextAdjacentLines != 2) &&
+           (previousAdjacentLines != 2 && nextAdjacentLines == 0);
 }
 
 bool Board::DoesMoveYieldPrevention(const Loc &location) const
@@ -232,7 +233,8 @@ bool Board::DoesMoveYieldPrevention(const Loc &location) const
     int previousAdjacentLines = CountAdjacentPreviousSurroundingLines(location);
     int nextAdjacentLines = CountAdjacentNextSurroundingLines(location);
 
-    return (previousAdjacentLines == 1) || (nextAdjacentLines == 1);
+    return (previousAdjacentLines == 1 && nextAdjacentLines != 2) &&
+           (previousAdjacentLines != 2 && nextAdjacentLines == 1);
 }
 
 ostream &operator<<(ostream &outputStream, const Board &board)

@@ -13,17 +13,12 @@ class OzgeAkosa5177_DimitriNearchosdon5092_Player : public IPlayer
 {
 private:
     Board board;         // Board instance to manage game state
-    Loc *emptylines;     // Array to store empty lines
-    int emptylines_cnt;  // Count of empty lines
     char player_box;     // Player's box character
     char player_line;    // Player's line character
-    char opponent_line;  // Opponent's line character
 
     Loc *FindScoringMove(const vector<Loc> &locations) const;       // Finds a move to complete a box
     Loc *FindSafeMove(const vector<Loc> &locations) const;          // Finds a move that avoids risky setups
     Loc *FindDisruptiveMove(const vector<Loc> &locations) const;    // Finds a move to disrupt the opponent's plans
-    void ListEmptyLines();       // Updates the list of all available empty lines
-
 
 public:
     // Constructor and Destructor

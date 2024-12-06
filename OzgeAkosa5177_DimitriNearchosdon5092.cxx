@@ -18,7 +18,6 @@ extern "C" IPlayer *PlayerFactory()
 OzgeAkosa5177_DimitriNearchosdon5092_Player::OzgeAkosa5177_DimitriNearchosdon5092_Player()
 {
     srand(time(0));
-    emptylines = nullptr;
 }
 
 OzgeAkosa5177_DimitriNearchosdon5092_Player::~OzgeAkosa5177_DimitriNearchosdon5092_Player()
@@ -31,15 +30,11 @@ void OzgeAkosa5177_DimitriNearchosdon5092_Player::Init(int _dots_in_rows, int _d
     board.AllocateBoard(_dots_in_rows, _dots_in_cols);
     player_box = _player_box;
     player_line = _player_line;
-    opponent_line = (player_line == 'A') ? 'B' : 'A';
-    emptylines = new Loc[board.GetRows() * board.GetCols()];
 }
 
 void OzgeAkosa5177_DimitriNearchosdon5092_Player::Close()
 {
     board.FreeBoard();
-    delete[] emptylines;
-    emptylines = nullptr;
 }
 
 void OzgeAkosa5177_DimitriNearchosdon5092_Player::EventAddLine(const char bar, const Loc &loc)
@@ -122,27 +117,4 @@ Loc *OzgeAkosa5177_DimitriNearchosdon5092_Player::FindDisruptiveMove(const vecto
     }
 
     return nullptr;
-}
-
-void OzgeAkosa5177_DimitriNearchosdon5092_Player::ListEmptyLines()
-{
-    emptylines_cnt = 0;
-
-    for (int row = 0; row < board.GetRows(); row++)
-    {
-        for (int col = 0; col < board.GetCols(); col++)
-        {
-            if ((row % 2 == 0 && col % 2 == 0) || (row % 2 == 1 && col % 2 == 1))
-            {
-                continue; // Skip dots and box centers
-            }
-
-            if (board(row, col) == ' ')
-            {
-                emptylines[emptylines_cnt].row = row;
-                emptylines[emptylines_cnt].col = col;
-                emptylines_cnt++;
-            }
-        }
-    }
 }

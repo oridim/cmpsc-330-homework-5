@@ -81,15 +81,8 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
         return disruptiveMove;
     }
 
-    // Step 4: Fallback to any available move
-    ListEmptyLines();
-    if (emptylines_cnt > 0)
-    {
-        int randloc = rand() % emptylines_cnt;
-        return emptylines[randloc];
-    }
-
-    return {-1, -1}; // No valid moves left
+    // Step 4: Fallback to any available move randomly.
+    return legalMoves.at(rand() % legalMoves.size());
 }
 
 Loc *OzgeAkosa5177_DimitriNearchosdon5092_Player::FindScoringMove(const vector<Loc> &locations) const

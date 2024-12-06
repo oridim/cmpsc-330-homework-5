@@ -193,6 +193,16 @@ bool Board::DoesBoxYieldChain(int row, int col) const
     return CountSurroundingLines(row, col) == 2;
 }
 
+bool Board::DoesBoxYieldFreebie(int row, int col) const
+{
+    return CountSurroundingLines(row, col) == 0;
+}
+
+bool Board::DoesBoxYieldPrevention(int row, int col) const
+{
+    return CountSurroundingLines(row, col) == 1;
+}
+
 bool Board::DoesMoveYieldCapture(const Loc &location) const
 {
     int previousAdjacentLines = CountAdjacentPreviousSurroundingLines(location);
@@ -207,6 +217,22 @@ bool Board::DoesMoveYieldChain(const Loc &location) const
     int nextAdjacentLines = CountAdjacentNextSurroundingLines(location);
 
     return (previousAdjacentLines == 2) || (nextAdjacentLines == 2);
+}
+
+bool Board::DoesMoveYieldFreebie(const Loc &location) const
+{
+    int previousAdjacentLines = CountAdjacentPreviousSurroundingLines(location);
+    int nextAdjacentLines = CountAdjacentNextSurroundingLines(location);
+
+    return (previousAdjacentLines == 0) || (nextAdjacentLines == 0);
+}
+
+bool Board::DoesMoveYieldPrevention(const Loc &location) const
+{
+    int previousAdjacentLines = CountAdjacentPreviousSurroundingLines(location);
+    int nextAdjacentLines = CountAdjacentNextSurroundingLines(location);
+
+    return (previousAdjacentLines == 1) || (nextAdjacentLines == 1);
 }
 
 ostream &operator<<(ostream &outputStream, const Board &board)

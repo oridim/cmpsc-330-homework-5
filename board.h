@@ -93,6 +93,14 @@ public:
 
     bool DoesBoxYieldChain(int row, int column) const;
 
+    bool DoesBoxYieldFreebie(const Loc &location) const { return DoesBoxYieldFreebie(location.row, location.col); };
+
+    bool DoesBoxYieldFreebie(int row, int column) const;
+
+    bool DoesBoxYieldPrevention(const Loc &location) const { return DoesBoxYieldPrevention(location.row, location.col); };
+
+    bool DoesBoxYieldPrevention(int row, int column) const;
+
     bool DoesMoveYieldCapture(const Loc &location) const;
 
     bool DoesMoveYieldCapture(int row, int column) const { return DoesMoveYieldCapture(Loc(row, column)); };
@@ -100,6 +108,14 @@ public:
     bool DoesMoveYieldChain(const Loc &location) const;
 
     bool DoesMoveYieldChain(int row, int column) const { return DoesMoveYieldChain(Loc(row, column)); };
+
+    bool DoesMoveYieldFreebie(const Loc &location) const;
+
+    bool DoesMoveYieldFreebie(int row, int column) const { return DoesMoveYieldFreebie(Loc(row, column)); };
+
+    bool DoesMoveYieldPrevention(const Loc &location) const;
+
+    bool DoesMoveYieldPrevention(int row, int column) const { return DoesMoveYieldPrevention(Loc(row, column)); };
 
     friend ostream &operator<<(ostream &outputStream, const Board &board);
 };

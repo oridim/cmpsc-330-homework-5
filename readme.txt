@@ -46,16 +46,16 @@ that, we experimented with various players and got the code you see now.
 
 (Ozge)
 
-While developing my player for "Dots and Boxes," I gained valuable insights into 
+While developing our player for "Dots and Boxes," I gained valuable insights into 
 implementing decision-making algorithms and designing strategies for competitive
-games. I focused on creating a system that prioritizes completing boxes by 
+games. We focused on creating a system that prioritizes completing boxes by 
 leveraging game state evaluations, such as counting surrounding lines with methods 
 like 'CountSurroundingLines' and checking move outcomes using functions like
 'DoesMoveYieldCapture' and 'DoesMoveYieldChain'. These functions taught me the 
 importance of modular and reusable logic when analyzing board states.
 
 I also learned to use data structures like `std::queue` to manage priority moves, 
-enabling my player to track and act on high-value opportunities, such as completing 
+enabling our player to track and act on high-value opportunities, such as completing 
 boxes with three lines. Implementing strategic fallbacks, such as avoiding chains or 
 choosing random moves when no optimal strategy exists, highlighted the role of 
 fail-safe mechanisms in AI design. Debugging issues with line and box placement using 

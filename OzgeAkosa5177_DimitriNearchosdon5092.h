@@ -2,7 +2,6 @@
 #define __OZGEAKOSA5177_DIMITRINEARCHOSDON5092_PLAYER__
 
 #include <vector>
-#include <queue> // For managing priority moves
 #include "common.h"
 #include "board.h"
 #include "player.h"
@@ -20,7 +19,6 @@ private:
     char player_line;         // The character used to represent lines drawn by this player.
     int board_rows;           // The total number of rows on the board (including dots and spaces for lines).
     int board_cols;           // The total number of columns on the board (including dots and spaces for lines).
-    queue<Loc> priorityMoves; // Stores high-priority moves, like completing a box or blocking the opponent.
 
     // Collect all legal moves available on the board.
     vector<Loc> CollectMoves(char displayCharacter) const;

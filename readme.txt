@@ -18,7 +18,7 @@ Run Commands:
 
     /* CUSTOM BOARD SIZES */
 
-    * `./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./strategic_player.so <<< "ROWS COLUMNS"`
+    * `...directory.../dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./strategic_player.so <<< "ROWS COLUMNS"`
 
 Acknowledgments:
 

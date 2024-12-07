@@ -30,3 +30,16 @@ Acknowledgments:
     2. Unless stated otherwise, we (Ozge and Dimitri) implemented everything in the
        source code from scratch.
 
+Homework #2 and #4 to Homework #5 Refactoring Log:
+
+(Dimitri)
+
+Generally, we did not reuse the code from either assignment. They had highly
+structured APIs and thus were not really compatible with Dr. Na's base project
+set up.
+
+That being said, we did reuse a lot of the logic and strategizing implementions
+in homework #4. Particularly, we translated over a lot of the optimizied grid
+walking loops for only traversing lines on the board. And we translated over
+our original strategic player as a test bed for trying out Dr. Na's APIs. After
+that, we experimented with various players and got the code you see now.

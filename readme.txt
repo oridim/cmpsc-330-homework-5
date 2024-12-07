@@ -54,7 +54,7 @@ like 'CountSurroundingLines' and checking move outcomes using functions like
 'DoesMoveYieldCapture' and 'DoesMoveYieldChain'. These functions taught me the 
 importance of modular and reusable logic when analyzing board states.
 
-I also learned to use data structures like std::queue to manage priority moves, 
+I also learned to use data structures like `std::queue` to manage priority moves, 
 enabling my player to track and act on high-value opportunities, such as completing 
 boxes with three lines. Implementing strategic fallbacks, such as avoiding chains or 
 choosing random moves when no optimal strategy exists, highlighted the role of 
@@ -62,7 +62,7 @@ fail-safe mechanisms in AI design. Debugging issues with line and box placement 
 assertions and careful boundary checks emphasized the importance of input validation, 
 especially when accessing board indices.
 
-Additionally, working with methods like SelectLineLocation required balancing 
+Additionally, working with methods like `SelectLineLocation` required balancing 
 offensive tactics (prioritizing box completions) and defensive considerations 
 (avoiding risky chains) while iterating through legal moves collected using 
 'CollectLegalMoves'. By assigning heuristic scores to moves in 'EvaluateMove', 

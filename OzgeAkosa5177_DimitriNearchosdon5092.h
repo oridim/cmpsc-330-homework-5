@@ -24,6 +24,7 @@
 #define __OZGEAKOSA5177_DIMITRINEARCHOSDON5092_PLAYER__
 
 #include <vector>
+
 #include "common.h"
 #include "board.h"
 #include "player.h"

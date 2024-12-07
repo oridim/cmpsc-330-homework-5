@@ -22,6 +22,37 @@ private:
     int board_cols;             // The total number of columns on the board (including dots and spaces for lines).
     queue<Loc> priorityMoves;   // Stores high-priority moves, like completing a box or blocking the opponent.
 
+    // Collect all legal moves available on the board.
+    vector<Loc> CollectMoves(char displayCharacter) const;
+
+    // Collect scorable boxes based on display character and yield type.
+    vector<Loc> CollectLegalMoves() const { return CollectMoves(' '); };
+
+    // Count surrounding lines for the "next" adjacent cell in the given direction.
+    int CountAdjacentNextSurroundingLines(int row, int column) const { return CountAdjacentNextSurroundingLines(Loc(row, column)); };
+
+    int CountAdjacentNextSurroundingLines(const Loc &location) const;
+
+    // Count surrounding lines for the "previous" adjacent cell in the given direction.
+    int CountAdjacentPreviousSurroundingLines(int row, int column) const { return CountAdjacentPreviousSurroundingLines(Loc(row, column)); };
+
+    int CountAdjacentPreviousSurroundingLines(const Loc &location) const;
+
+    // Check if a box is a "prevention" move (1 surrounding line).
+    bool DoesBoxYieldPrevention(const Loc &location) const { return DoesBoxYieldPrevention(location.row, location.col); };
+
+    bool DoesBoxYieldPrevention(int row, int column) const;
+
+    // Check if a move (line) will capture a box.
+    bool DoesMoveYieldCapture(const Loc &location) const;
+
+    bool DoesMoveYieldCapture(int row, int column) const { return DoesMoveYieldCapture(Loc(row, column)); };
+
+    // Check if a move creates or continues a chain.
+    bool DoesMoveYieldChain(const Loc &location) const;
+
+    bool DoesMoveYieldChain(int row, int column) const { return DoesMoveYieldChain(Loc(row, column)); };
+
 public:
     // Constructor: Initializes the player instance.
     // Prepares the player for gameplay by setting up necessary variables.

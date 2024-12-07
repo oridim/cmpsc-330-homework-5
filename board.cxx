@@ -63,66 +63,6 @@ void Board::FreeBoard()
     }
 }
 
-vector<Loc> Board::CollectMoves(char displayCharacter) const
-{
-    vector<Loc> availableBoxes = vector<Loc>();
-
-    // Iterate over all horizontal line locations (even rows, odd columns).   
-    for (int row = 0; row < rows; row += 2)
-    {
-        for (int column = 1; column < columns; column += 2)
-        {
-            if (board[row][column] == displayCharacter)
-            {
-                availableBoxes.push_back(Loc(row, column));
-            }
-        }
-    }
-    // Iterate over all vertical line locations (odd rows, even columns).
-    for (int row = 1; row < rows; row += 2)
-    {
-        for (int column = 0; column < columns; column += 2)
-        {
-            if (board[row][column] == displayCharacter)
-            {
-                availableBoxes.push_back(Loc(row, column));
-            }
-        }
-    }
-
-    return availableBoxes;
-}
-
-int Board::CountAdjacentNextSurroundingLines(const Loc &location) const
-{
-    if (location.IsLineVerticalLocation())
-    {
-        int nextColumn = location.col + 1;
-
-        // Return the surrounding line count for the adjacent cell if valid.
-        return (nextColumn < columns) ? CountSurroundingLines(location.row, nextColumn) : 0;
-    }
-
-    int nextRow = location.row + 1;
-
-    // Return the surrounding line count for the adjacent cell if valid.
-    return (nextRow < rows) ? CountSurroundingLines(nextRow, location.col) : 0;
-}
-
-int Board::CountAdjacentPreviousSurroundingLines(const Loc &location) const
-{
-    if (location.IsLineVerticalLocation())
-    {
-        int previousColumn = location.col - 1;
-
-        return (previousColumn >= 0) ? CountSurroundingLines(location.row, previousColumn) : 0;
-    }
-
-    int previousRow = location.row - 1;
-
-    return (previousRow >= 0) ? CountSurroundingLines(previousRow, location.col) : 0;
-}
-
 int Board::CountSurroundingLines(int row, int column) const
 {
     int lineCount = 0;
@@ -149,29 +89,6 @@ int Board::CountSurroundingLines(int row, int column) const
     }
 
     return lineCount;
-}
-
-bool Board::DoesBoxYieldPrevention(int row, int col) const
-{
-    return CountSurroundingLines(row, col) == 1;
-}
-
-bool Board::DoesMoveYieldCapture(const Loc &location) const
-{
-    // Determines if a box at a given location is ready to be captured.
-    int previousAdjacentLines = CountAdjacentPreviousSurroundingLines(location);
-    int nextAdjacentLines = CountAdjacentNextSurroundingLines(location);
-
-    return (previousAdjacentLines == 3) || (nextAdjacentLines == 3);
-}
-
-bool Board::DoesMoveYieldChain(const Loc &location) const
-{
-    // Determines if a box at a given location is part of a chain.
-    int previousAdjacentLines = CountAdjacentPreviousSurroundingLines(location);
-    int nextAdjacentLines = CountAdjacentNextSurroundingLines(location);
-
-    return (previousAdjacentLines == 2) || (nextAdjacentLines == 2);
 }
 
 ostream &operator<<(ostream &outputStream, const Board &board)

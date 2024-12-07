@@ -1,3 +1,25 @@
+//---------------------------------------------------------------------
+//
+// Name: Ozge Selin Ak + Dimitri Orion Nearchos
+// Email: osa5177@psu.edu + don5092@psu.edu
+// Class: CMPSC 330
+// Section: 001
+//
+// Assignment: Homework 5
+// Due Date: December 6th, 2024
+//
+// Description:
+//
+// 
+//The code implements a strategic player for the game "Dots and Boxes" 
+//that evaluates the game board and selects moves based on a defined strategy. 
+//It prioritizes completing boxes to score points, avoids moves that might 
+//give the opponent an advantage, and uses a priority queue to handle critical 
+//opportunities, such as completing boxes with three lines. Additionally, it
+//dynamically updates its internal board state based on game events and uses 
+//a fallback random selection when no strategic moves are available, ensuring 
+//the player remains competitive throughout the game.
+//--------------------------------------------------------------------- 
 #ifndef __OZGEAKOSA5177_DIMITRINEARCHOSDON5092_PLAYER__
 #define __OZGEAKOSA5177_DIMITRINEARCHOSDON5092_PLAYER__
 

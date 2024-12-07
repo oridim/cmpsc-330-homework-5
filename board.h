@@ -18,17 +18,6 @@ public:
 
 class Board : public IBoard
 {
-public:
-// Enum for different move or box yield types, such as captures and chains.
-    enum YIELD_KINDS
-    {
-        undefined,
-
-        capture,
-
-        chain
-    };
-
 private:
     char **board;
 
@@ -68,19 +57,11 @@ public:
     char &operator()(const Loc &location) { return board[location.row][location.col]; }
     char operator()(const Loc &location) const { return board[location.row][location.col]; }
 
-
-
-    // Collect boxes matching a specific display character and yield type
-    vector<Loc> CollectBoxes(char displayCharacter, YIELD_KINDS yieldKind = YIELD_KINDS::undefined) const;
-
     // Collect all legal moves available on the board.
-    vector<Loc> CollectMoves(char displayCharacter, YIELD_KINDS yieldKind = YIELD_KINDS::undefined) const;
+    vector<Loc> CollectMoves(char displayCharacter) const;
 
     // Collect scorable boxes based on display character and yield type.
-    vector<Loc> CollectLegalMoves(YIELD_KINDS yieldKind = YIELD_KINDS::undefined) const { return CollectMoves(' ', yieldKind); };
-
-    // Collect all legal moves available on the board.
-    vector<Loc> CollectScorableBoxes(YIELD_KINDS yieldKind = YIELD_KINDS::undefined) const { return CollectBoxes(' ', yieldKind); }
+    vector<Loc> CollectLegalMoves() const { return CollectMoves(' '); };
 
     // Count surrounding lines for the "next" adjacent cell in the given direction.
     int CountAdjacentNextSurroundingLines(int row, int column) const { return CountAdjacentNextSurroundingLines(Loc(row, column)); };
@@ -97,21 +78,6 @@ public:
 
     int CountSurroundingLines(const Loc &location) const { return CountSurroundingLines(location.row, location.col); };
 
-    // Check if a box (at a given location) can be captured.
-    bool DoesBoxYieldCapture(const Loc &location) const { return DoesBoxYieldCapture(location.row, location.col); };
-
-    bool DoesBoxYieldCapture(int row, int column) const;
-
-    //  Check if a box (at a given location) is part of a chain.
-    bool DoesBoxYieldChain(const Loc &location) const { return DoesBoxYieldChain(location.row, location.col); };
-
-    bool DoesBoxYieldChain(int row, int column) const;
-
-    // Check if a box is a "freebie" (surrounded by no lines).
-    bool DoesBoxYieldFreebie(const Loc &location) const { return DoesBoxYieldFreebie(location.row, location.col); };
-
-    bool DoesBoxYieldFreebie(int row, int column) const;
-
     // Check if a box is a "prevention" move (1 surrounding line).
     bool DoesBoxYieldPrevention(const Loc &location) const { return DoesBoxYieldPrevention(location.row, location.col); };
 
@@ -126,16 +92,6 @@ public:
     bool DoesMoveYieldChain(const Loc &location) const;
 
     bool DoesMoveYieldChain(int row, int column) const { return DoesMoveYieldChain(Loc(row, column)); };
-
-    // Check if a move is a freebie.
-    bool DoesMoveYieldFreebie(const Loc &location) const;
-
-    bool DoesMoveYieldFreebie(int row, int column) const { return DoesMoveYieldFreebie(Loc(row, column)); };
-
-    // Check if a move prevents an opponent from scoring.
-    bool DoesMoveYieldPrevention(const Loc &location) const;
-
-    bool DoesMoveYieldPrevention(int row, int column) const { return DoesMoveYieldPrevention(Loc(row, column)); };
 
     // Output the board state to a stream
     friend ostream &operator<<(ostream &outputStream, const Board &board);

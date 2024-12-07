@@ -12,7 +12,13 @@ Build Commands:
 
 Run Commands:
 
+    /* SELECTIVE BOARD SIZES */
+
     * `...directory.../run-test-run.sh`
+
+    /* CUSTOM BOARD SIZES */
+
+    * `./dotsboxes ./OzgeAkosa5177_DimitriNearchosdon5092.so ./strategic_player.so <<< "ROWS COLUMNS"`
 
 Acknowledgments:
 

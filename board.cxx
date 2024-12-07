@@ -1,159 +1,74 @@
-#include <assert.h>
 #include <iostream>
-#include <vector>
-
+#include <assert.h>
 #include "common.h"
 #include "board.h"
 
 using namespace std;
 
-void Board::AllocateBoard(int dotsInRows, int dotsInColumns, int &blankLineCount)
+void Board::AllocateBoard(int dots_in_rows, int dots_in_cols, int& blanklinecount)
 {
     assert(board == nullptr);
+    rows = dots_in_rows * 2 - 1;
+    cols = dots_in_cols * 2 - 1;
 
-    rows = dotsInRows * 2 - 1;
-    columns = dotsInColumns * 2 - 1;
+    board = new char* [rows];
+    for(int r = 0; r < rows; r++)
+        board[r] = new char[cols];
 
-    board = new char *[rows];
-
-    // Allocate memory for the board.
-    for (int row = 0; row < rows; row++)
-    {
-        board[row] = new char[columns];
-    }
-
-    blankLineCount = 0;
-
-    // Initialize all board cells to blank spaces (' ') or dots ('.').
-    for (int row = 0; row < rows; row++)
-    {
-        for (int column = 0; column < columns; column++)
+    blanklinecount = 0;
+    for(int r = 0; r < rows; r ++)
+        for(int c = 0; c < cols; c ++)
         {
-            board[row][column] = ' ';
-
-            if (Loc(row, column).IsLineLocation())
-            {
-                blankLineCount++;
-            }
+            board[r][c] = ' ';
+            if(Loc(r, c).IsLineLocation())
+                blanklinecount++;
         }
-    }
 
-     // Place dots ('.') at even row and column indices.
-    for (int row = 0; row < rows; row += 2)
-    {
-        for (int column = 0; column < columns; column += 2)
-        {
-            board[row][column] = '.';
-        }
-    }
+    for(int r = 0; r < rows; r += 2)
+        for(int c = 0; c < cols; c += 2)
+            board[r][c] = '.';
 }
 
 void Board::FreeBoard()
 {
-    if (board != nullptr)
+    if(board != nullptr)
     {
-        // Free each row.
-        for (int row = 0; row < rows; row++)
-        {
-            delete[] board[row];
-        }
-
+        for(int r = 0; r < rows; r++)
+            delete[] board[r];
         delete[] board;
         board = nullptr;
     }
 }
 
-int Board::CountSurroundingLines(int row, int column) const
+ostream& operator << (ostream& os, const Board& board)
 {
-    int lineCount = 0;
-
-    // Check the four possible surrounding positions of the cell (top, bottom, left, right).
-    if (row > 0 && this->operator()(row - 1, column) != ' ')
-    {
-        lineCount++; // Above
-    }
-
-    if (row < GetRows() - 1 && this->operator()(row + 1, column) != ' ')
-    {
-        lineCount++; // Below
-    }
-
-    if (column > 0 && this->operator()(row, column - 1) != ' ')
-    {
-        lineCount++; // Left
-    }
-
-    if (column < GetCols() - 1 && this->operator()(row, column + 1) != ' ')
-    {
-        lineCount++; // Right
-    }
-
-    return lineCount;
-}
-
-ostream &operator<<(ostream &outputStream, const Board &board)
-{
-    // Outputs the current state of the board to the console.
     cout << "   ";
-
-    for (int column = 0; column < board.columns; column++)
+    for(int i=0; i<board.cols; i++)
     {
-        if (column % 10 == 0)
-        {
-            cout << (column / 10);
-        }
-        else
-        {
-            cout << ' ';
-        }
+        if(i % 10 == 0) cout << (i/10);
+        else            cout << ' ';
     }
-
     cout << endl;
     cout << "   ";
-
-    for (int column = 0; column < board.columns; column++)
-    {
-        cout << (column % 10);
-    }
-
+    for(int i=0; i<board.cols; i++)
+        cout << (i%10);
     cout << endl;
 
-    for (int row = 0; row < board.GetRows(); row++)
+    for(int r=0; r<board.GetRows(); r++)
     {
-        if (row % 10 == 0)
-        {
-            cout << (row / 10) << (row % 10) << ' ';
-        }
-        else
-        {
-            cout << ' ' << (row % 10) << ' ';
-        }
+        if(r%10 == 0) cout << (r/10) << (r%10) << ' ';
+        else          cout << ' '    << (r%10) << ' ';
 
-        for (int column = 0; column < board.GetCols(); column++)
+        for(int c=0; c<board.GetCols(); c++)
         {
-            Loc location = Loc(row, column);
-            char displayCharacter = board(row, column);
-
-            if (displayCharacter == ' ')
-            {
-                cout << displayCharacter;
-            }
-            else if (location.IsLineVerticalLocation() && displayCharacter != ' ')
-            {
-                cout << "|";
-            }
-            else if (location.IsLineHorizontalLocation() && displayCharacter != ' ')
-            {
-                cout << "-";
-            }
-            else
-            {
-                cout << displayCharacter;
-            }
+            Loc loc(r,c);
+            char b_rc = board(r,c);
+            if(b_rc == ' ') cout << b_rc;
+            else if(loc.IsLineVerticalLocation  () && b_rc != ' ') cout << "|";
+            else if(loc.IsLineHorizontalLocation() && b_rc != ' ') cout << "-";
+            else cout << b_rc;
         }
-
         cout << endl;
     }
-
-    return outputStream;
+    return os;
 }

@@ -16,6 +16,7 @@ void Board::AllocateBoard(int dotsInRows, int dotsInColumns, int &blankLineCount
 
     board = new char *[rows];
 
+    // Allocate memory for the board.
     for (int row = 0; row < rows; row++)
     {
         board[row] = new char[columns];
@@ -23,6 +24,7 @@ void Board::AllocateBoard(int dotsInRows, int dotsInColumns, int &blankLineCount
 
     blankLineCount = 0;
 
+    // Initialize all board cells to blank spaces (' ') or dots ('.').
     for (int row = 0; row < rows; row++)
     {
         for (int column = 0; column < columns; column++)
@@ -36,6 +38,7 @@ void Board::AllocateBoard(int dotsInRows, int dotsInColumns, int &blankLineCount
         }
     }
 
+     // Place dots ('.') at even row and column indices.
     for (int row = 0; row < rows; row += 2)
     {
         for (int column = 0; column < columns; column += 2)
@@ -49,6 +52,7 @@ void Board::FreeBoard()
 {
     if (board != nullptr)
     {
+        // Free each row.
         for (int row = 0; row < rows; row++)
         {
             delete[] board[row];
@@ -63,12 +67,14 @@ vector<Loc> Board::CollectBoxes(char displayCharacter, YIELD_KINDS yieldKind) co
 {
     vector<Loc> availableBoxes = vector<Loc>();
 
+    // Iterate over all box locations (odd row and column indices).
     for (int row = 1; row < rows; row += 2)
     {
         for (int column = 1; column < columns; column += 2)
         {
             if (board[row][column] == displayCharacter)
             {
+                // Skip boxes that don't match the yield kind.
                 if (
                     (yieldKind == YIELD_KINDS::capture && !DoesBoxYieldCapture(row, column)) ||
                     (yieldKind == YIELD_KINDS::chain && !DoesBoxYieldChain(row, column)))
@@ -88,6 +94,7 @@ vector<Loc> Board::CollectMoves(char displayCharacter, YIELD_KINDS yieldKind) co
 {
     vector<Loc> availableBoxes = vector<Loc>();
 
+    // Iterate over all horizontal line locations (even rows, odd columns).   
     for (int row = 0; row < rows; row += 2)
     {
         for (int column = 1; column < columns; column += 2)
@@ -105,7 +112,7 @@ vector<Loc> Board::CollectMoves(char displayCharacter, YIELD_KINDS yieldKind) co
             }
         }
     }
-
+    // Iterate over all vertical line locations (odd rows, even columns).
     for (int row = 1; row < rows; row += 2)
     {
         for (int column = 0; column < columns; column += 2)
@@ -133,11 +140,13 @@ int Board::CountAdjacentNextSurroundingLines(const Loc &location) const
     {
         int nextColumn = location.col + 1;
 
+        // Return the surrounding line count for the adjacent cell if valid.
         return (nextColumn < columns) ? CountSurroundingLines(location.row, nextColumn) : 0;
     }
 
     int nextRow = location.row + 1;
 
+    // Return the surrounding line count for the adjacent cell if valid.
     return (nextRow < rows) ? CountSurroundingLines(nextRow, location.col) : 0;
 }
 
@@ -205,6 +214,7 @@ bool Board::DoesBoxYieldPrevention(int row, int col) const
 
 bool Board::DoesMoveYieldCapture(const Loc &location) const
 {
+    // Determines if a box at a given location is ready to be captured.
     int previousAdjacentLines = CountAdjacentPreviousSurroundingLines(location);
     int nextAdjacentLines = CountAdjacentNextSurroundingLines(location);
 
@@ -213,6 +223,7 @@ bool Board::DoesMoveYieldCapture(const Loc &location) const
 
 bool Board::DoesMoveYieldChain(const Loc &location) const
 {
+    // Determines if a box at a given location is part of a chain.
     int previousAdjacentLines = CountAdjacentPreviousSurroundingLines(location);
     int nextAdjacentLines = CountAdjacentNextSurroundingLines(location);
 
@@ -221,6 +232,7 @@ bool Board::DoesMoveYieldChain(const Loc &location) const
 
 bool Board::DoesMoveYieldFreebie(const Loc &location) const
 {
+    //  Determines if a box is completely free of lines
     int previousAdjacentLines = CountAdjacentPreviousSurroundingLines(location);
     int nextAdjacentLines = CountAdjacentNextSurroundingLines(location);
 
@@ -230,6 +242,7 @@ bool Board::DoesMoveYieldFreebie(const Loc &location) const
 
 bool Board::DoesMoveYieldPrevention(const Loc &location) const
 {
+    //Determines if a box is a "prevention" move.
     int previousAdjacentLines = CountAdjacentPreviousSurroundingLines(location);
     int nextAdjacentLines = CountAdjacentNextSurroundingLines(location);
 
@@ -239,6 +252,7 @@ bool Board::DoesMoveYieldPrevention(const Loc &location) const
 
 ostream &operator<<(ostream &outputStream, const Board &board)
 {
+    // Outputs the current state of the board to the console.
     cout << "   ";
 
     for (int column = 0; column < board.columns; column++)

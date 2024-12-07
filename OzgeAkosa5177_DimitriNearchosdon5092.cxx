@@ -3,7 +3,6 @@
 #include <iostream>
 #include <random>
 #include <vector>
-#include <queue>
 
 #include "common.h"
 #include "board.h"

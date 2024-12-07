@@ -10,16 +10,19 @@
 //
 // Description:
 //
-// 
-//The code implements a strategic player for the game "Dots and Boxes" 
-//that evaluates the game board and selects moves based on a defined strategy. 
-//It prioritizes completing boxes to score points, avoids moves that might 
-//give the opponent an advantage, and uses a priority queue to handle critical 
-//opportunities, such as completing boxes with three lines. Additionally, it
-//dynamically updates its internal board state based on game events and uses 
-//a fallback random selection when no strategic moves are available, ensuring 
-//the player remains competitive throughout the game.
-//--------------------------------------------------------------------- 
+// The code implements a strategic player for the game "Dots and Boxes"
+// that evaluates the game board and selects moves based on a defined strategy.
+//
+// It prioritizes completing boxes to score points, avoids moves that might
+// give the opponent an advantage, and uses a priority queue to handle critical
+// opportunities, such as completing boxes with three lines.
+//
+// Additionally, it dynamically updates its internal board state based on game
+// events and uses a fallback random selection when no strategic moves are available,
+// ensuring the player remains competitive throughout the game.
+//
+//---------------------------------------------------------------------
+
 #ifndef __OZGEAKOSA5177_DIMITRINEARCHOSDON5092_PLAYER__
 #define __OZGEAKOSA5177_DIMITRINEARCHOSDON5092_PLAYER__
 
@@ -37,11 +40,11 @@ using namespace std;
 class OzgeAkosa5177_DimitriNearchosdon5092_Player : public IPlayer
 {
 private:
-    Board board;              // Tracks the current state of the game board (dots, lines, boxes).
-    char player_box;          // The character used to represent boxes captured by this player.
-    char player_line;         // The character used to represent lines drawn by this player.
-    int board_rows;           // The total number of rows on the board (including dots and spaces for lines).
-    int board_cols;           // The total number of columns on the board (including dots and spaces for lines).
+    Board board;      // Tracks the current state of the game board (dots, lines, boxes).
+    char player_box;  // The character used to represent boxes captured by this player.
+    char player_line; // The character used to represent lines drawn by this player.
+    int board_rows;   // The total number of rows on the board (including dots and spaces for lines).
+    int board_cols;   // The total number of columns on the board (including dots and spaces for lines).
 
 public:
     // Constructor: Initializes the player instance.

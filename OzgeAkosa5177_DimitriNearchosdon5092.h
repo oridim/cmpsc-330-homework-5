@@ -15,12 +15,12 @@ using namespace std;
 class OzgeAkosa5177_DimitriNearchosdon5092_Player : public IPlayer
 {
 private:
-    Board board;                // Tracks the current state of the game board (dots, lines, boxes).
-    char player_box;            // The character used to represent boxes captured by this player.
-    char player_line;           // The character used to represent lines drawn by this player.
-    int board_rows;             // The total number of rows on the board (including dots and spaces for lines).
-    int board_cols;             // The total number of columns on the board (including dots and spaces for lines).
-    queue<Loc> priorityMoves;   // Stores high-priority moves, like completing a box or blocking the opponent.
+    Board board;              // Tracks the current state of the game board (dots, lines, boxes).
+    char player_box;          // The character used to represent boxes captured by this player.
+    char player_line;         // The character used to represent lines drawn by this player.
+    int board_rows;           // The total number of rows on the board (including dots and spaces for lines).
+    int board_cols;           // The total number of columns on the board (including dots and spaces for lines).
+    queue<Loc> priorityMoves; // Stores high-priority moves, like completing a box or blocking the opponent.
 
     // Collect all legal moves available on the board.
     vector<Loc> CollectMoves(char displayCharacter) const;

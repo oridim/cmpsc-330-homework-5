@@ -29,8 +29,10 @@ OzgeAkosa5177_DimitriNearchosdon5092_Player::~OzgeAkosa5177_DimitriNearchosdon50
 void OzgeAkosa5177_DimitriNearchosdon5092_Player::Init(int _dots_in_rows, int _dots_in_cols, char _player_box, char _player_line)
 {
     board.AllocateBoard(_dots_in_rows, _dots_in_cols);
+
     board_rows = _dots_in_rows;
     board_cols = _dots_in_cols;
+
     player_box = _player_box;
     player_line = _player_line;
 }
@@ -44,6 +46,7 @@ void OzgeAkosa5177_DimitriNearchosdon5092_Player::EventAddLine(const char bar, c
 {
     assert(loc.IsLineLocation());
     assert(board(loc) == ' ');
+
     board(loc) = bar;
 
     // Check for boxes with three lines after the opponent's move
@@ -53,16 +56,24 @@ void OzgeAkosa5177_DimitriNearchosdon5092_Player::EventAddLine(const char bar, c
     if (loc.IsLineHorizontalLocation())
     {
         if (loc.row > 0)
+        {
             neighbors.emplace_back(loc.row - 1, loc.col); // Box above the line
+        }
         if (loc.row < board_rows - 1)
-            neighbors.emplace_back(loc.row, loc.col);     // Box below the line
+        {
+            neighbors.emplace_back(loc.row, loc.col); // Box below the line
+        }
     }
     else if (loc.IsLineVerticalLocation())
     {
         if (loc.col > 0)
+        {
             neighbors.emplace_back(loc.row, loc.col - 1); // Box to the left of the line
+        }
         if (loc.col < board_cols - 1)
-            neighbors.emplace_back(loc.row, loc.col);     // Box to the right of the line
+        {
+            neighbors.emplace_back(loc.row, loc.col); // Box to the right of the line
+        }
     }
 
     for (const Loc &neighbor : neighbors)
@@ -78,6 +89,7 @@ void OzgeAkosa5177_DimitriNearchosdon5092_Player::EventAddBox(const char box, co
 {
     assert(loc.IsBoxLocation());
     assert(board(loc) == ' ');
+
     board(loc) = box;
 }
 
@@ -88,7 +100,7 @@ vector<Loc> OzgeAkosa5177_DimitriNearchosdon5092_Player::CollectMoves(char displ
 
     vector<Loc> availableBoxes = vector<Loc>();
 
-    // Iterate over all horizontal line locations (even rows, odd columns).   
+    // Iterate over all horizontal line locations (even rows, odd columns).
     for (int row = 0; row < rows; row += 2)
     {
         for (int column = 1; column < columns; column += 2)
@@ -148,6 +160,9 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::CountAdjacentPreviousSurroundin
 
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::CountSurroundingLines(int row, int column) const
 {
+    int columns = board.GetCols();
+    int rows = board.GetRows();
+
     int lineCount = 0;
 
     // Check the four possible surrounding positions of the cell (top, bottom, left, right).
@@ -156,7 +171,7 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::CountSurroundingLines(int row, 
         lineCount++; // Above
     }
 
-    if (row < board.GetRows() - 1 && board(row + 1, column) != ' ')
+    if (row < rows - 1 && board(row + 1, column) != ' ')
     {
         lineCount++; // Below
     }
@@ -166,7 +181,7 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::CountSurroundingLines(int row, 
         lineCount++; // Left
     }
 
-    if (column < board.GetCols() - 1 && board(row, column + 1) != ' ')
+    if (column < columns - 1 && board(row, column + 1) != ' ')
     {
         lineCount++; // Right
     }
@@ -228,17 +243,27 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
         {
             // Check above and below the horizontal line
             if (move.row > 0)
+            {
                 neighbors.emplace_back(move.row - 1, move.col);
+            }
+
             if (move.row < board_rows - 1)
+            {
                 neighbors.emplace_back(move.row, move.col);
+            }
         }
         else if (move.IsLineVerticalLocation())
         {
             // Check left and right of the vertical line
             if (move.col > 0)
+            {
                 neighbors.emplace_back(move.row, move.col - 1);
+            }
+
             if (move.col < board_cols - 1)
+            {
                 neighbors.emplace_back(move.row, move.col);
+            }
         }
 
         // Evaluate neighbors for safe moves
@@ -258,8 +283,16 @@ Loc OzgeAkosa5177_DimitriNearchosdon5092_Player::SelectLineLocation()
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::EvaluateMove(const Loc &move)
 {
     int score = 0;
-    if (DoesMoveYieldCapture(move)) score += 10; // Favor moves completing boxes.
-    if (DoesMoveYieldChain(move)) score -= 5;    // Penalize moves leaving chains.
-  
+
+    if (DoesMoveYieldCapture(move))
+    {
+        score += 10; // Favor moves completing boxes.
+    }
+
+    if (DoesMoveYieldChain(move))
+    {
+        score -= 5; // Penalize moves leaving chains.
+    }
+
     return score;
 }

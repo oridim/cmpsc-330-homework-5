@@ -29,7 +29,7 @@ jobs:
               run: ./compile-game-engine.sh
 
             - name: Compile Players
-              run: ./compile-players.sh
+              run: ./compile-player.sh
 
             - name: Run Test Runs
-              run: ./run-test-runs.sh
+              run: ./run-test-run.sh

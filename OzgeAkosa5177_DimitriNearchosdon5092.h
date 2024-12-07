@@ -38,6 +38,11 @@ private:
 
     int CountAdjacentPreviousSurroundingLines(const Loc &location) const;
 
+    // Count the number of lines around a given cell.
+    int CountSurroundingLines(int row, int column) const;
+
+    int CountSurroundingLines(const Loc &location) const { return CountSurroundingLines(location.row, location.col); };
+
     // Check if a box is a "prevention" move (1 surrounding line).
     bool DoesBoxYieldPrevention(const Loc &location) const { return DoesBoxYieldPrevention(location.row, location.col); };
 

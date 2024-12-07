@@ -67,7 +67,7 @@ void OzgeAkosa5177_DimitriNearchosdon5092_Player::EventAddLine(const char bar, c
 
     for (const Loc &neighbor : neighbors)
     {
-        if (board.CountSurroundingLines(neighbor) == 3)
+        if (CountSurroundingLines(neighbor) == 3)
         {
             priorityMoves.push(neighbor); // Store boxes with three lines as priority
         }
@@ -122,14 +122,14 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::CountAdjacentNextSurroundingLin
         int nextColumn = location.col + 1;
 
         // Return the surrounding line count for the adjacent cell if valid.
-        return (nextColumn < columns) ? board.CountSurroundingLines(location.row, nextColumn) : 0;
+        return (nextColumn < columns) ? CountSurroundingLines(location.row, nextColumn) : 0;
     }
 
     int rows = board.GetRows();
     int nextRow = location.row + 1;
 
     // Return the surrounding line count for the adjacent cell if valid.
-    return (nextRow < rows) ? board.CountSurroundingLines(nextRow, location.col) : 0;
+    return (nextRow < rows) ? CountSurroundingLines(nextRow, location.col) : 0;
 }
 
 int OzgeAkosa5177_DimitriNearchosdon5092_Player::CountAdjacentPreviousSurroundingLines(const Loc &location) const
@@ -138,18 +138,45 @@ int OzgeAkosa5177_DimitriNearchosdon5092_Player::CountAdjacentPreviousSurroundin
     {
         int previousColumn = location.col - 1;
 
-        return (previousColumn >= 0) ? board.CountSurroundingLines(location.row, previousColumn) : 0;
+        return (previousColumn >= 0) ? CountSurroundingLines(location.row, previousColumn) : 0;
     }
 
     int previousRow = location.row - 1;
 
-    return (previousRow >= 0) ? board.CountSurroundingLines(previousRow, location.col) : 0;
+    return (previousRow >= 0) ? CountSurroundingLines(previousRow, location.col) : 0;
 }
 
+int OzgeAkosa5177_DimitriNearchosdon5092_Player::CountSurroundingLines(int row, int column) const
+{
+    int lineCount = 0;
+
+    // Check the four possible surrounding positions of the cell (top, bottom, left, right).
+    if (row > 0 && board(row - 1, column) != ' ')
+    {
+        lineCount++; // Above
+    }
+
+    if (row < board.GetRows() - 1 && board(row + 1, column) != ' ')
+    {
+        lineCount++; // Below
+    }
+
+    if (column > 0 && board(row, column - 1) != ' ')
+    {
+        lineCount++; // Left
+    }
+
+    if (column < board.GetCols() - 1 && board(row, column + 1) != ' ')
+    {
+        lineCount++; // Right
+    }
+
+    return lineCount;
+}
 
 bool OzgeAkosa5177_DimitriNearchosdon5092_Player::DoesBoxYieldPrevention(int row, int col) const
 {
-    return board.CountSurroundingLines(row, col) == 1;
+    return CountSurroundingLines(row, col) == 1;
 }
 
 bool OzgeAkosa5177_DimitriNearchosdon5092_Player::DoesMoveYieldCapture(const Loc &location) const
